@@ -4,6 +4,6 @@ import { ForgotPasswordService } from './forgot-password.service';
 
 @Module({
   controllers: [ForgotPasswordController],
-  providers: [ForgotPasswordService]
+  providers: [ForgotPasswordService],
 })
 export class ForgotPasswordModule {}
