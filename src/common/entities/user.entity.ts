@@ -88,12 +88,6 @@ export class Users extends BaseEntity {
   age: number;
 
   @Column({
-    name: 'role_id',
-    type: 'int',
-  })
-  roleId: number;
-
-  @Column({
     name: 'reference_broker_id',
     type: 'int',
     default: 0,

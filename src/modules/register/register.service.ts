@@ -26,7 +26,6 @@ export class RegisterService {
     user.referenceBrokerId = register.referenceBrokerId;
     user.ssn = register.ssn;
     user.age = register.age;
-    user.roleId = register.role;
 
     await this.userRepository.save(user);
 

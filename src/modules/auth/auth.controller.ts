@@ -13,15 +13,16 @@ import { AuthService } from './auth.service';
 import { InviteDto } from 'src/common/dto/invite.dto';
 import { TokenDto } from 'src/common/dto/token.dto';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  login(@Body() loginData: LoginDto) {
-    return this.authService.loginDetails(loginData.email, loginData.password);
+  async login(@Body() loginDTO: LoginDto) {
+    const result = await this.authService.login(loginDTO);
+    return result;
   }
 
   @Post('invite')
