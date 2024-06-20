@@ -9,7 +9,7 @@ import {
 import { RegisterService } from './register.service';
 import { RegisterDto } from 'src/common/dto/register.dto';
 
-@Controller('register')
+@Controller('api/register')
 export class RegisterController {
   constructor(private registerService: RegisterService) {}
 

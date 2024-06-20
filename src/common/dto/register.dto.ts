@@ -37,6 +37,4 @@ export class RegisterDto {
   @IsNotEmpty()
   age: number;
 
-  @IsNotEmpty()
-  role: number;
 }
