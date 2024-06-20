@@ -35,7 +35,7 @@ export class AuthController {
     return { message: 'Invitation sent successfully' };
   }
 
-  @Get('invite')
+  @Post('invite-validate')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   tokenValidate(@Body() tokenDTO: TokenDto) {
