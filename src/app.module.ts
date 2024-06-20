@@ -6,6 +6,7 @@ import { typeOrmConfigAsync } from './database/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { RegisterModule } from './modules/register/register.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { MailModule } from './common/mail/mail.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthModule } from './modules/auth/auth.module';
     ForgotPasswordModule,
     RegisterModule,
     AuthModule,
+    MailModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
   ],
