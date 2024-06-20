@@ -1,9 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class InviteDto {
+export class ForgotPasswordLinkDto {
   @IsNotEmpty({ message: 'Email should not be empty' })
   email: string;
-
-  @IsNotEmpty()
-  roleId: number;
 }

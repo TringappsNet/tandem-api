@@ -101,6 +101,18 @@ export class Users extends BaseEntity {
   })
   isActive: boolean;
 
+  @Column({
+    name: 'reset_token',
+    type: 'varchar',
+  })
+  resetToken: string;
+
+  @Column({
+    name: 'reset_token_expires',
+    type: 'timestamp',
+  })
+  resetTokenExpires: Date;
+
   @CreateDateColumn({
     name: 'created_at',
     nullable: true,

@@ -13,6 +13,8 @@ import Session from 'src/common/entities/session.entity';
 import { LoginDto } from 'src/common/dto/login.dto';
 import { Users } from 'src/common/entities/user.entity';
 import { Role } from 'src/common/entities/role.entity';
+import { ForgotPasswordLinkDto } from 'src/common/dto/forgot-password-link.dto';
+import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -83,9 +85,6 @@ export class AuthService {
     }
   }
 
- 
-      
-
   async sendInvite(inviteDTO: InviteDto) {
     try {
       const existingUser = await this.userRepository.findOne({
@@ -123,7 +122,7 @@ export class AuthService {
       inviteUser.inviteTokenExpires = new Date(
         Date.now() + 24 * 60 * 60 * 1000,
       );
-      inviteUser.invitedBy = inviteDTO.invitedBy;
+      // inviteUser.invitedBy = inviteDTO.invitedBy;
 
       await this.inviteRepository.save(inviteUser);
 
@@ -156,4 +155,55 @@ export class AuthService {
     }
 
   }
+
+  async forgotPassword(forgotPasswordDTO: ForgotPasswordLinkDto) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email: forgotPasswordDTO.email },
+      });
+      if (!user) {
+        throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+      }
+
+      user.resetToken = crypto.randomBytes(50).toString('hex').slice(0, 100);
+      user.resetTokenExpires = new Date(Date.now() + 1 * 60 * 60 * 1000);
+
+      await this.userRepository.save(user);
+
+      const resetUrl = `http://localhost:3000/reset-password?resetToken=${user.resetToken}`;
+
+      const subject = 'Password Reset Request';
+      const text = `Hello! To reset your password, please click the following link: ${resetUrl}
+                    This link is valid for 1 hour.`;
+
+      await this.mailService.sendMail(user.email, subject, text);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async resetPassword(resetPasswordDTO: ResetPasswordDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: resetPasswordDTO.userId },
+    });
+    if (!user) {
+      throw new HttpException(
+        'Invalid UserID Received',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    if (!user.isActive) {
+      throw new HttpException(
+        'User account is inactive. Please contact support.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    
+    const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
+    // console.log(resetPasswordDTO.newPassword, updatedPassword);
+    await this.userRepository.update(user.id, {password: updatedPassword});
+
+  }
+
+  
 }
