@@ -1,6 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginService } from '../login/login.service';
 import * as bcrypt from 'bcrypt';
 import { InviteDto } from 'src/common/dto/invite.dto';
 import { InviteUser } from 'src/common/entities/invite.entity';
@@ -8,13 +7,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
 import { MailService } from 'src/common/mail/mail.service';
-import { TokenDto } from 'src/common/dto/token.dto';
 import Session from 'src/common/entities/session.entity';
 import { LoginDto } from 'src/common/dto/login.dto';
 import { Users } from 'src/common/entities/user.entity';
 import { Role } from 'src/common/entities/role.entity';
 import { ForgotPasswordLinkDto } from 'src/common/dto/forgot-password-link.dto';
 import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
+import { UserRole } from 'src/common/entities/user-role.entity';
+import { RegisterDto } from 'src/common/dto/register.dto';
+import { ForgotPasswordDto } from 'src/common/dto/forgot-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +29,8 @@ export class AuthService {
     private inviteRepository: Repository<InviteUser>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectRepository(UserRole)
+    private readonly userRoleRepository: Repository<UserRole>,
     private mailService: MailService,
     private jwtService: JwtService,
   ) {}
@@ -39,7 +42,7 @@ export class AuthService {
       });
       if (!user) {
         throw new HttpException(
-          'Invalid email or password',
+          'You are not a registered user',
           HttpStatus.UNAUTHORIZED,
         );
       }
@@ -56,7 +59,7 @@ export class AuthService {
       );
       if (!isPasswordValid) {
         throw new HttpException(
-          'Invalid email or password',
+          'Incorrect Password',
           HttpStatus.UNAUTHORIZED,
         );
       }
@@ -127,7 +130,7 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Invitation to join our platform';
-      const text = `Hello! You have been invited to join our platform. Please click on the following link to complete your registration: http://192.168.1.69:3001/registerform?inviteToken=${inviteUser.inviteToken}
+      const text = `Hello! You have been invited to join our platform. Please click on the following link to complete your registration: http://192.168.1.77:3000/registerform?inviteToken=${inviteUser.inviteToken}
                     NOTE: this token is valid for only 24 hours`;
 
       await this.mailService.sendMail(inviteDTO.email, subject, text);
@@ -136,9 +139,10 @@ export class AuthService {
     }
   }
 
-  async tokenValidate(tokenDTO: TokenDto) {
+  async registerDetails(registerDTO: RegisterDto) {
+
     const inviteUser = await this.inviteRepository.findOne({
-      where: { inviteToken: tokenDTO.token },
+      where: { inviteToken: registerDTO.inviteToken },
     });
 
     if(!inviteUser) {
@@ -148,18 +152,36 @@ export class AuthService {
     }
 
     if(inviteUser.inviteTokenExpires < new Date()){
-      await this.inviteRepository.remove(inviteUser);
       throw new BadRequestException(
         'Invite Token has expired',
       )
     }
 
+    const user = new Users();
+
+    user.email = inviteUser.email;
+    user.password = await bcrypt.hash(registerDTO.password, 10);
+    user.firstname = registerDTO.firstname;
+    user.lastname = registerDTO.lastname;
+    user.mobile = registerDTO.mobileno;
+    user.isActive = true;
+
+    const savedUser = await this.userRepository.save(user);
+
+    const userRole = new UserRole();
+    userRole.userId = savedUser.id;
+    userRole.roleId = inviteUser.roleId;
+    await this.userRoleRepository.save(userRole);
+
+    await this.inviteRepository.remove(inviteUser);
+
+    return { message: 'Registered Successfully!' };
   }
 
-  async forgotPassword(forgotPasswordDTO: ForgotPasswordLinkDto) {
+  async forgotPasswordLink(forgotPasswordLinkDTO: ForgotPasswordLinkDto) {
     try {
       const user = await this.userRepository.findOne({
-        where: { email: forgotPasswordDTO.email },
+        where: { email: forgotPasswordLinkDTO.email },
       });
       if (!user) {
         throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
@@ -177,6 +199,28 @@ export class AuthService {
                     This link is valid for 1 hour.`;
 
       await this.mailService.sendMail(user.email, subject, text);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async forgotPassword(resetToken: string, forgotPasswordDTO: ForgotPasswordDto) {
+    try {
+      const user = await this.userRepository.findOne({ where: { resetToken } });
+      if (!user || user.resetTokenExpires < new Date()) {
+        throw new HttpException(
+          'Invalid or expired reset token',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      user.password = await bcrypt.hash(forgotPasswordDTO.newPassword, 10);
+      user.resetToken = '';
+      user.resetTokenExpires = null;
+
+      await this.userRepository.save(user);
+
+      return { message: 'Password has been reset successfully' };
     } catch (error) {
       throw error;
     }
@@ -205,5 +249,24 @@ export class AuthService {
 
   }
 
-  
+  async logout(token: string) {
+    try {
+      const session = await this.sessionRepository.findOne({
+        where: { token },
+      });
+
+      if (!session) {
+        throw new HttpException(
+          'Invalid session token',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      await this.sessionRepository.delete({ token: session.token });
+
+      return { message: 'Logout successful' };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

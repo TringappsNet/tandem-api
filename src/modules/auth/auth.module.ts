@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { LoginModule } from '../login/login.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../../common/constants/auth.constants';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,12 +9,12 @@ import { MailModule } from 'src/common/mail/mail.module';
 import { Users } from 'src/common/entities/user.entity';
 import Session from 'src/common/entities/session.entity';
 import { Role } from 'src/common/entities/role.entity';
+import { UserRole } from 'src/common/entities/user-role.entity';
 
 @Module({
   imports: [
-    LoginModule,
     MailModule,
-    TypeOrmModule.forFeature([InviteUser, Users, Session, Role]),
+    TypeOrmModule.forFeature([InviteUser, Users, Session, Role, UserRole]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

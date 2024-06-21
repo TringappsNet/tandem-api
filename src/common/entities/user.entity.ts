@@ -19,6 +19,7 @@ export class Users extends BaseEntity {
   @Column({
     name: 'email_id',
     type: 'varchar',
+    default: '',
   })
   email: string;
 
@@ -41,14 +42,22 @@ export class Users extends BaseEntity {
   lastname: string;
 
   @Column({
+    name: 'mobile',
+    type: 'int',
+  })
+  mobile: number;
+
+  @Column({
     name: 'address',
     type: 'varchar',
+    default: '',
   })
   address: string;
 
   @Column({
     name: 'city',
     type: 'varchar',
+    default: '',
   })
   city: string;
 
@@ -62,12 +71,14 @@ export class Users extends BaseEntity {
   @Column({
     name: 'country',
     type: 'varchar',
+    default: '',
   })
   country: string;
 
   @Column({
     name: 'pincode',
     type: 'int',
+    default: 0,
   })
   pincode: number;
 
@@ -96,7 +107,7 @@ export class Users extends BaseEntity {
 
   @Column({
     name: 'is_active',
-    default: true,
+    default: false,
     type: 'boolean',
   })
   isActive: boolean;
@@ -104,12 +115,14 @@ export class Users extends BaseEntity {
   @Column({
     name: 'reset_token',
     type: 'varchar',
+    default: ''
   })
   resetToken: string;
 
   @Column({
     name: 'reset_token_expires',
     type: 'timestamp',
+    default: null,
   })
   resetTokenExpires: Date;
 

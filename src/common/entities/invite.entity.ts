@@ -22,7 +22,7 @@ import {
     @Column({ name: 'invite_token_expires', type: 'timestamp' })
     inviteTokenExpires: Date;
   
-    @Column({ name: 'invited_by' })
+    @Column({ name: 'invited_by', default: 1})
     invitedBy: number;
   
     @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
