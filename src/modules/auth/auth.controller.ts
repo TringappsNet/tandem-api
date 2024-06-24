@@ -48,7 +48,9 @@ export class AuthController {
   @Post('forgot-password-link')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async forgotPasswordLink(@Body() forgotPasswordLinkDTO: ForgotPasswordLinkDto) {
+  async forgotPasswordLink(
+    @Body() forgotPasswordLinkDTO: ForgotPasswordLinkDto,
+  ) {
     await this.authService.forgotPasswordLink(forgotPasswordLinkDTO);
     return { message: 'Password reset email sent successfully' };
   }

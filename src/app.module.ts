@@ -19,5 +19,4 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
   ],
 })
-
 export class AppModule {}

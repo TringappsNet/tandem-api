@@ -115,7 +115,7 @@ export class Users extends BaseEntity {
   @Column({
     name: 'reset_token',
     type: 'varchar',
-    default: ''
+    default: '',
   })
   resetToken: string;
 

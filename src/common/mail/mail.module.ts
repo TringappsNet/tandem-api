@@ -5,9 +5,7 @@ import { mailConfigAsync } from '../configurations/email.config';
 
 @Global()
 @Module({
-  imports: [
-    MailerModule.forRootAsync(mailConfigAsync),
-  ],
+  imports: [MailerModule.forRootAsync(mailConfigAsync)],
   providers: [MailService],
   exports: [MailService],
 })

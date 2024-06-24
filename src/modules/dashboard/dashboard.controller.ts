@@ -5,10 +5,10 @@ import { DashboardService } from './dashboard.service';
 @ApiTags('Dashboard')
 @Controller('api/dashboard')
 export class DashboardController {
-    constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService) {}
 
-    @Get('home')
-    async getHomeData() {
-        return await this.dashboardService.getHomeData();
-    }
+  @Get('home')
+  async getHomeData() {
+    return await this.dashboardService.getHomeData();
+  }
 }
