@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -16,31 +17,64 @@ export class Deals {
   })
   id: number;
 
-  @Column({ name: 'active_step', type: 'int', default: 1 })
+  @Column({ 
+    name: 'active_step', 
+    type: 'int', 
+    default: 1,
+  })
   activeStep: number;
 
-  @Column({ name: 'status', type: 'varchar' })
+  @Column({
+    name: 'status',
+    type: 'varchar',
+  })
   status: string;
 
-  @Column({ name: 'broker_name', type: 'varchar' })
+  @Column({
+    name: 'broker_name', 
+    type: 'varchar',
+  })
   brokerName: string;
 
-  @Column({ name: 'property_id', type: 'int' })
+  @Column({
+    name: 'property_id', 
+    type: 'int',
+  })
   propertyId: number;
 
-  @Column({ name: 'deal_start_date', type: 'timestamp', default: null })
+  @Column({
+    name: 'deal_start_date', 
+    type: 'timestamp', 
+    default: null,
+  })
   dealStartDate: Date;
 
-  @Column({ name: 'proposal_date', type: 'timestamp', default: null })
+  @Column({ 
+    name: 'proposal_date', 
+    type: 'timestamp', 
+    default: null,
+  })
   proposalDate: Date;
 
-  @Column({ name: 'loi_execute_date', type: 'timestamp', default: null })
+  @Column({ 
+    name: 'loi_execute_date', 
+    type: 'timestamp', 
+    default: null,
+  })
   loiExecuteDate: Date;
 
-  @Column({ name: 'lease_signed_date', type: 'timestamp', default: null })
+  @Column({ 
+    name: 'lease_signed_date', 
+    type: 'timestamp', 
+    default: null,
+  })
   leaseSignedDate: Date;
 
-  @Column({ name: 'notice_to_proceed_date', type: 'timestamp', default: null })
+  @Column({ 
+    name: 'notice_to_proceed_date', 
+    type: 'timestamp', 
+    default: null,
+  })
   noticeToProceedDate: Date;
 
   @Column({
@@ -57,14 +91,24 @@ export class Deals {
   })
   potentialCommissionDate: Date;
 
-  @Column({ name: 'potential_commission', type: 'int', default: 0 })
+  @Column({ 
+    name: 'potential_commission', 
+    type: 'int', 
+    default: 0 
+  })
   potentialCommission: number;
 
   @ManyToOne(() => Users, (userId) => userId.id)
-  createdBy: Users;
+  @JoinColumn({
+    name: 'created_by',
+  })
+  createdBy: number;
 
   @ManyToOne(() => Users, (userId) => userId.id)
-  updatedBy: Users;
+  @JoinColumn({
+    name: 'updated_by',
+  })
+  updatedBy: number;
 
   @CreateDateColumn({
     name: 'created_at',

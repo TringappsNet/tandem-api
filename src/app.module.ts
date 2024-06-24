@@ -7,6 +7,7 @@ import { MailModule } from './common/mail/mail.module';
 import { RoleModule } from './modules/user-role/role/role.module';
 import { UserRoleModule } from './modules/user-role/user-role.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { DealsModule } from './modules/deals/deals.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     RoleModule,
     UserRoleModule,
     DashboardModule,
+    DealsModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
   ],

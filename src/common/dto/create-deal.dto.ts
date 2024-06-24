@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class DealsDto {
+export class CreateDealDto {
   @IsNotEmpty()
   id: number;
 
@@ -42,7 +42,4 @@ export class DealsDto {
 
   @IsNotEmpty()
   createdBy: number;
-
-  @IsNotEmpty()
-  updatedBy: number;
 }
