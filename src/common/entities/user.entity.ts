@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Deals } from './deals.entity';
 
 @Entity('users')
 export class Users extends BaseEntity {
@@ -137,4 +139,10 @@ export class Users extends BaseEntity {
     nullable: true,
   })
   updatedAt: Date = undefined;
+
+  @OneToMany(() => Deals, (deal) => deal.createdBy)
+  createdDeals: Deals[];
+
+  @OneToMany(() => Deals, (deal) => deal.updatedBy)
+  updatedDeals: Deals[];
 }

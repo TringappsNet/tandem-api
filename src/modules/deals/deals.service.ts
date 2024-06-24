@@ -11,10 +11,10 @@ export class DealsService {
         @InjectRepository(Deals) private dealsRepository: Repository<Deals>
     ) {}
     
-    async createDeal(createDealDto: CreateDealDto): Promise<Deals> {
-        const dealData = this.dealsRepository.create(createDealDto);
-        return await this.dealsRepository.save(dealData);
-    }
+    // async createDeal(createDealDto: CreateDealDto): Promise<Deals> {
+    //     const dealData = this.dealsRepository.create(createDealDto);
+    //     return await this.dealsRepository.save(dealData);
+    // }
 
     async getAllDeals(): Promise<Deals[]> {
         return await this.dealsRepository.find();

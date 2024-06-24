@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateDealDto {
   @IsNotEmpty()
@@ -40,6 +40,6 @@ export class CreateDealDto {
   @IsNotEmpty()
   potentialCommission: number;
 
-  @IsNotEmpty()
+  @IsInt()
   createdBy: number;
 }
