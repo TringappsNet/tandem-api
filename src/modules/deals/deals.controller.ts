@@ -10,12 +10,12 @@ import { UpdateDealDto } from 'src/common/dto/update-deal.dto';
 export class DealsController {
     constructor(private readonly dealsService: DealsService) {}
 
-    @Post('deal')
-    @HttpCode(HttpStatus.OK)
-    @UsePipes(ValidationPipe)
-    async createDeal(@Body() createDealDto: CreateDealDto): Promise<Deals> {
-        return this.dealsService.createDeal(createDealDto);
-    }
+    // @Post('deal')
+    // @HttpCode(HttpStatus.OK)
+    // @UsePipes(ValidationPipe)
+    // async createDeal(@Body() createDealDto: CreateDealDto): Promise<Deals> {
+    //     return this.dealsService.createDeal(createDealDto);
+    // }
 
     @Get()
     @HttpCode(HttpStatus.OK)
@@ -24,14 +24,15 @@ export class DealsController {
         return this.dealsService.getAllDeals();
     } 
 
-    // @Get('deals/:id')
-    // @HttpCode(HttpStatus.OK)
-    // @UsePipes(ValidationPipe)
-    // async getDealsById(
-    //     @Param('id') id: number,
-    // ): Promise<Deals[]> {
-    //     return this.dealsService.getDealsById(id)
-    // }
+    @Get('createdBy/:createdBy')
+    @HttpCode(HttpStatus.OK)
+    @UsePipes(ValidationPipe)
+    async getDealsByCreatedBy(
+        @Param('createdBy') createdBy: number,
+    ): Promise<Deals[]> {
+        return this.dealsService.getDealsByCreatedBy(createdBy);
+    }
+
 
     @Get('deal/:id')
     @HttpCode(HttpStatus.OK)
@@ -42,15 +43,15 @@ export class DealsController {
         return this.dealsService.getDealById(id)
     }
 
-    @Put('deal/:id')
-    @HttpCode(HttpStatus.OK)
-    @UsePipes(ValidationPipe)
-    async updateDealById(
-        @Param('id') id: number,
-        @Body() updateDealDto: UpdateDealDto,
-    ): Promise<Deals> {
-        return this.dealsService.updateDealById(id, updateDealDto)
-    }
+    // @Put('deal/:id')
+    // @HttpCode(HttpStatus.OK)
+    // @UsePipes(ValidationPipe)
+    // async updateDealById(
+    //     @Param('id') id: number,
+    //     @Body() updateDealDto: UpdateDealDto,
+    // ): Promise<Deals> {
+    //     return this.dealsService.updateDealById(id, updateDealDto)
+    // }
 
     @Delete('deal/:id')
     @HttpCode(HttpStatus.OK)

@@ -98,17 +98,18 @@ export class Deals {
   })
   potentialCommission: number;
 
-  @ManyToOne(() => Users, (userId) => userId.id)
+
+  @ManyToOne(() => Users, (user) => user.createdDeals)
   @JoinColumn({
     name: 'created_by',
   })
-  createdBy: number;
+  createdBy: Users;
 
-  @ManyToOne(() => Users, (userId) => userId.id)
+  @ManyToOne(() => Users, (user) => user.updatedDeals)
   @JoinColumn({
     name: 'updated_by',
   })
-  updatedBy: number;
+  updatedBy: Users;
 
   @CreateDateColumn({
     name: 'created_at',
