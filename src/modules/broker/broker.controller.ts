@@ -1,0 +1,15 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { BrokerService } from './broker.service';
+import { Users } from 'src/common/entities/user.entity';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('Broker')
+@Controller('brokers')
+export class BrokerController {
+  constructor(private readonly brokerService: BrokerService) {}
+
+  @Get('/')
+  async getUsersByRoleId(): Promise<Users[]> {
+    return this.brokerService.findByRoleId();
+  }
+}
