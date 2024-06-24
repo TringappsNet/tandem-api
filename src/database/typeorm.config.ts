@@ -3,6 +3,12 @@ import {
   TypeOrmModuleAsyncOptions,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import * as glob from 'glob';
+import * as path from 'path';
+
+function getEntitiesPath(): string[] {
+  return glob.sync(path.join(__dirname, '/../**/*.entity.ts'));
+}
 
 export default class TypeOrmConfig {
   static getOrmConfig(configService: ConfigService): TypeOrmModuleOptions {

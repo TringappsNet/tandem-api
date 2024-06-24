@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForgotPasswordService } from './forgot-password.service';
+import { ForgotPasswordService } from '../forgot-password.service';
 
 describe('ForgotPasswordService', () => {
   let service: ForgotPasswordService;

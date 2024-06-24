@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForgotPasswordController } from './forgot-password.controller';
+import { ForgotPasswordController } from '../forgot-password.controller';
 
 describe('ForgotPasswordController', () => {
   let controller: ForgotPasswordController;
