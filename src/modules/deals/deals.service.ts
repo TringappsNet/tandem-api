@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateDealDto } from 'src/common/dto/create-deal.dto';
 import { UpdateDealDto } from 'src/common/dto/update-deal.dto';
@@ -20,20 +20,24 @@ export class DealsService {
         return await this.dealsRepository.find();
     }
 
-    // async getDealsById(id: number): Promise<Deals[]> {
-    //     const usersWithRole = await this.dealsRepository
-    //     .createQueryBuilder('userRole')
-    //     .innerJoinAndSelect('userRole.user', 'user')
-    //     .where('userRole.roleId = :roleId', { id })
-    //     .getMany();
-
-    //     return usersWithRole.map((userRole) => userRole.createdBy);
-    // }
+    async getDealsById(id: number): Promise<Deals[]> {
+        return await this.dealsRepository.find({
+            where: { 
+                id: id
+            },
+        });
+    }
 
     async getDealById(id: number): Promise<Deals> {
-        return await this.dealsRepository.findOneBy(
+        const dealId = await this.dealsRepository.findOneBy(
             { id }
         );
+
+        if (!dealId) {
+            throw new NotFoundException(`Deal with ID ${id} not found`);
+        }
+
+        return dealId
     }
 
     async updateDealById(id: number, updateDealDto: UpdateDealDto): Promise<Deals> {

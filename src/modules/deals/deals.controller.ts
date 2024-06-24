@@ -24,14 +24,14 @@ export class DealsController {
         return this.dealsService.getAllDeals();
     } 
 
-    // @Get('deals/:id')
-    // @HttpCode(HttpStatus.OK)
-    // @UsePipes(ValidationPipe)
-    // async getDealsById(
-    //     @Param('id') id: number,
-    // ): Promise<Deals[]> {
-    //     return this.dealsService.getDealsById(id)
-    // }
+    @Get('deals/:id')
+    @HttpCode(HttpStatus.OK)
+    @UsePipes(ValidationPipe)
+    async getDealsById(
+        @Param('id') id: number,
+    ): Promise<Deals[]> {
+        return this.dealsService.getDealsById(id)
+    }
 
     @Get('deal/:id')
     @HttpCode(HttpStatus.OK)
