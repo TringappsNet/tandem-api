@@ -42,10 +42,10 @@ export class AuthController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   async registerDetails(@Body() registerData: RegisterDto) {
-    return await this.authService.registerDetails(registerData);
+    return await this.authService.register(registerData);
   }
 
-  @Post('forgot-password-link')
+  @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async forgotPasswordLink(@Body() forgotPasswordLinkDTO: ForgotPasswordLinkDto) {
@@ -53,7 +53,7 @@ export class AuthController {
     return { message: 'Password reset email sent successfully' };
   }
 
-  @Post('forgot-password')
+  @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async forgotPassword(
