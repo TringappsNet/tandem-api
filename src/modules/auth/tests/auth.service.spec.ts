@@ -73,6 +73,7 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should return user details and session on successful login', async () => {
       const mockLoginDto = { email: 'test@example.com', password: 'password123' };
+
       const mockUser = { 
         id: 1, 
         email: 'test@example.com', 
@@ -99,6 +100,8 @@ describe('AuthService', () => {
         softRemove: null,
         recover: null,
         reload: null,
+        createdDeals: null,
+        updatedDeals: null,
       };
 
       const mockSession = { 
@@ -157,6 +160,8 @@ describe('AuthService', () => {
         softRemove: null,
         recover: null,
         reload: null,
+        createdDeals: null,
+        updatedDeals: null,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockInactiveUser);
@@ -193,6 +198,8 @@ describe('AuthService', () => {
         softRemove: null,
         recover: null,
         reload: null,
+        createdDeals: null,
+        updatedDeals: null,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -202,5 +209,67 @@ describe('AuthService', () => {
       await expect(service.login(mockLoginDto)).rejects.toThrow(HttpException);
     });
   });
+
+  describe('sendInvite', () => {
+    it('should send invite email', async () => {
+      const mockInviteDto = { email:'sendinvite@gmail.com', roleId:2 }
+
+      const mockInviteUser = {
+        id: 1,
+        email: 'test@example.com', 
+        roleId: 2,
+        inviteToken: null,
+        inviteTokenExpires: null,
+        invitedBy: 1,
+        createdAt: null,
+      }
+
+      const mockUser = { 
+        id: 1, 
+        email: 'test@example.com', 
+        password: await bcrypt.hash('password123', 10), 
+        firstname: 'test',
+        lastname: 'test',
+        mobile: 1234567890,
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        pincode: null,
+        ssn: null,
+        age: null,
+        referenceBrokerId: null,
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null, 
+        save: null, 
+        remove: null, 
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
+      // jest.spyOn(roleRepository, 'findOne').mockResolvedValue();
+      jest.spyOn(roleRepository, 'save').mockResolvedValue(null);
+
+      const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
+
+      const result = await service.sendInvite(mockInviteDto);
+
+      expect(result).toBeDefined();
+      expect(spySendMail).toHaveBeenCalled();
+      expect(inviteRepository.save).toHaveBeenCalledTimes(1);
+
+    });
+  })
+
+
 
 });
