@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDTO } from '../../../common/dto/create-role.dto';
-import { UpdateRoleDTO } from '../../../common/dto/update-role.dto';
+import { UpdateDealDto } from '../../../common/dto/update-role.dto';
 import { Role } from '../../../common/entities/role.entity';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -36,7 +36,7 @@ export class RoleController {
   @Put('role/:id')
   async updateRole(
     @Param('id') id: number,
-    @Body() updateRoleDto: UpdateRoleDTO,
+    @Body() updateRoleDto: UpdateDealDto,
   ): Promise<Role> {
     return this.roleService.updateRole(id, updateRoleDto);
   }

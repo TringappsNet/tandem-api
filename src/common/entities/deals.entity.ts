@@ -37,10 +37,10 @@ export class Deals {
   brokerName: string;
 
   @Column({
-    name: 'property_id',
-    type: 'int',
+    name: 'property_name',
+    type: 'varchar',
   })
-  propertyId: number;
+  propertyName: string;
 
   @Column({
     name: 'deal_start_date',

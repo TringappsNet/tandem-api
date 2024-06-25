@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../../../common/entities/role.entity';
 import { CreateRoleDTO } from '../../../common/dto/create-role.dto';
-import { UpdateRoleDTO } from '../../../common/dto/update-role.dto';
+import { UpdateDealDto } from '../../../common/dto/update-role.dto';
 // import { LoggerService } from '@logger/logger.service';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class RoleService {
     return role;
   }
 
-  async updateRole(id: number, updateRoleDto: UpdateRoleDTO): Promise<Role> {
+  async updateRole(id: number, updateRoleDto: UpdateDealDto): Promise<Role> {
     const role = await this.getRoleById(id);
     Object.assign(role, updateRoleDto);
     // this.logger.log(`Role with ID ${id} updated`);

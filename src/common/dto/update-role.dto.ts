@@ -1,18 +1,35 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsInt, IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
+import { Users } from '../entities/user.entity';
 
-export class UpdateRoleDTO {
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  roleName?: string;
+export class UpdateDealDto {
+  @IsNotEmpty()
+  activeStep: number;
 
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  description?: string;
+  @IsNotEmpty()
+  status: string;
+
+  @IsNotEmpty()
+  brokerName: string;
+
+  @IsNotEmpty()
+  propertyName: string;
+
+  dealStartDate: Date;
+
+  proposalDate: Date;
+
+  loiExecuteDate: Date;
+
+  leaseSignedDate: Date;
+
+  noticeToProceedDate: Date;
+
+  commercialOperationDate: Date;
+
+  potentialCommissionDate: Date;
+
+  potentialCommission: number;
 
   @IsInt()
-  @IsNotEmpty()
-  updatedBy: number;
+  updatedBy: Users;
 }
