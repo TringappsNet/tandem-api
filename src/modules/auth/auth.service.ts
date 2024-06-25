@@ -8,20 +8,20 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { InviteDto } from 'src/common/dto/invite.dto';
-import { InviteUser } from 'src/common/entities/invite.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
-import { MailService } from 'src/common/mail/mail.service';
-import Session from 'src/common/entities/session.entity';
 import { LoginDto } from 'src/common/dto/login.dto';
-import { Users } from 'src/common/entities/user.entity';
-import { Role } from 'src/common/entities/role.entity';
 import { ForgotPasswordLinkDto } from 'src/common/dto/forgot-password-link.dto';
 import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
-import { UserRole } from 'src/common/entities/user-role.entity';
 import { RegisterDto } from 'src/common/dto/register.dto';
 import { ForgotPasswordDto } from 'src/common/dto/forgot-password.dto';
+import { Session } from './../../common/entities/session.entity';
+import { Users } from './../../common/entities/user.entity';
+import { Role } from './../../common/entities/role.entity';
+import { UserRole } from './../../common/entities/user-role.entity';
+import { InviteUser } from './../../common/entities/invite.entity';
+import { MailService } from './../../common/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -141,7 +141,8 @@ export class AuthService {
     }
   }
 
-  async registerDetails(registerDTO: RegisterDto) {
+
+  async register(registerDTO: RegisterDto) {
     const inviteUser = await this.inviteRepository.findOne({
       where: { inviteToken: registerDTO.inviteToken },
     });
