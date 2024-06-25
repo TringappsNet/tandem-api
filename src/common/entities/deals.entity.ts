@@ -94,7 +94,7 @@ export class Deals {
   @Column({
     name: 'potential_commission',
     type: 'int',
-    default: 0,
+    default: null,
   })
   potentialCommission: number;
 
