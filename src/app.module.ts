@@ -10,7 +10,6 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { DealsModule } from './modules/deals/deals.module';
 import { BrokerModule } from './modules/broker/broker.module';
 
-
 @Module({
   imports: [
     AuthModule,

@@ -7,10 +7,7 @@ import { UserRole } from 'src/common/entities/user-role.entity';
 import { Deals } from 'src/common/entities/deals.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Users, UserRole, Deals]),
-    
-  ],
+  imports: [TypeOrmModule.forFeature([Users, UserRole, Deals])],
   controllers: [BrokerController],
   providers: [BrokerService],
 })

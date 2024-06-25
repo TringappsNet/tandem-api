@@ -29,7 +29,7 @@ export class DealsController {
     return this.dealsService.createDeal(createDealDto);
   }
 
-  @Get( )
+  @Get()
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async getAllDeals(): Promise<Deals[]> {

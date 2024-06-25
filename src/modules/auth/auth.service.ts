@@ -141,7 +141,6 @@ export class AuthService {
     }
   }
 
-
   async register(registerDTO: RegisterDto) {
     const inviteUser = await this.inviteRepository.findOne({
       where: { inviteToken: registerDTO.inviteToken },

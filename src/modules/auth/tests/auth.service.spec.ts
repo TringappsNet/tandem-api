@@ -10,7 +10,7 @@ import { UserRole } from '../../../common/entities/user-role.entity';
 import { MailService } from '../../../common/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import {HttpException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, UnauthorizedException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 describe('AuthService', () => {
@@ -31,7 +31,7 @@ describe('AuthService', () => {
         JwtService,
         {
           provide: MailerService,
-          useValue: { send: jest.fn() }
+          useValue: { send: jest.fn() },
         },
         {
           provide: getRepositoryToken(Users),
@@ -58,10 +58,16 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
-    sessionRepository = module.get<Repository<Session>>(getRepositoryToken(Session));
-    inviteRepository = module.get<Repository<InviteUser>>(getRepositoryToken(InviteUser));
+    sessionRepository = module.get<Repository<Session>>(
+      getRepositoryToken(Session),
+    );
+    inviteRepository = module.get<Repository<InviteUser>>(
+      getRepositoryToken(InviteUser),
+    );
     roleRepository = module.get<Repository<Role>>(getRepositoryToken(Role));
-    userRoleRepository = module.get<Repository<UserRole>>(getRepositoryToken(UserRole));
+    userRoleRepository = module.get<Repository<UserRole>>(
+      getRepositoryToken(UserRole),
+    );
     mailService = module.get<MailService>(MailService);
     jwtService = module.get<JwtService>(JwtService);
   });
@@ -72,12 +78,15 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should return user details and session on successful login', async () => {
-      const mockLoginDto = { email: 'test@example.com', password: 'password123' };
+      const mockLoginDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
 
-      const mockUser = { 
-        id: 1, 
-        email: 'test@example.com', 
-        password: await bcrypt.hash('password123', 10), 
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
         firstname: 'test',
         lastname: 'test',
         mobile: 1234567890,
@@ -94,9 +103,9 @@ describe('AuthService', () => {
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
         isActive: true,
-        hasId: null, 
-        save: null, 
-        remove: null, 
+        hasId: null,
+        save: null,
+        remove: null,
         softRemove: null,
         recover: null,
         reload: null,
@@ -104,12 +113,13 @@ describe('AuthService', () => {
         updatedDeals: null,
       };
 
-      const mockSession = { 
-        userId: 1, 
-        token: '2304c37032a7d6ef516cc25d4880f40d255fd4cd21cc311da2ff1087460d2b7e82968c9b56057104fbeafb23394a70eca22e', 
+      const mockSession = {
+        userId: 1,
+        token:
+          '2304c37032a7d6ef516cc25d4880f40d255fd4cd21cc311da2ff1087460d2b7e82968c9b56057104fbeafb23394a70eca22e',
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         id: 1,
-        createdAt: new Date(Date.now())
+        createdAt: new Date(Date.now()),
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -126,7 +136,10 @@ describe('AuthService', () => {
     });
 
     it('should throw HttpException if user does not exist', async () => {
-      const mockLoginDto = { email: 'nonexistent@example.com', password: 'password123' };
+      const mockLoginDto = {
+        email: 'nonexistent@example.com',
+        password: 'password123',
+      };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
@@ -134,10 +147,10 @@ describe('AuthService', () => {
     });
 
     it('should throw HttpException if user account is inactive', async () => {
-      const mockInactiveUser = { 
-        id: 1, 
-        email: 'test@example.com', 
-        password: await bcrypt.hash('password123', 10), 
+      const mockInactiveUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
         firstname: 'test',
         lastname: 'test',
         mobile: null,
@@ -154,9 +167,9 @@ describe('AuthService', () => {
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
         isActive: false,
-        hasId: null, 
-        save: null, 
-        remove: null, 
+        hasId: null,
+        save: null,
+        remove: null,
         softRemove: null,
         recover: null,
         reload: null,
@@ -166,16 +179,19 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockInactiveUser);
 
-      const mockLoginDto = { email: 'test@example.com', password: 'password123' };
+      const mockLoginDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(HttpException);
     });
 
     it('should throw HttpException if password is incorrect', async () => {
-      const mockUser = { 
-        id: 1, 
-        email: 'test@example.com', 
-        password: await bcrypt.hash('password123', 10), 
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
         firstname: 'test',
         lastname: 'test',
         mobile: null,
@@ -192,9 +208,9 @@ describe('AuthService', () => {
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
         isActive: true,
-        hasId: null, 
-        save: null, 
-        remove: null, 
+        hasId: null,
+        save: null,
+        remove: null,
         softRemove: null,
         recover: null,
         reload: null,
@@ -204,7 +220,10 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-      const mockLoginDto = { email: 'test@example.com', password: 'wrongpassword' };
+      const mockLoginDto = {
+        email: 'test@example.com',
+        password: 'wrongpassword',
+      };
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(HttpException);
     });
@@ -212,38 +231,39 @@ describe('AuthService', () => {
 
   describe('sendInvite', () => {
     it('should send invite email successfully', async () => {
-      const mockInviteDto = { email:'invite@gmail.com', roleId:2 }
+      const mockInviteDto = { email: 'invite@gmail.com', roleId: 2 };
 
       const mockRole = {
         id: 2,
         roleName: 'broker',
         description: 'broker-role',
-        createdBy: 1, 
-        createdAt: new Date(Date.now()), 
-        updatedBy: 1, 
+        createdBy: 1,
+        createdAt: new Date(Date.now()),
+        updatedBy: 1,
         updatedAt: new Date(Date.now()),
-      }
+      };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(roleRepository, 'findOne').mockResolvedValue(mockRole);
       jest.spyOn(inviteRepository, 'save').mockResolvedValue(null);
 
-      const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
+      const spySendMail = jest
+        .spyOn(mailService, 'sendMail')
+        .mockResolvedValue(undefined);
 
       const result = await service.sendInvite(mockInviteDto);
 
       expect(result).toBeUndefined();
       expect(spySendMail).toHaveBeenCalled();
       expect(inviteRepository.save).toHaveBeenCalledTimes(1);
-
     });
 
     it('should throw HttpException if email already exist', async () => {
-      const mockUser = { 
-        id: 1, 
-        email: 'invite@gmail.com', 
-        password: await bcrypt.hash('password123', 10), 
+      const mockUser = {
+        id: 1,
+        email: 'invite@gmail.com',
+        password: await bcrypt.hash('password123', 10),
         firstname: 'test',
         lastname: 'test',
         mobile: 1234567890,
@@ -260,9 +280,9 @@ describe('AuthService', () => {
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
         isActive: true,
-        hasId: null, 
-        save: null, 
-        remove: null, 
+        hasId: null,
+        save: null,
+        remove: null,
         softRemove: null,
         recover: null,
         reload: null,
@@ -270,45 +290,46 @@ describe('AuthService', () => {
         updatedDeals: null,
       };
 
-      const mockInviteDto = { email:'invite@gmail.com', roleId:2 }
+      const mockInviteDto = { email: 'invite@gmail.com', roleId: 2 };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(HttpException);
+      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw HttpException if invite already sent to the email', async () => {
       const mockInviteUser = {
         id: 1,
-        email: 'test@gmail.com', 
+        email: 'test@gmail.com',
         roleId: 2,
         inviteToken: null,
         inviteTokenExpires: null,
         invitedBy: 1,
         createdAt: null,
-      }
+      };
 
-      const mockInviteDto = { email:'test@gmail.com', roleId:2 }
+      const mockInviteDto = { email: 'test@gmail.com', roleId: 2 };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
 
-      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(HttpException);
-
+      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw HttpException if invalid role id', async () => {
-      const mockInviteDto = { email:'test@gmail.com', roleId:21 }
+      const mockInviteDto = { email: 'test@gmail.com', roleId: 21 };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(roleRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(HttpException);
+      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(
+        HttpException,
+      );
     });
-
-  })
-
-
-
+  });
 });
