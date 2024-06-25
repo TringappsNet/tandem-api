@@ -42,5 +42,5 @@ export class UpdateDealDto {
   potentialCommission: number;
 
   @IsInt()
-  updatedBy: Users; 
+  updatedBy: Users;
 }

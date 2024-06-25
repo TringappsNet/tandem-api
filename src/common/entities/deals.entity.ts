@@ -17,9 +17,9 @@ export class Deals {
   })
   id: number;
 
-  @Column({ 
-    name: 'active_step', 
-    type: 'int', 
+  @Column({
+    name: 'active_step',
+    type: 'int',
     default: 1,
   })
   activeStep: number;
@@ -31,48 +31,48 @@ export class Deals {
   status: string;
 
   @Column({
-    name: 'broker_name', 
+    name: 'broker_name',
     type: 'varchar',
   })
   brokerName: string;
 
   @Column({
-    name: 'property_id', 
+    name: 'property_id',
     type: 'int',
   })
   propertyId: number;
 
   @Column({
-    name: 'deal_start_date', 
-    type: 'timestamp', 
+    name: 'deal_start_date',
+    type: 'timestamp',
     default: null,
   })
   dealStartDate: Date;
 
-  @Column({ 
-    name: 'proposal_date', 
-    type: 'timestamp', 
+  @Column({
+    name: 'proposal_date',
+    type: 'timestamp',
     default: null,
   })
   proposalDate: Date;
 
-  @Column({ 
-    name: 'loi_execute_date', 
-    type: 'timestamp', 
+  @Column({
+    name: 'loi_execute_date',
+    type: 'timestamp',
     default: null,
   })
   loiExecuteDate: Date;
 
-  @Column({ 
-    name: 'lease_signed_date', 
-    type: 'timestamp', 
+  @Column({
+    name: 'lease_signed_date',
+    type: 'timestamp',
     default: null,
   })
   leaseSignedDate: Date;
 
-  @Column({ 
-    name: 'notice_to_proceed_date', 
-    type: 'timestamp', 
+  @Column({
+    name: 'notice_to_proceed_date',
+    type: 'timestamp',
     default: null,
   })
   noticeToProceedDate: Date;
@@ -91,10 +91,10 @@ export class Deals {
   })
   potentialCommissionDate: Date;
 
-  @Column({ 
-    name: 'potential_commission', 
-    type: 'int', 
-    default: 0 
+  @Column({
+    name: 'potential_commission',
+    type: 'int',
+    default: 0,
   })
   potentialCommission: number;
 

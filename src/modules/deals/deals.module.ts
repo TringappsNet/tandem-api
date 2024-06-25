@@ -6,10 +6,8 @@ import { Deals } from 'src/common/entities/deals.entity';
 import { Users } from 'src/common/entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Deals, Users]),
-  ],
+  imports: [TypeOrmModule.forFeature([Deals, Users])],
   controllers: [DealsController],
-  providers: [DealsService]
+  providers: [DealsService],
 })
 export class DealsModule {}

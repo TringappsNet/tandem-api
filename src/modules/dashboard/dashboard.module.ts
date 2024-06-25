@@ -7,13 +7,8 @@ import { Users } from 'src/common/entities/user.entity';
 import { DealsService } from '../deals/deals.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Deals, Users]),
-  ],
+  imports: [TypeOrmModule.forFeature([Deals, Users])],
   controllers: [DashboardController],
-  providers: [
-    DashboardService,
-    DealsService,
-  ],
+  providers: [DashboardService, DealsService],
 })
 export class DashboardModule {}
