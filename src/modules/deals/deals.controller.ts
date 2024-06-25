@@ -29,7 +29,7 @@ export class DealsController {
     return this.dealsService.createDeal(createDealDto);
   }
 
-  @Get()
+  @Get( )
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async getAllDeals(): Promise<Deals[]> {
@@ -41,7 +41,7 @@ export class DealsController {
   @UsePipes(ValidationPipe)
   async getDealsByCreatedBy(
     @Param('createdBy') createdBy: number,
-  ): Promise<Deals[]> {
+  ): Promise<any> {
     return this.dealsService.getDealsByCreatedBy(createdBy);
   }
 
