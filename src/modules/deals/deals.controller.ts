@@ -24,14 +24,15 @@ export class DealsController {
         return this.dealsService.getAllDeals();
     } 
 
-    @Get('deals/:id')
+    @Get('createdBy/:createdBy')
     @HttpCode(HttpStatus.OK)
     @UsePipes(ValidationPipe)
-    async getDealsById(
-        @Param('id') id: number,
+    async getDealsByCreatedBy(
+        @Param('createdBy') createdBy: number,
     ): Promise<Deals[]> {
-        return this.dealsService.getDealsById(id)
+        return this.dealsService.getDealsByCreatedBy(createdBy);
     }
+
 
     @Get('deal/:id')
     @HttpCode(HttpStatus.OK)

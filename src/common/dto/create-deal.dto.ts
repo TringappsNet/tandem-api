@@ -1,4 +1,5 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
+import { Users } from '../entities/user.entity';
 
 export class CreateDealDto {
   @IsNotEmpty()
@@ -41,5 +42,5 @@ export class CreateDealDto {
   potentialCommission: number;
 
   @IsInt()
-  createdBy: number;
+  createdBy: Users;
 }

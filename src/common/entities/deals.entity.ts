@@ -98,7 +98,6 @@ export class Deals {
   })
   potentialCommission: number;
 
-
   @ManyToOne(() => Users, (user) => user.createdDeals)
   @JoinColumn({
     name: 'created_by',
