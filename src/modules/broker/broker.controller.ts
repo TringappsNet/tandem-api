@@ -4,7 +4,7 @@ import { Users } from 'src/common/entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Broker')
-@Controller('brokers')
+@Controller('api/brokers')
 export class BrokerController {
   constructor(private readonly brokerService: BrokerService) {}
 
