@@ -211,22 +211,38 @@ describe('AuthService', () => {
   });
 
   describe('sendInvite', () => {
-    it('should send invite email', async () => {
-      const mockInviteDto = { email:'sendinvite@gmail.com', roleId:2 }
+    it('should send invite email successfully', async () => {
+      const mockInviteDto = { email:'invite@gmail.com', roleId:2 }
 
-      const mockInviteUser = {
-        id: 1,
-        email: 'test@example.com', 
-        roleId: 2,
-        inviteToken: null,
-        inviteTokenExpires: null,
-        invitedBy: 1,
-        createdAt: null,
+      const mockRole = {
+        id: 2,
+        roleName: 'broker',
+        description: 'broker-role',
+        createdBy: 1, 
+        createdAt: new Date(Date.now()), 
+        updatedBy: 1, 
+        updatedAt: new Date(Date.now()),
       }
 
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(roleRepository, 'findOne').mockResolvedValue(mockRole);
+      jest.spyOn(inviteRepository, 'save').mockResolvedValue(null);
+
+      const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
+
+      const result = await service.sendInvite(mockInviteDto);
+
+      expect(result).toBeUndefined();
+      expect(spySendMail).toHaveBeenCalled();
+      expect(inviteRepository.save).toHaveBeenCalledTimes(1);
+
+    });
+
+    it('should throw HttpException if email already exist', async () => {
       const mockUser = { 
         id: 1, 
-        email: 'test@example.com', 
+        email: 'invite@gmail.com', 
         password: await bcrypt.hash('password123', 10), 
         firstname: 'test',
         lastname: 'test',
@@ -254,20 +270,43 @@ describe('AuthService', () => {
         updatedDeals: null,
       };
 
+      const mockInviteDto = { email:'invite@gmail.com', roleId:2 }
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+
+      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(HttpException);
+    });
+
+    it('should throw HttpException if invite already sent to the email', async () => {
+      const mockInviteUser = {
+        id: 1,
+        email: 'test@gmail.com', 
+        roleId: 2,
+        inviteToken: null,
+        inviteTokenExpires: null,
+        invitedBy: 1,
+        createdAt: null,
+      }
+
+      const mockInviteDto = { email:'test@gmail.com', roleId:2 }
+
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
-      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
-      // jest.spyOn(roleRepository, 'findOne').mockResolvedValue();
-      jest.spyOn(roleRepository, 'save').mockResolvedValue(null);
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
 
-      const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
-
-      const result = await service.sendInvite(mockInviteDto);
-
-      expect(result).toBeDefined();
-      expect(spySendMail).toHaveBeenCalled();
-      expect(inviteRepository.save).toHaveBeenCalledTimes(1);
+      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(HttpException);
 
     });
+
+    it('should throw HttpException if invalid role id', async () => {
+      const mockInviteDto = { email:'test@gmail.com', roleId:21 }
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(roleRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(HttpException);
+    });
+
   })
 
 
