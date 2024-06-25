@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BrokerController } from './broker.controller';
-import { BrokerService } from './broker.service';
+import { BrokerController } from '../broker.controller';
+import { BrokerService } from '../broker.service';
 
 describe('BrokerController', () => {
   let controller: BrokerController;

@@ -16,14 +16,49 @@ export class DealsService {
     return await this.dealsRepository.save(dealData);
   }
 
-  async getAllDeals(): Promise<Deals[]> {
-    return await this.dealsRepository.find();
+  async getAllDeals(): Promise<any> {
+    
+    const deals =  await this.dealsRepository.find();
+    const totalDeals = deals.length;
+    const dealsOpened = deals.filter(deal => deal.activeStep === 1).length;
+    const dealsInProgress = deals.filter(deal => deal.activeStep > 1 && deal.activeStep <= 6).length;
+    const dealsClosed = deals.filter(deal => deal.activeStep === 7).length;
+    const totalCommission = deals.reduce((sum, deal) => sum + deal.potentialCommission, 0);
+    return {
+      totalDeals,
+      dealsOpened,
+      dealsInProgress,
+      dealsClosed,
+      totalCommission,
+      deals,
+    };
   }
 
-  async getDealsByCreatedBy(createdBy: number): Promise<Deals[]> {
-    return await this.dealsRepository.find({
+  // async getDealsByCreatedBy(createdBy: number): Promise<Deals[]> {
+  //   return await this.dealsRepository.find({
+  //     where: { createdBy: { id: createdBy } },
+  //   });
+  // }
+
+  async getDealsByCreatedBy(createdBy: number): Promise<any> {
+    const deals = await this.dealsRepository.find({
       where: { createdBy: { id: createdBy } },
     });
+
+    const totalDeals = deals.length;
+    const dealsOpened = deals.filter(deal => deal.activeStep === 1).length;
+    const dealsInProgress = deals.filter(deal => deal.activeStep > 1 && deal.activeStep <= 6).length;
+    const dealsClosed = deals.filter(deal => deal.activeStep === 7).length;
+    const totalCommission = deals.reduce((sum, deal) => sum + deal.potentialCommission, 0);
+
+    return {
+      totalDeals,
+      dealsOpened,
+      dealsInProgress,
+      dealsClosed,
+      totalCommission,
+      deals,
+    };
   }
 
   async getDealById(id: number): Promise<Deals> {
