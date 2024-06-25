@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateDealDto } from 'src/common/dto/create-deal.dto';
 import { UpdateDealDto } from 'src/common/dto/update-deal.dto';
@@ -12,8 +12,13 @@ export class DealsService {
   ) {}
 
   async createDeal(createDealDto: CreateDealDto): Promise<Deals> {
-    const dealData = this.dealsRepository.create(createDealDto);
-    return await this.dealsRepository.save(dealData);
+    if(createDealDto.isNew) {
+      const dealData = this.dealsRepository.create(createDealDto);
+      const saveData = await this.dealsRepository.save(dealData);
+      return saveData;
+    } else {
+      throw new BadRequestException(`It is not a new deal ${createDealDto.isNew}`);
+    }
   }
 
   async getAllDeals(): Promise<any> {

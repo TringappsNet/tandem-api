@@ -3,9 +3,6 @@ import { Users } from '../entities/user.entity';
 
 export class UpdateDealDto {
   @IsNotEmpty()
-  id: number;
-
-  @IsNotEmpty()
   activeStep: number;
 
   @IsNotEmpty()
@@ -15,30 +12,22 @@ export class UpdateDealDto {
   brokerName: string;
 
   @IsNotEmpty()
-  propertyId: number;
+  propertyName: string;
 
-  @IsNotEmpty()
   dealStartDate: Date;
 
-  @IsNotEmpty()
   proposalDate: Date;
 
-  @IsNotEmpty()
   loiExecuteDate: Date;
 
-  @IsNotEmpty()
   leaseSignedDate: Date;
 
-  @IsNotEmpty()
   noticeToProceedDate: Date;
 
-  @IsNotEmpty()
   commercialOperationDate: Date;
 
-  @IsNotEmpty()
   potentialCommissionDate: Date;
 
-  @IsNotEmpty()
   potentialCommission: number;
 
   @IsInt()
