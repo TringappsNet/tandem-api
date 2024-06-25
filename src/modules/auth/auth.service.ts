@@ -1,4 +1,10 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { InviteDto } from 'src/common/dto/invite.dto';
@@ -19,13 +25,12 @@ import { MailService } from './../../common/mail/mail.service';
 
 @Injectable()
 export class AuthService {
-  
   constructor(
     @InjectRepository(Users)
     private readonly userRepository: Repository<Users>,
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
-    @InjectRepository(InviteUser) 
+    @InjectRepository(InviteUser)
     private inviteRepository: Repository<InviteUser>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
@@ -34,7 +39,7 @@ export class AuthService {
     private mailService: MailService,
     private jwtService: JwtService,
   ) {}
-  
+
   async login(loginDTO: LoginDto) {
     try {
       const user = await this.userRepository.findOne({
@@ -58,10 +63,7 @@ export class AuthService {
         user.password,
       );
       if (!isPasswordValid) {
-        throw new HttpException(
-          'Incorrect Password',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new HttpException('Incorrect Password', HttpStatus.UNAUTHORIZED);
       }
 
       let session = await this.sessionRepository.findOne({
@@ -73,8 +75,8 @@ export class AuthService {
         session.userId = user.id;
       }
 
-      session.token = crypto.randomBytes(50).toString('hex'),
-      session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      (session.token = crypto.randomBytes(50).toString('hex')),
+        (session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000));
 
       await this.sessionRepository.save(session);
 
@@ -139,22 +141,18 @@ export class AuthService {
     }
   }
 
-  async register(registerDTO: RegisterDto) {
 
+  async register(registerDTO: RegisterDto) {
     const inviteUser = await this.inviteRepository.findOne({
       where: { inviteToken: registerDTO.inviteToken },
     });
 
-    if(!inviteUser) {
-      throw new BadRequestException(
-        'Invalid Invite Token',
-      )
+    if (!inviteUser) {
+      throw new BadRequestException('Invalid Invite Token');
     }
 
-    if(inviteUser.inviteTokenExpires < new Date()){
-      throw new BadRequestException(
-        'Invite Token has expired',
-      )
+    if (inviteUser.inviteTokenExpires < new Date()) {
+      throw new BadRequestException('Invite Token has expired');
     }
 
     const user = new Users();
@@ -204,7 +202,10 @@ export class AuthService {
     }
   }
 
-  async forgotPassword(resetToken: string, forgotPasswordDTO: ForgotPasswordDto) {
+  async forgotPassword(
+    resetToken: string,
+    forgotPasswordDTO: ForgotPasswordDto,
+  ) {
     try {
       const user = await this.userRepository.findOne({ where: { resetToken } });
       if (!user || user.resetTokenExpires < new Date()) {
@@ -242,11 +243,10 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    
+
     const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
     // console.log(resetPasswordDTO.newPassword, updatedPassword);
-    await this.userRepository.update(user.id, {password: updatedPassword});
-
+    await this.userRepository.update(user.id, { password: updatedPassword });
   }
 
   async logout(token: string) {
