@@ -244,7 +244,6 @@ export class AuthService {
     }
 
     const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
-    // console.log(resetPasswordDTO.newPassword, updatedPassword);
     await this.userRepository.update(user.id, { password: updatedPassword });
   }
 

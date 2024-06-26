@@ -8,8 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { CreateRoleDTO } from '../../../common/dto/create-role.dto';
-import { UpdateDealDto } from '../../../common/dto/update-role.dto';
+import { CreateRoleDto } from '../../../common/dto/create-role.dto';
+import { UpdateRoleDto } from '../../../common/dto/update-role.dto';
 import { Role } from '../../../common/entities/role.entity';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -19,7 +19,7 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post('role')
-  async createRole(@Body() createRoleDto: CreateRoleDTO): Promise<Role> {
+  async createRole(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return this.roleService.createRole(createRoleDto);
   }
 
@@ -36,7 +36,7 @@ export class RoleController {
   @Put('role/:id')
   async updateRole(
     @Param('id') id: number,
-    @Body() updateRoleDto: UpdateDealDto,
+    @Body() updateRoleDto: UpdateRoleDto,
   ): Promise<Role> {
     return this.roleService.updateRole(id, updateRoleDto);
   }

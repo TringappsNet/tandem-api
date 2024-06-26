@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleController } from '../role.controller';
 import { RoleService } from '../role.service';
-import { CreateRoleDTO } from '../../../../common/dto/create-role.dto';
-import { UpdateRoleDTO } from '../../../../common/dto/update-role.dto';
+import { CreateRoleDto } from '../../../../common/dto/create-role.dto';
+import { UpdateRoleDto } from '../../../../common/dto/update-role.dto';
 import { Role } from '../../../../common/entities/role.entity';
 
 describe('RoleController', () => {
@@ -79,7 +79,7 @@ describe('RoleController', () => {
 
   describe('createRole', () => {
     it('should create a role', async () => {
-      const createRoleDto: CreateRoleDTO = {
+      const createRoleDto: CreateRoleDto = {
         roleName: 'Admin',
         createdBy: 0,
       };
@@ -186,7 +186,7 @@ describe('RoleController', () => {
   describe('updateRole', () => {
     it('should update role', async () => {
       const roleId = 1;
-      const updateRoleDto: UpdateRoleDTO = {
+      const updateRoleDto: UpdateRoleDto = {
         roleName: 'New Admin',
         updatedBy: 0,
       };

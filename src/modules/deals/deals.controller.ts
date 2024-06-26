@@ -12,10 +12,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { DealsService } from './deals.service';
-import { Deals } from 'src/common/entities/deals.entity';
+import { Deals } from '../../common/entities/deals.entity';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateDealDto } from 'src/common/dto/create-deal.dto';
-import { UpdateDealDto } from 'src/common/dto/update-deal.dto';
+import { CreateDealDto } from '../../common/dto/create-deal.dto';
+import { UpdateDealDto } from '../../common/dto/update-deal.dto';
 
 @ApiTags('Deals')
 @Controller('api/deals')

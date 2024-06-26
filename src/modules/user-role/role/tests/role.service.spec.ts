@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleService } from '../role.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Role } from '../../../../common/entities/role.entity';
-import { CreateRoleDTO } from '../../../../common/dto/create-role.dto';
-import { UpdateRoleDTO } from '../../../../common/dto/update-role.dto';
+import { CreateRoleDto } from '../../../../common/dto/create-role.dto';
+import { UpdateRoleDto } from '../../../../common/dto/update-role.dto';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 // import { LoggerService } from '@logger/logger.service';
@@ -49,7 +49,7 @@ describe('RoleService', () => {
 
   describe('createRole', () => {
     it('should create a role and log it', async () => {
-      const createRoleDto: CreateRoleDTO = {
+      const createRoleDto: CreateRoleDto = {
         roleName: 'Admin',
         createdBy: 0,
         description: 'Administrator role',
@@ -146,7 +146,7 @@ describe('RoleService', () => {
   describe('updateRole', () => {
     it('should update role and log it', async () => {
       const roleId = 1;
-      const updateRoleDto: UpdateRoleDTO = {
+      const updateRoleDto: UpdateRoleDto = {
         roleName: 'New Admin',
         description: 'Updated description',
         updatedBy: 0,

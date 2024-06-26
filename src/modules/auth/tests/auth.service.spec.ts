@@ -10,7 +10,7 @@ import { UserRole } from '../../../common/entities/user-role.entity';
 import { MailService } from '../../../common/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { HttpException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 describe('AuthService', () => {
@@ -218,12 +218,12 @@ describe('AuthService', () => {
         updatedDeals: null,
       };
 
-      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
-
       const mockLoginDto = {
         email: 'test@example.com',
         password: 'wrongpassword',
       };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(HttpException);
     });
@@ -330,6 +330,354 @@ describe('AuthService', () => {
       await expect(service.sendInvite(mockInviteDto)).rejects.toThrow(
         HttpException,
       );
+    });
+  });
+
+  describe('register', () => {
+    it('should register user successfully with valid invite token', async () => {
+      const mockInviteUser = {
+        id: 1,
+        email: 'invite@gmail.com',
+        roleId: 2,
+        inviteToken: 'qwertyuiop',
+        inviteTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        invitedBy: 1,
+        createdAt: new Date(Date.now()),
+      };
+
+      const mockRegisterDto = {
+        firstname: 'test',
+        lastname: 'test',
+        mobileno: 1234567890,
+        inviteToken: 'qwertyuiop',
+        password: await bcrypt.hash('password123', 10)
+      };
+
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
+      jest.spyOn(userRepository, 'save').mockImplementation((user) => Promise.resolve({id:1, ...user} as Users));
+      jest.spyOn(userRoleRepository, 'save').mockResolvedValue(undefined);
+      jest.spyOn(inviteRepository, 'remove').mockResolvedValue(undefined);
+
+      const result = await service.register(mockRegisterDto);
+
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Registered Successfully!');
+      expect(userRepository.save).toHaveBeenCalled();
+
+    });
+
+    it('should throw BadRequestException if invalid invite token', async () => {
+      const mockRegisterDto = {
+        firstname: 'test',
+        lastname: 'test',
+        mobileno: 1234567890,
+        inviteToken: 'qwertyuiop',
+        password: await bcrypt.hash('password123', 10)
+      };
+
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(service.register(mockRegisterDto)).rejects.toThrow(BadRequestException)
+    });
+
+    it('should throw BadRequestException if invite token has expired', async () => {
+      const mockRegisterDto = {
+        firstname: 'test',
+        lastname: 'test',
+        mobileno: 1234567890,
+        inviteToken: 'qwertyuiop',
+        password: await bcrypt.hash('password123', 10)
+      };
+
+      const mockInviteUser = {
+        id: 1,
+        email: 'invite@gmail.com',
+        roleId: 2,
+        inviteToken: 'qwertyuiop',
+        inviteTokenExpires: new Date(Date.now() - 1000),
+        invitedBy: 1,
+        createdAt: new Date(Date.now()),
+      };
+
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
+
+      await expect(service.register(mockRegisterDto)).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('changePassword', () => {
+    it('should sent the password reset link if valid user found', async () => {
+      const mockChangePasswordDto = {
+        email: 'test@gmail.com'
+      };
+
+      const mockUser = {
+        id: 1,
+        email: 'test@gmail.com',
+        password: await bcrypt.hash('password123', 10),
+        firstname: 'test',
+        lastname: 'test',
+        mobile: 1234567890,
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        pincode: null,
+        ssn: null,
+        age: null,
+        referenceBrokerId: null,
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'save').mockResolvedValue(null);
+
+      const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
+
+      const result = await service.forgotPasswordLink(mockChangePasswordDto);
+
+      expect(result).toBeUndefined();
+      expect(userRepository.save).toHaveBeenCalled();
+      expect(spySendMail).toHaveBeenCalledTimes(1);
+
+    });
+
+    it('should throw HttpException if valid user not found', async () => {
+      const mockChangePasswordDto = {
+        email: 'test@gmail.com'
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(service.forgotPasswordLink(mockChangePasswordDto)).rejects.toThrow(HttpException);
+    });
+  });
+  
+  describe('forgotPassword', () => {
+    it('should reset password successfully with valid reset token', async () => {
+      const mockForgotPasswordDto = {
+        newPassword: await bcrypt.hash('newpassword123', 10),
+      };
+
+      const resetToken = 'qwertyuiop';
+
+      const mockUser = {
+        id: 1,
+        email: 'test@gmail.com',
+        password: await bcrypt.hash('password123', 10),
+        firstname: 'test',
+        lastname: 'test',
+        mobile: 1234567890,
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        pincode: null,
+        ssn: null,
+        age: null,
+        referenceBrokerId: null,
+        resetToken: 'qwertyuiop',
+        resetTokenExpires: new Date(Date.now() + 1000),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'save').mockResolvedValue(null);
+
+      const result = await service.forgotPassword(resetToken, mockForgotPasswordDto);
+
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Password has been reset successfully');
+      expect(userRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw HttpException if invalid or expired reset token', async () => {
+      const mockForgotPasswordDto = {
+        newPassword: await bcrypt.hash('newpassword123', 10),
+      };
+
+      const resetToken = 'qwertyuiop';
+
+      const mockUser = {
+        id: 1,
+        email: 'test@gmail.com',
+        password: await bcrypt.hash('password123', 10),
+        firstname: 'test',
+        lastname: 'test',
+        mobile: 1234567890,
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        pincode: null,
+        ssn: null,
+        age: null,
+        referenceBrokerId: null,
+        resetToken: 'asdfghjkl',
+        resetTokenExpires: new Date(Date.now() - 1000),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+
+      await expect(service.forgotPassword(resetToken, mockForgotPasswordDto)).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should change password successfully with valid user and active record', async () => {
+      const mockResetPasswordDto = {
+        userId: 1,
+        oldPassword: 'password123',
+        newPassword: 'newpassword123',
+      }
+
+      const mockUser = {
+        id: 1,
+        email: 'test@gmail.com',
+        password: await bcrypt.hash('password123', 10),
+        firstname: 'test',
+        lastname: 'test',
+        mobile: 1234567890,
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        pincode: null,
+        ssn: null,
+        age: null,
+        referenceBrokerId: null,
+        resetToken: 'qwertyuiop',
+        resetTokenExpires: new Date(Date.now() + 1000),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'update').mockResolvedValue(undefined);
+
+      const result = await service.resetPassword(mockResetPasswordDto);
+
+      expect(result).toBeUndefined();
+      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {password: expect.any(String)});
+    });
+
+    it('should throw HttpException if invalid user id received', async () => {
+      const mockResetPasswordDto = {
+        userId: 1,
+        oldPassword: 'password123',
+        newPassword: 'newpassword123',
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(service.resetPassword(mockResetPasswordDto)).rejects.toThrow(HttpException);
+    });
+
+    it('should throw HttpException if user account is inactive', async () => {
+      const mockResetPasswordDto = {
+        userId: 1,
+        oldPassword: 'password123',
+        newPassword: 'newpassword123',
+      };
+
+      const mockUser = {
+        id: 1,
+        email: 'test@gmail.com',
+        password: await bcrypt.hash('password123', 10),
+        firstname: 'test',
+        lastname: 'test',
+        mobile: 1234567890,
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        pincode: null,
+        ssn: null,
+        age: null,
+        referenceBrokerId: null,
+        resetToken: 'qwertyuiop',
+        resetTokenExpires: new Date(Date.now() + 1000),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: false,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+
+      await expect(service.resetPassword(mockResetPasswordDto)).rejects.toThrow(HttpException);
+    });
+  });
+  
+  describe('logout', () => {
+    it('should logout successfully with valid session token', async () => {
+      const mockSessionToken = 'qwertyuiop';
+
+      const mockSession = {
+        id: 1,
+        userId: 1,
+        token: 'qwertyuiop',
+        expiresAt: new Date(Date.now() + 1000),
+        createdAt: new Date(Date.now()),
+      }
+
+      jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(mockSession);
+      jest.spyOn(sessionRepository, 'delete').mockResolvedValue(null);
+
+      const result = await service.logout(mockSessionToken);
+
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Logout successful');
+      expect(sessionRepository.delete).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../../../common/entities/role.entity';
-import { CreateRoleDTO } from '../../../common/dto/create-role.dto';
-import { UpdateDealDto } from '../../../common/dto/update-role.dto';
+import { CreateRoleDto } from '../../../common/dto/create-role.dto';
+import { UpdateRoleDto } from '../../../common/dto/update-role.dto';
 // import { LoggerService } from '@logger/logger.service';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class RoleService {
     // private readonly logger: LoggerService,
   ) {}
 
-  async createRole(createRoleDto: CreateRoleDTO): Promise<Role> {
+  async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const role = this.roleRepository.create(createRoleDto);
     // this.logger.log(`Role created with ID ${role.id}`);
     return await this.roleRepository.save(role);
@@ -35,7 +35,7 @@ export class RoleService {
     return role;
   }
 
-  async updateRole(id: number, updateRoleDto: UpdateDealDto): Promise<Role> {
+  async updateRole(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
     const role = await this.getRoleById(id);
     Object.assign(role, updateRoleDto);
     // this.logger.log(`Role with ID ${id} updated`);

@@ -22,9 +22,10 @@ describe('Swagger', () => {
   describe('setupSwagger', () => {
     it('should setup swagger correctly', () => {
       const options = new DocumentBuilder()
-        .setTitle('API Documentation')
-        .setDescription('Mobile Marketplace API documentation')
-        .setVersion('1.0.0')
+        .setTitle('Tandem Infrastructure')
+        .setDescription('Welcome to Tandem Infrastructure')
+        .setVersion('1.0')
+        .addTag('Tandem')
         .addBearerAuth()
         .build();
 
