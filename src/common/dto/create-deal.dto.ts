@@ -12,7 +12,7 @@ export class CreateDealDto {
   brokerName: string;
 
   @IsNotEmpty()
-  propertyname: string;
+  propertyName: string;
 
   dealStartDate: Date;
 
@@ -32,4 +32,7 @@ export class CreateDealDto {
 
   @IsInt()
   createdBy: Users;
+
+  @IsNotEmpty()
+  isNew: boolean;
 }
