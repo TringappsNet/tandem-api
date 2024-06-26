@@ -141,7 +141,6 @@ export class AuthService {
     }
   }
 
-
   async register(registerDTO: RegisterDto) {
     const inviteUser = await this.inviteRepository.findOne({
       where: { inviteToken: registerDTO.inviteToken },
@@ -245,7 +244,6 @@ export class AuthService {
     }
 
     const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
-    // console.log(resetPasswordDTO.newPassword, updatedPassword);
     await this.userRepository.update(user.id, { password: updatedPassword });
   }
 

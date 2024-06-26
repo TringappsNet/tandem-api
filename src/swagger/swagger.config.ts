@@ -10,7 +10,7 @@ export const setupSwagger = (app: INestApplication<any>) => {
     .setTitle('Tandem Infrastructure')
     .setDescription('Welcome to Tandem Infrastructure')
     .setVersion('1.0')
-    .addTag('dashboard')
+    .addTag('Tandem')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);

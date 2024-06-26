@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateDealDto } from 'src/common/dto/create-deal.dto';
-import { UpdateDealDto } from 'src/common/dto/update-deal.dto';
-import { Deals } from 'src/common/entities/deals.entity';
+import { CreateDealDto } from '../../common/dto/create-deal.dto';
+import { UpdateDealDto } from '../../common/dto/update-deal.dto';
+import { Deals } from '../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -22,13 +22,17 @@ export class DealsService {
   }
 
   async getAllDeals(): Promise<any> {
-    
-    const deals =  await this.dealsRepository.find();
+    const deals = await this.dealsRepository.find();
     const totalDeals = deals.length;
-    const dealsOpened = deals.filter(deal => deal.activeStep === 1).length;
-    const dealsInProgress = deals.filter(deal => deal.activeStep > 1 && deal.activeStep <= 6).length;
-    const dealsClosed = deals.filter(deal => deal.activeStep === 7).length;
-    const totalCommission = deals.reduce((sum, deal) => sum + deal.potentialCommission, 0);
+    const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+    const dealsInProgress = deals.filter(
+      (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+    ).length;
+    const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
+    const totalCommission = deals.reduce(
+      (sum, deal) => sum + deal.potentialCommission,
+      0,
+    );
     return {
       totalDeals,
       dealsOpened,
@@ -51,10 +55,15 @@ export class DealsService {
     });
 
     const totalDeals = deals.length;
-    const dealsOpened = deals.filter(deal => deal.activeStep === 1).length;
-    const dealsInProgress = deals.filter(deal => deal.activeStep > 1 && deal.activeStep <= 6).length;
-    const dealsClosed = deals.filter(deal => deal.activeStep === 7).length;
-    const totalCommission = deals.reduce((sum, deal) => sum + deal.potentialCommission, 0);
+    const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+    const dealsInProgress = deals.filter(
+      (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+    ).length;
+    const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
+    const totalCommission = deals.reduce(
+      (sum, deal) => sum + deal.potentialCommission,
+      0,
+    );
 
     return {
       totalDeals,

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/common/entities/user.entity';
-import { UserRole } from 'src/common/entities/user-role.entity';
-import { Deals } from 'src/common/entities/deals.entity';
+import { Users } from '../../common/entities/user.entity';
+import { UserRole } from '../../common/entities/user-role.entity';
+import { Deals } from '../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -31,28 +31,39 @@ export class BrokerService {
       throw new NotFoundException(`Users with RoleID ${roleId} not found`);
     }
 
-    const brokers = await Promise.all(usersWithRole.map(async (userRole) => {
-      const user = userRole.user;
+    const brokers = await Promise.all(
+      usersWithRole.map(async (userRole) => {
+        const user = userRole.user;
 
-      const deals = await this.dealsRepository.find({
-        where: { createdBy: { id: user.id } },
-      });
+        const deals = await this.dealsRepository.find({
+          where: { createdBy: { id: user.id } },
+        });
 
-      const totalDeals = deals.length;
-      const dealsOpened = deals.filter(deal => deal.activeStep === 1).length;
-      const dealsInProgress = deals.filter(deal => deal.activeStep > 1 && deal.activeStep <= 6).length;
-      const dealsClosed = deals.filter(deal => deal.activeStep === 7).length;
-      const totalCommission = deals.reduce((sum, deal) => sum + deal.potentialCommission, 0);
+        const totalDeals = deals.length;
+        const dealsOpened = deals.filter(
+          (deal) => deal.activeStep === 1,
+        ).length;
+        const dealsInProgress = deals.filter(
+          (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+        ).length;
+        const dealsClosed = deals.filter(
+          (deal) => deal.activeStep === 7,
+        ).length;
+        const totalCommission = deals.reduce(
+          (sum, deal) => sum + deal.potentialCommission,
+          0,
+        );
 
-      return {
-        user,
-        totalDeals,
-        dealsOpened,
-        dealsInProgress,
-        dealsClosed,
-        totalCommission,
-      };
-    }));
+        return {
+          user,
+          totalDeals,
+          dealsOpened,
+          dealsInProgress,
+          dealsClosed,
+          totalCommission,
+        };
+      }),
+    );
 
     return brokers;
   }

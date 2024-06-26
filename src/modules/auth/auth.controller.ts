@@ -8,14 +8,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { LoginDto } from 'src/common/dto/login.dto';
+import { LoginDto } from '../../common/dto/login.dto';
+import { InviteDto } from '../../common/dto/invite.dto';
+import { ForgotPasswordLinkDto } from '../../common/dto/forgot-password-link.dto';
+import { ResetPasswordDto } from '../../common/dto/reset-password.dto';
+import { RegisterDto } from '../../common/dto/register.dto';
+import { ForgotPasswordDto } from '../../common/dto/forgot-password.dto';
 import { AuthService } from './auth.service';
-import { InviteDto } from 'src/common/dto/invite.dto';
-import { ForgotPasswordLinkDto } from 'src/common/dto/forgot-password-link.dto';
-import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { RegisterDto } from 'src/common/dto/register.dto';
-import { ForgotPasswordDto } from 'src/common/dto/forgot-password.dto';
 
 @ApiTags('Auth')
 @Controller('api/auth')
