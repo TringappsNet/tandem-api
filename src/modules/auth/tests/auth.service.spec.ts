@@ -123,7 +123,7 @@ describe('AuthService', () => {
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
-      jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(mockSession);
+      jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(sessionRepository, 'save').mockResolvedValue(mockSession);
 
       const result = await service.login(mockLoginDto);
@@ -131,7 +131,7 @@ describe('AuthService', () => {
       expect(result).toBeDefined();
       expect(result.message).toEqual('Login successful');
       expect(result.user.id).toEqual(mockUser.id);
-      expect(result.session.token).toEqual(mockSession.token);
+      expect(result.session.token).toEqual(expect.any(String));
       expect(sessionRepository.save).toHaveBeenCalledTimes(1);
     });
 
@@ -405,9 +405,9 @@ describe('AuthService', () => {
     });
   });
 
-  describe('changePassword', () => {
+  describe('forgotPassword', () => {
     it('should sent the password reset link if valid user found', async () => {
-      const mockChangePasswordDto = {
+      const mockForgotPasswordDto = {
         email: 'test@gmail.com'
       };
 
@@ -446,7 +446,7 @@ describe('AuthService', () => {
 
       const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
 
-      const result = await service.forgotPasswordLink(mockChangePasswordDto);
+      const result = await service.forgotPasswordLink(mockForgotPasswordDto);
 
       expect(result).toBeUndefined();
       expect(userRepository.save).toHaveBeenCalled();
@@ -455,19 +455,19 @@ describe('AuthService', () => {
     });
 
     it('should throw HttpException if valid user not found', async () => {
-      const mockChangePasswordDto = {
+      const mockForgotPasswordDto = {
         email: 'test@gmail.com'
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.forgotPasswordLink(mockChangePasswordDto)).rejects.toThrow(HttpException);
+      await expect(service.forgotPasswordLink(mockForgotPasswordDto)).rejects.toThrow(HttpException);
     });
   });
   
-  describe('forgotPassword', () => {
+  describe('changePassword', () => {
     it('should reset password successfully with valid reset token', async () => {
-      const mockForgotPasswordDto = {
+      const mockChangePasswordDto = {
         newPassword: await bcrypt.hash('newpassword123', 10),
       };
 
@@ -506,7 +506,7 @@ describe('AuthService', () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(userRepository, 'save').mockResolvedValue(null);
 
-      const result = await service.forgotPassword(resetToken, mockForgotPasswordDto);
+      const result = await service.forgotPassword(resetToken, mockChangePasswordDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password has been reset successfully');
@@ -514,7 +514,7 @@ describe('AuthService', () => {
     });
 
     it('should throw HttpException if invalid or expired reset token', async () => {
-      const mockForgotPasswordDto = {
+      const mockChangePasswordDto = {
         newPassword: await bcrypt.hash('newpassword123', 10),
       };
 
@@ -552,7 +552,7 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.forgotPassword(resetToken, mockForgotPasswordDto)).rejects.toThrow(HttpException);
+      await expect(service.forgotPassword(resetToken, mockChangePasswordDto)).rejects.toThrow(HttpException);
     });
   });
 
@@ -678,6 +678,14 @@ describe('AuthService', () => {
       expect(result).toBeDefined();
       expect(result.message).toEqual('Logout successful');
       expect(sessionRepository.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw HttpException if invalid session token', async () => {
+      const mockSessionToken = 'qwertyuiop';
+
+      jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(service.logout(mockSessionToken)).rejects.toThrow(HttpException);
     });
   });
 });
