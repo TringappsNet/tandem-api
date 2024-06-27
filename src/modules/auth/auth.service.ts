@@ -22,6 +22,7 @@ import { Role } from './../../common/entities/role.entity';
 import { UserRole } from './../../common/entities/user-role.entity';
 import { InviteUser } from './../../common/entities/invite.entity';
 import { MailService } from './../../common/mail/mail.service';
+import { authConstants } from './../../common/constants/auth.constants';
 
 @Injectable()
 export class AuthService {
@@ -132,7 +133,7 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Invitation to join our platform';
-      const text = `Hello! You have been invited to join our platform. Please click on the following link to complete your registration: http://192.168.1.77:3000/registerform?inviteToken=${inviteUser.inviteToken}
+      const text = `Hello! You have been invited to join our platform. Please click on the following link to complete your registration: ${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}
                     NOTE: this token is valid for only 24 hours`;
 
       await this.mailService.sendMail(inviteDTO.email, subject, text);
@@ -189,7 +190,7 @@ export class AuthService {
 
       await this.userRepository.save(user);
 
-      const resetUrl = `http://localhost:3000/reset-password?resetToken=${user.resetToken}`;
+      const resetUrl = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
 
       const subject = 'Password Reset Request';
       const text = `Hello! To reset your password, please click the following link: ${resetUrl}

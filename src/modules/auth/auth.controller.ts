@@ -41,7 +41,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(200)
   @UsePipes(ValidationPipe)
-  async registerDetails(@Body() registerData: RegisterDto) {
+  async register(@Body() registerData: RegisterDto) {
     return await this.authService.register(registerData);
   }
 
@@ -80,7 +80,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Headers('Authorization') token: string) {
-    console.log(token);
+    // console.log(token);
     const result = await this.authService.logout(token);
     return result;
   }
