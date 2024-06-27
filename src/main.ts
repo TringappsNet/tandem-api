@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   setupSwagger(app);
   app.enableCors();
-  await app.listen(3009);
+  await app.listen(3008);
   console.log(
     `Application is running on: ${(await app.getUrl()).replace('[::1]', 'localhost')}/api`,
   );
