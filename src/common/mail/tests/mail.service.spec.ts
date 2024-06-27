@@ -3,7 +3,8 @@ import { MailService } from '../mail.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
 describe('EmailService', () => {
-  let service: MailService;
+  let mailService: MailService;
+  let mailerService: MailerService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -11,15 +12,32 @@ describe('EmailService', () => {
         MailService,
         {
           provide: MailerService,
-          useValue: { send: jest.fn() },
+          useValue: { sendMail: jest.fn() },
         },
       ],
     }).compile();
 
-    service = module.get<MailService>(MailService);
+    mailService = module.get<MailService>(MailService);
+    mailerService = module.get<MailerService>(MailerService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(mailService).toBeDefined();
   });
+
+  describe('sendMail', () => {
+    it('should sent the mail successfully', async () => {
+      const email = 'test@gmail.com';
+      const subject = 'test';
+      const text = 'test';
+
+      jest.spyOn(mailerService, 'sendMail').mockResolvedValue(true);
+
+      const result = await mailService.sendMail(email, subject, text);
+
+      expect(result).toBeUndefined();
+      expect(mailerService.sendMail).toHaveBeenCalled();
+    });
+  });
+  
 });
