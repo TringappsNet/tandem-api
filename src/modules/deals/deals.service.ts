@@ -76,13 +76,11 @@ export class DealsService {
   }
 
   async getDealById(id: number): Promise<Deals> {
-    const dealId = await this.dealsRepository.findOneBy({ id });
-
-    if (!dealId) {
+    const deal = await this.dealsRepository.findOneBy({ id });
+    if (!deal) {
       throw new NotFoundException(`Deal with ID ${id} not found`);
     }
-
-    return dealId;
+    return deal;
   }
 
   async updateDealById(
