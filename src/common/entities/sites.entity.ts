@@ -1,4 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+  } from 'typeorm';
+  import { Users } from './user.entity';
+
 
 @Entity('sites')
 export class Sites {
@@ -44,4 +54,28 @@ export class Sites {
         length: 100
     })
     country: string;
+  
+  @ManyToOne(() => Users, (user) => user.createdSites)
+  @JoinColumn({
+    name: 'created_by',
+  })
+  createdBy: Users;
+
+  @ManyToOne(() => Users, (user) => user.updatedSites)
+  @JoinColumn({
+    name: 'updated_by',
+  })
+  updatedBy: Users;
+
+  @CreateDateColumn({
+    name: 'created_at',
+    nullable: true,
+  })
+  createdAt: Date = undefined;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+    nullable: true,
+  })
+  updatedAt: Date = undefined;
 }

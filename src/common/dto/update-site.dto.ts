@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsInt, IsOptional } from 'class-validator';
+import { Users } from '../entities/user.entity';
 
 
 export class UpdateSiteDto {
@@ -25,4 +26,7 @@ export class UpdateSiteDto {
   @IsNotEmpty()
   @IsString()
   country: string;
+
+  @IsInt()
+  updatedBy: Users;
 }

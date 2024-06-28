@@ -19,9 +19,12 @@ export class SitesService {
           const saveData = await this.sitesRepository.save(dealData);
           return saveData;
         } else {
-          throw new BadRequestException(`It is not a new deal ${createSiteDto.isNew}`);
+          throw new BadRequestException(`It is not a new site ${createSiteDto.isNew}`);
         }
       }
+
+      
+
       async getSiteById(id: number): Promise<Sites> {
         const siteId = await this.sitesRepository.findOneBy({ id });
     
