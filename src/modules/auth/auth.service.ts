@@ -3,7 +3,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -12,10 +11,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
 import { LoginDto } from 'src/common/dto/login.dto';
-import { ForgotPasswordLinkDto } from 'src/common/dto/forgot-password-link.dto';
 import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 import { RegisterDto } from 'src/common/dto/register.dto';
 import { ForgotPasswordDto } from 'src/common/dto/forgot-password.dto';
+import { ChangePasswordDto } from 'src/common/dto/change-password.dto';
 import { Session } from './../../common/entities/session.entity';
 import { Users } from './../../common/entities/user.entity';
 import { Role } from './../../common/entities/role.entity';
@@ -159,9 +158,14 @@ export class AuthService {
 
     user.email = inviteUser.email;
     user.password = await bcrypt.hash(registerDTO.password, 10);
-    user.firstname = registerDTO.firstname;
-    user.lastname = registerDTO.lastname;
-    user.mobile = registerDTO.mobileno;
+    user.firstName = registerDTO.firstName;
+    user.lastName = registerDTO.lastName;
+    user.mobile = registerDTO.mobileNo;
+    user.address = registerDTO.address;
+    user.city = registerDTO.city;
+    user.state = registerDTO.state;
+    user.country = registerDTO.country;
+    user.zipcode = registerDTO.zipcode
     user.isActive = true;
 
     const savedUser = await this.userRepository.save(user);
@@ -176,10 +180,10 @@ export class AuthService {
     return { message: 'Registered Successfully!' };
   }
 
-  async forgotPasswordLink(forgotPasswordLinkDTO: ForgotPasswordLinkDto) {
+  async forgotPassword(forgotPasswordDTO: ForgotPasswordDto) {
     try {
       const user = await this.userRepository.findOne({
-        where: { email: forgotPasswordLinkDTO.email },
+        where: { email: forgotPasswordDTO.email },
       });
       if (!user) {
         throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
@@ -202,9 +206,9 @@ export class AuthService {
     }
   }
 
-  async forgotPassword(
+  async changePassword(
     resetToken: string,
-    forgotPasswordDTO: ForgotPasswordDto,
+    changePasswordDTO: ChangePasswordDto,
   ) {
     try {
       const user = await this.userRepository.findOne({ where: { resetToken } });
@@ -215,7 +219,7 @@ export class AuthService {
         );
       }
 
-      user.password = await bcrypt.hash(forgotPasswordDTO.newPassword, 10);
+      user.password = await bcrypt.hash(changePasswordDTO.newPassword, 10);
       user.resetToken = '';
       user.resetTokenExpires = null;
 

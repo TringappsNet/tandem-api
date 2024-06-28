@@ -2,17 +2,25 @@ import { IsNotEmpty } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
-  firstname: string;
+  firstName: string;
 
-  @IsNotEmpty()
-  lastname: string;
+  lastName: string;
 
-  @IsNotEmpty()
-  mobileno: number;
+  mobileNo: string;
 
   @IsNotEmpty({ message: 'Password should not be empty' })
   password: string;
 
+  address: string;
+
+  city: string;
+
+  state: string;
+
+  country: string;
+
+  zipcode: string;
+  
   @IsNotEmpty()
   inviteToken: string;
 }
