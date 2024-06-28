@@ -6,18 +6,20 @@ export class Sites {
     id: number;
 
     @Column({
-        name: 'address_line_1',
+        name: 'address_line1',
         type: 'varchar',
+        
+
         length: 255
     })
-    addressLine1: string;
+    addressline1: string;
 
     @Column({
-        name: 'address_line_2',
+        name: 'address_line2',
         type: 'varchar',
         length: 255
     })
-    addressLine2: string;
+    addressline2: string;
 
     @Column({
         type: 'varchar',
