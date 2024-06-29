@@ -165,7 +165,7 @@ export class AuthService {
     user.city = registerDTO.city;
     user.state = registerDTO.state;
     user.country = registerDTO.country;
-    user.zipcode = registerDTO.zipcode
+    user.zipcode = registerDTO.zipcode;
     user.isActive = true;
 
     const savedUser = await this.userRepository.save(user);
