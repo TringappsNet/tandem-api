@@ -21,4 +21,5 @@ import { BrokerModule } from './modules/broker/broker.module';
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
   ],
 })
+
 export class AppModule {}
