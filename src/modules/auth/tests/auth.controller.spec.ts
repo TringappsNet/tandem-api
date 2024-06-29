@@ -13,7 +13,7 @@ import { Session } from 'inspector';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from '../../../common/dto/login.dto';
 import { InviteDto } from '../../../common/dto/invite.dto';
-import { exec } from 'child_process';
+import * as bcrypt from 'bcrypt';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -88,9 +88,38 @@ describe('AuthController', () => {
         password: 'password123',
       };
 
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+      };
+
+      const { password, createdAt, updatedAt, isActive,resetToken, resetTokenExpires, ...userObject } = mockUser;
+
       const mockLogin = {
         message: 'Login successful',
-        user: { id: 1, email: 'test@gmail.com' },
+        user: userObject,
         session: { token: 'qwertyuiop', expiresAt: new Date(Date.now() + 1000)},
       }
 
