@@ -23,7 +23,11 @@ export class SitesService {
         }
       }
 
-      
+      async getSitesByCreatedBy(createdBy: number): Promise<Sites[]> {
+          return await this.sitesRepository.find({
+            where: { createdBy: { id: createdBy } },
+          });
+        }
 
       async getSiteById(id: number): Promise<Sites> {
         const siteId = await this.sitesRepository.findOneBy({ id });

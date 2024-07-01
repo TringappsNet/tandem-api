@@ -30,6 +30,15 @@ export class SitesController {
     return this.sitesService.createSite(createSiteDto);
   }
 
+  @Get('createdBy/:createdBy')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationPipe)
+  async getSitesByCreatedBy(
+    @Param('createdBy') createdBy: number,
+  ): Promise<any> {
+    return this.sitesService.getSitesByCreatedBy(createdBy);
+  }
+
   @Get('site/:id')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
