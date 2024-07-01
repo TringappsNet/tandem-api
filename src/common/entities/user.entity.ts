@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Deals } from './deals.entity';
+import { Sites } from './sites.entity';
 
 @Entity('users')
 export class Users extends BaseEntity {
@@ -35,19 +36,19 @@ export class Users extends BaseEntity {
     name: 'first_name',
     type: 'varchar',
   })
-  firstname: string;
+  firstName: string;
 
   @Column({
     name: 'last_name',
     type: 'varchar',
   })
-  lastname: string;
+  lastName: string;
 
   @Column({
     name: 'mobile',
-    type: 'int',
+    type: 'varchar',
   })
-  mobile: number;
+  mobile: string;
 
   @Column({
     name: 'address',
@@ -78,34 +79,11 @@ export class Users extends BaseEntity {
   country: string;
 
   @Column({
-    name: 'pincode',
-    type: 'int',
-    default: 0,
+    name: 'zipcode',
+    type: 'varchar',
+    default: '',
   })
-  pincode: number;
-
-  @Column({
-    name: 'ssn',
-    type: 'int',
-    default: 0,
-  })
-  @MaxLength(9)
-  @MinLength(9)
-  ssn: number;
-
-  @Column({
-    name: 'age',
-    type: 'int',
-    default: 0,
-  })
-  age: number;
-
-  @Column({
-    name: 'reference_broker_id',
-    type: 'int',
-    default: 0,
-  })
-  referenceBrokerId: number;
+  zipcode: string;
 
   @Column({
     name: 'is_active',
@@ -145,4 +123,10 @@ export class Users extends BaseEntity {
 
   @OneToMany(() => Deals, (deal) => deal.updatedBy)
   updatedDeals: Deals[];
+
+  @OneToMany(() => Sites, (site) => site.createdBy)
+  createdSites: Sites[];
+
+  @OneToMany(() => Sites, (site) => site.updatedBy)
+  updatedSites: Sites[];
 }

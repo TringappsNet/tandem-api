@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { LoginDto } from '../../common/dto/login.dto';
 import { InviteDto } from '../../common/dto/invite.dto';
-import { ForgotPasswordLinkDto } from '../../common/dto/forgot-password-link.dto';
+import { ForgotPasswordDto } from '../../common/dto/forgot-password.dto';
 import { ResetPasswordDto } from '../../common/dto/reset-password.dto';
 import { RegisterDto } from '../../common/dto/register.dto';
-import { ForgotPasswordDto } from '../../common/dto/forgot-password.dto';
+import { ChangePasswordDto } from '../../common/dto/change-password.dto';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -48,23 +48,23 @@ export class AuthController {
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async forgotPasswordLink(
-    @Body() forgotPasswordLinkDTO: ForgotPasswordLinkDto,
+  async forgotPassword(
+    @Body() forgotPasswordLinkDTO: ForgotPasswordDto,
   ) {
-    await this.authService.forgotPasswordLink(forgotPasswordLinkDTO);
+    await this.authService.forgotPassword(forgotPasswordLinkDTO);
     return { message: 'Password reset email sent successfully' };
   }
 
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async forgotPassword(
+  async changePassword(
     @Headers('resetToken') resetToken: string,
-    @Body() forgotPasswordDTO: ForgotPasswordDto,
+    @Body() changePasswordDTO: ChangePasswordDto,
   ) {
-    const result = await this.authService.forgotPassword(
+    const result = await this.authService.changePassword(
       resetToken,
-      forgotPasswordDTO,
+      changePasswordDTO,
     );
     return result;
   }

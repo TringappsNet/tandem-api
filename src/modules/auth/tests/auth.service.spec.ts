@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../auth.service';
 import { Repository } from 'typeorm';
 import { Users } from '../../../common/entities/user.entity';
 import { Session } from '../../../common/entities/session.entity';
@@ -87,17 +87,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@example.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: null,
         resetTokenExpires: new Date(Date.now()),
         createdAt: new Date(Date.now()),
@@ -111,6 +108,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       const mockSession = {
@@ -151,17 +150,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@example.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
+        firstName: 'test',
+        lastName: 'test',
         mobile: null,
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: null,
         resetTokenExpires: new Date(Date.now()),
         createdAt: new Date(Date.now()),
@@ -175,6 +171,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockInactiveUser);
@@ -192,17 +190,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@example.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
+        firstName: 'test',
+        lastName: 'test',
         mobile: null,
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: null,
         resetToken: null,
         resetTokenExpires: new Date(Date.now()),
         createdAt: new Date(Date.now()),
@@ -216,6 +211,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       const mockLoginDto = {
@@ -264,17 +261,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'invite@gmail.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: null,
         resetToken: null,
         resetTokenExpires: new Date(Date.now()),
         createdAt: new Date(Date.now()),
@@ -288,6 +282,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       const mockInviteDto = { email: 'invite@gmail.com', roleId: 2 };
@@ -346,9 +342,14 @@ describe('AuthService', () => {
       };
 
       const mockRegisterDto = {
-        firstname: 'test',
-        lastname: 'test',
-        mobileno: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobileNo: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
         inviteToken: 'qwertyuiop',
         password: await bcrypt.hash('password123', 10)
       };
@@ -368,9 +369,14 @@ describe('AuthService', () => {
 
     it('should throw BadRequestException if invalid invite token', async () => {
       const mockRegisterDto = {
-        firstname: 'test',
-        lastname: 'test',
-        mobileno: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobileNo: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
         inviteToken: 'qwertyuiop',
         password: await bcrypt.hash('password123', 10)
       };
@@ -382,9 +388,14 @@ describe('AuthService', () => {
 
     it('should throw BadRequestException if invite token has expired', async () => {
       const mockRegisterDto = {
-        firstname: 'test',
-        lastname: 'test',
-        mobileno: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobileNo: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
         inviteToken: 'qwertyuiop',
         password: await bcrypt.hash('password123', 10)
       };
@@ -415,17 +426,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@gmail.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: null,
         resetTokenExpires: new Date(Date.now()),
         createdAt: new Date(Date.now()),
@@ -439,6 +447,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -446,7 +456,7 @@ describe('AuthService', () => {
 
       const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
 
-      const result = await service.forgotPasswordLink(mockForgotPasswordDto);
+      const result = await service.forgotPassword(mockForgotPasswordDto);
 
       expect(result).toBeUndefined();
       expect(userRepository.save).toHaveBeenCalled();
@@ -461,7 +471,7 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.forgotPasswordLink(mockForgotPasswordDto)).rejects.toThrow(HttpException);
+      await expect(service.forgotPassword(mockForgotPasswordDto)).rejects.toThrow(HttpException);
     });
   });
   
@@ -477,17 +487,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@gmail.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: 'qwertyuiop',
         resetTokenExpires: new Date(Date.now() + 1000),
         createdAt: new Date(Date.now()),
@@ -501,12 +508,14 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(userRepository, 'save').mockResolvedValue(null);
 
-      const result = await service.forgotPassword(resetToken, mockChangePasswordDto);
+      const result = await service.changePassword(resetToken, mockChangePasswordDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password has been reset successfully');
@@ -524,17 +533,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@gmail.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: 'asdfghjkl',
         resetTokenExpires: new Date(Date.now() - 1000),
         createdAt: new Date(Date.now()),
@@ -548,11 +554,13 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.forgotPassword(resetToken, mockChangePasswordDto)).rejects.toThrow(HttpException);
+      await expect(service.changePassword(resetToken, mockChangePasswordDto)).rejects.toThrow(HttpException);
     });
   });
 
@@ -568,17 +576,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@gmail.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: 'qwertyuiop',
         resetTokenExpires: new Date(Date.now() + 1000),
         createdAt: new Date(Date.now()),
@@ -592,6 +597,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -626,17 +633,14 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@gmail.com',
         password: await bcrypt.hash('password123', 10),
-        firstname: 'test',
-        lastname: 'test',
-        mobile: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
         address: 'test address',
         city: 'test city',
         state: 'test state',
         country: 'test country',
-        pincode: null,
-        ssn: null,
-        age: null,
-        referenceBrokerId: null,
+        zipcode: '456789',
         resetToken: 'qwertyuiop',
         resetTokenExpires: new Date(Date.now() + 1000),
         createdAt: new Date(Date.now()),
@@ -650,6 +654,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);

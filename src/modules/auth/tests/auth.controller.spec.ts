@@ -13,7 +13,7 @@ import { Session } from 'inspector';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from '../../../common/dto/login.dto';
 import { InviteDto } from '../../../common/dto/invite.dto';
-import { exec } from 'child_process';
+import * as bcrypt from 'bcrypt';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -88,9 +88,40 @@ describe('AuthController', () => {
         password: 'password123',
       };
 
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
+      };
+
+      const { password, createdAt, updatedAt, isActive,resetToken, resetTokenExpires, ...userObject } = mockUser;
+
       const mockLogin = {
         message: 'Login successful',
-        user: { id: 1, email: 'test@gmail.com' },
+        user: userObject,
         session: { token: 'qwertyuiop', expiresAt: new Date(Date.now() + 1000)},
       }
 
@@ -124,10 +155,15 @@ describe('AuthController', () => {
   describe('register', () => {
     it('should return a register successful message', async () => {
       const mockRegisterDto = {
-        firstname: 'test',
-        lastname: 'test',
-        mobileno: 1234567890,
+        firstName: 'test',
+        lastName: 'test',
+        mobileNo: '1234567890',
         password: 'password123',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '123456',
         inviteToken: 'qwertyuiop',
       };
 
@@ -151,13 +187,13 @@ describe('AuthController', () => {
         email: 'test@gmail.com',
       };
 
-      jest.spyOn(service, 'forgotPasswordLink').mockResolvedValue(undefined);
+      jest.spyOn(service, 'forgotPassword').mockResolvedValue(undefined);
 
-      const result = await controller.forgotPasswordLink(mockForgotPasswordDto);
+      const result = await controller.forgotPassword(mockForgotPasswordDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password reset email sent successfully');
-      expect(service.forgotPasswordLink).toHaveBeenCalledWith(mockForgotPasswordDto);
+      expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
     });
   });
 
@@ -173,13 +209,13 @@ describe('AuthController', () => {
         message: 'Password has been reset successfully',
       };
 
-      jest.spyOn(service, 'forgotPassword').mockResolvedValue(mockChangePassword);
+      jest.spyOn(service, 'changePassword').mockResolvedValue(mockChangePassword);
 
-      const result = await controller.forgotPassword(resetToken, mockChangePasswordDto);
+      const result = await controller.changePassword(resetToken, mockChangePasswordDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password has been reset successfully');
-      expect(service.forgotPassword).toHaveBeenCalledWith(resetToken, mockChangePasswordDto);
+      expect(service.changePassword).toHaveBeenCalledWith(resetToken, mockChangePasswordDto);
     });
   });
   
