@@ -1,6 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { BrokerService } from './broker.service';
-import { Users } from 'src/common/entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Broker')

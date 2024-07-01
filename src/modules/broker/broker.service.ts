@@ -16,9 +16,9 @@ export class BrokerService {
     private readonly dealsRepository: Repository<Deals>,
   ) {}
 
-  async findAll() {
-    return await this.brokerRepository.find();
-  }
+  // async findAll() {
+  //   return await this.brokerRepository.find();
+  // }
 
   async findByRoleId(roleId: number = 2): Promise<any> {
     const usersWithRole = await this.userRoleRepository
