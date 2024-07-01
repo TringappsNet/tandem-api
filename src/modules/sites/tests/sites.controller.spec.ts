@@ -6,13 +6,12 @@ import { UpdateSiteDto } from '../../../common/dto/update-site.dto';
 import { Sites } from '../../../common/entities/sites.entity';
 import { Users } from '../../../common/entities/user.entity'; 
 
-// Create a mock implementation of SitesService
 const mockSitesService = {
   createSite: jest.fn((dto: CreateSiteDto) => Promise.resolve({
     ...dto,
     id: Date.now(),
-    createdBy: { id: 1, name: 'User One' } as unknown as Users, // Mocking related entity
-    updatedBy: { id: 1, name: 'User One' } as unknown as Users, // Mocking related entity
+    createdBy: { id: 1, name: 'User One' } as unknown as Users, 
+    updatedBy: { id: 1, name: 'User One' } as unknown as Users, 
     createdAt: new Date(),
     updatedAt: new Date(),
   } as Sites)),
@@ -90,5 +89,5 @@ describe('SitesController', () => {
     expect(controller).toBeDefined();
   });
 
-  // Add more tests for each method of SitesController here
+
 });
