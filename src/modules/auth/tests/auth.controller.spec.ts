@@ -113,6 +113,8 @@ describe('AuthController', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
       };
 
       const { password, createdAt, updatedAt, isActive,resetToken, resetTokenExpires, ...userObject } = mockUser;
