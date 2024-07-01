@@ -84,10 +84,12 @@ import {
   
     @Column({
         name: 'created_by',
+        nullable: true,
     })
     createdBy: number;
 
     @Column({
+        nullable: true,
         name: 'updated_by',
     })
     updatedBy: number;
