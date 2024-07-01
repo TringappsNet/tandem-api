@@ -82,17 +82,15 @@ import {
     })
     zipcode: string;
   
-    @ManyToOne(() => Users, (user) => user.createdDeals)
-    @JoinColumn({
+    @Column({
         name: 'created_by',
     })
-    createdBy: Users;
+    createdBy: number;
 
-    @ManyToOne(() => Users, (user) => user.updatedDeals)
-    @JoinColumn({
+    @Column({
         name: 'updated_by',
     })
-    updatedBy: Users;
+    updatedBy: number;
   
     @CreateDateColumn({
       name: 'created_at',
