@@ -3,6 +3,7 @@ import {
   Controller,
   Headers,
   HttpCode,
+  HttpException,
   HttpStatus,
   Post,
   UsePipes,
@@ -20,29 +21,65 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Auth')
 @Controller('api/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async login(@Body() loginDTO: LoginDto) {
-    const result = await this.authService.login(loginDTO);
-    return result;
+    try {
+      const result = await this.authService.login(loginDTO);
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @Post('invite')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  sendInvite(@Body() inviteDTO: InviteDto) {
-    this.authService.sendInvite(inviteDTO);
-    return { message: 'Invitation sent successfully' };
+  async sendInvite(@Body() inviteDTO: InviteDto) {
+    try {
+      await this.authService.sendInvite(inviteDTO);
+      return { message: 'Invitation sent successfully' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @Post('register')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async register(@Body() registerData: RegisterDto) {
-    return await this.authService.register(registerData);
+    try {
+      return await this.authService.register(registerData);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @Post('forgot-password')
@@ -51,8 +88,20 @@ export class AuthController {
   async forgotPassword(
     @Body() forgotPasswordLinkDTO: ForgotPasswordDto,
   ) {
-    await this.authService.forgotPassword(forgotPasswordLinkDTO);
-    return { message: 'Password reset email sent successfully' };
+    try {
+      await this.authService.forgotPassword(forgotPasswordLinkDTO);
+      return { message: 'Password reset email sent successfully' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @Post('change-password')
@@ -62,26 +111,60 @@ export class AuthController {
     @Headers('resetToken') resetToken: string,
     @Body() changePasswordDTO: ChangePasswordDto,
   ) {
-    const result = await this.authService.changePassword(
-      resetToken,
-      changePasswordDTO,
-    );
-    return result;
+    try {
+      const result = await this.authService.changePassword(
+        resetToken,
+        changePasswordDTO,
+      );
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async resetPassword(@Body() resetPasswordDTO: ResetPasswordDto) {
-    await this.authService.resetPassword(resetPasswordDTO);
-    return { message: 'Reset Password successfully' };
+    try {
+      await this.authService.resetPassword(resetPasswordDTO);
+      return { message: 'Password reset successfully' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Headers('Authorization') token: string) {
-    // console.log(token);
-    const result = await this.authService.logout(token);
-    return result;
+    try {
+      const result = await this.authService.logout(token);
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 }

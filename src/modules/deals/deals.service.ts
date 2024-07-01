@@ -54,6 +54,11 @@ export class DealsService {
       where: { createdBy: { id: createdBy } },
     });
 
+    if (!deals || deals.length === 0) {
+      throw new NotFoundException(`No deals found for user with ID ${createdBy}`);
+    }
+
+
     const totalDeals = deals.length;
     const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
     const dealsInProgress = deals.filter(
@@ -84,18 +89,26 @@ export class DealsService {
 
     return dealId;
   }
-
   async updateDealById(
     id: number,
     updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
-    const existingData = await this.getDealById(id);
-    const updateData = this.dealsRepository.merge(existingData, updateDealDto);
-    return await this.dealsRepository.save(updateData);
+    const existingDeal = await this.getDealById(id);
+    if (!existingDeal) {
+      throw new NotFoundException(`Deal with ID ${id} not found, cannot update.`);
+    }
+
+    const updatedDeal = this.dealsRepository.merge(existingDeal, updateDealDto);
+    return await this.dealsRepository.save(updatedDeal);
   }
 
   async deleteDealById(id: number): Promise<Deals> {
-    const deleteData = await this.getDealById(id);
-    return await this.dealsRepository.remove(deleteData);
+    const deal = await this.getDealById(id);
+
+    if (!deal) {
+      throw new NotFoundException(`Deal with ID ${id} not found, unable to delete.`);
+    }
+
+    return await this.dealsRepository.remove(deal);
   }
 }
