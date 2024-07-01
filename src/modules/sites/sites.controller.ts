@@ -10,6 +10,9 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
+  BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { SitesService } from './sites.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -26,34 +29,82 @@ export class SitesController {
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   async createSite(@Body() createSiteDto: CreateSiteDto): Promise<Sites> {
-    return this.sitesService.createSite(createSiteDto);
+    try {
+      return await this.sitesService.createSite(createSiteDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw new BadRequestException('Failed to create site');
+      }
+    }
   }
 
   @Get('createdBy/:createdBy')
   @HttpCode(HttpStatus.OK)
-  async getSitesByCreatedBy(@Param('createdBy') createdBy: number): Promise<Sites[]> {
-    return this.sitesService.getSitesByCreatedBy(createdBy);
+  async getSitesByCreatedBy(@Param('createdBy', ParseIntPipe) createdBy: number): Promise<Sites[]> {
+    try {
+      const sites = await this.sitesService.getSitesByCreatedBy(createdBy);
+      if (!sites || sites.length === 0) {
+        throw new NotFoundException('No sites found for the specified creator');
+      }
+      return sites;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new BadRequestException('Failed to retrieve sites');
+      }
+    }
   }
 
   @Get('site/:id')
   @HttpCode(HttpStatus.OK)
-  async getSiteById(@Param('id') id: number): Promise<Sites> {
-    return this.sitesService.getSiteById(id);
+  async getSiteById(@Param('id', ParseIntPipe) id: number): Promise<Sites> {
+    try {
+      return await this.sitesService.getSiteById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new BadRequestException('Failed to retrieve site');
+      }
+    }
   }
-
+  
   @Put('site/:id')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async updateSiteById(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateSiteDto: UpdateSiteDto,
   ): Promise<Sites> {
-    return this.sitesService.updateSiteById(id, updateSiteDto);
+    try {
+      return await this.sitesService.updateSiteById(id, updateSiteDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw new BadRequestException('Failed to update site');
+      }
+    }
   }
 
   @Delete('site/:id')
   @HttpCode(HttpStatus.OK)
-  async deleteSiteById(@Param('id') id: number): Promise<Sites> {
-    return this.sitesService.deleteSiteById(id);
+  async deleteSiteById(@Param('id', ParseIntPipe) id: number): Promise<Sites> {
+    try {
+      return await this.sitesService.deleteSiteById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Site with ID ${id} does not exist`);
+      } else {
+        throw new BadRequestException('Failed to delete site');
+      }
+    }
   }
 }

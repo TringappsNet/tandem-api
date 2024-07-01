@@ -10,6 +10,8 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { DealsService } from './deals.service';
 import { Deals } from '../../common/entities/deals.entity';
@@ -23,33 +25,55 @@ export class DealsController {
   constructor(private readonly dealsService: DealsService) {}
 
   @Post('deal')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   async createDeal(@Body() createDealDto: CreateDealDto): Promise<Deals> {
-    return this.dealsService.createDeal(createDealDto);
+    try {
+      return await this.dealsService.createDeal(createDealDto);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('Failed to create deal');
+    }
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
-  async getAllDeals(): Promise<Deals[]> {
-    return this.dealsService.getAllDeals();
+  async getAllDeals(): Promise<any> {
+    try {
+      return await this.dealsService.getAllDeals();
+    } catch (error) {
+      throw new BadRequestException('Failed to retrieve deals');
+    }
   }
 
   @Get('createdBy/:createdBy')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
   async getDealsByCreatedBy(
     @Param('createdBy') createdBy: number,
   ): Promise<any> {
-    return this.dealsService.getDealsByCreatedBy(createdBy);
+    try {
+      return await this.dealsService.getDealsByCreatedBy(createdBy);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException('Failed to retrieve deals for the specified creator');
+    }
   }
 
   @Get('deal/:id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
   async getDealById(@Param('id') id: number): Promise<Deals> {
-    return this.dealsService.getDealById(id);
+    try {
+      return await this.dealsService.getDealById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException('Failed to retrieve the deal');
+    }
   }
 
   @Put('deal/:id')
@@ -59,13 +83,28 @@ export class DealsController {
     @Param('id') id: number,
     @Body() updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
-    return this.dealsService.updateDealById(id, updateDealDto);
+    try {
+      return await this.dealsService.updateDealById(id, updateDealDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('Failed to update the deal');
+    }
   }
 
   @Delete('deal/:id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
   async deleteDealById(@Param('id') id: number): Promise<Deals> {
-    return this.dealsService.deleteDealById(id);
+    try {
+      return await this.dealsService.deleteDealById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException('Failed to delete the deal');
+    }
   }
 }

@@ -27,9 +27,15 @@ export class SitesService {
   }
 
   async getSitesByCreatedBy(createdBy: number): Promise<Sites[]> {
-    return await this.sitesRepository.find({
+    const sites = await this.sitesRepository.find({
       where: { createdBy: { id: createdBy } },
     });
+
+    if (sites.length === 0) {
+      throw new NotFoundException(`No sites found for creator with ID ${createdBy}`);
+    }
+
+    return sites;
   }
 
   async getSiteById(id: number): Promise<Sites> {

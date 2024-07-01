@@ -144,7 +144,7 @@ describe('AuthController', () => {
 
       jest.spyOn(service, 'sendInvite').mockResolvedValue(undefined);
 
-      const result = controller.sendInvite(mockInviteDto);
+      const result = await controller.sendInvite(mockInviteDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Invitation sent successfully');
@@ -232,7 +232,7 @@ describe('AuthController', () => {
       const result = await controller.resetPassword(mockResetPasswordDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Reset Password successfully');
+      expect(result.message).toEqual('Password reset successfully');
       expect(service.resetPassword).toHaveBeenCalledWith(mockResetPasswordDto);
     });
   });

@@ -1,6 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, NotFoundException } from '@nestjs/common'; 
 import { BrokerService } from './broker.service';
-import { Users } from 'src/common/entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Broker')
@@ -10,6 +9,16 @@ export class BrokerController {
 
   @Get('/')
   async getUsersByRoleId(): Promise<any> {
-    return this.brokerService.findByRoleId();
+    try {
+      return await this.brokerService.findByRoleId();
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
