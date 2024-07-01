@@ -1,16 +1,16 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Post,
-    Put,
-    UsePipes,
-    ValidationPipe,
-  }from '@nestjs/common';
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { SitesService } from './sites.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Sites } from '../../common/entities/sites.entity';
@@ -20,11 +20,10 @@ import { UpdateSiteDto } from '../../common/dto/update-site.dto';
 @ApiTags('Sites')
 @Controller('api/sites')
 export class SitesController {
-    constructor(private readonly sitesService: SitesService) {}
-
+  constructor(private readonly sitesService: SitesService) {}
 
   @Post('site')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   async createSite(@Body() createSiteDto: CreateSiteDto): Promise<Sites> {
     return this.sitesService.createSite(createSiteDto);
@@ -32,17 +31,13 @@ export class SitesController {
 
   @Get('createdBy/:createdBy')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
-  async getSitesByCreatedBy(
-    @Param('createdBy') createdBy: number,
-  ): Promise<any> {
+  async getSitesByCreatedBy(@Param('createdBy') createdBy: number): Promise<Sites[]> {
     return this.sitesService.getSitesByCreatedBy(createdBy);
   }
 
   @Get('site/:id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
-  async getDealById(@Param('id') id: number): Promise<Sites> {
+  async getSiteById(@Param('id') id: number): Promise<Sites> {
     return this.sitesService.getSiteById(id);
   }
 
@@ -58,9 +53,7 @@ export class SitesController {
 
   @Delete('site/:id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
   async deleteSiteById(@Param('id') id: number): Promise<Sites> {
     return this.sitesService.deleteSiteById(id);
   }
 }
-

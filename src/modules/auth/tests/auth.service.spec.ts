@@ -108,6 +108,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       const mockSession = {
@@ -169,6 +171,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockInactiveUser);
@@ -207,6 +211,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       const mockLoginDto = {
@@ -276,6 +282,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       const mockInviteDto = { email: 'invite@gmail.com', roleId: 2 };
@@ -439,6 +447,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -498,6 +508,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -542,6 +554,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -583,6 +597,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -638,6 +654,8 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
