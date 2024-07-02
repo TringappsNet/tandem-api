@@ -251,7 +251,8 @@ describe('AuthService', () => {
 
       const result = await service.sendInvite(mockInviteDto);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Invite sent successfully');
       expect(spySendMail).toHaveBeenCalled();
       expect(inviteRepository.save).toHaveBeenCalledTimes(1);
     });
@@ -458,7 +459,8 @@ describe('AuthService', () => {
 
       const result = await service.forgotPassword(mockForgotPasswordDto);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Password reset email sent successfully')
       expect(userRepository.save).toHaveBeenCalled();
       expect(spySendMail).toHaveBeenCalledTimes(1);
 
@@ -606,7 +608,8 @@ describe('AuthService', () => {
 
       const result = await service.resetPassword(mockResetPasswordDto);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Reset Password successfully')
       expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {password: expect.any(String)});
     });
 
