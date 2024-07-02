@@ -124,8 +124,8 @@ export class Users extends BaseEntity {
   @OneToMany(() => Deals, (deal) => deal.updatedBy)
   updatedDeals: Deals[];
 
-  @OneToMany(() => Sites, (site) => site.createdBy)
-  createdSites: Sites[];
+  // @OneToMany(() => Sites, (site) => site.createdBy)
+  // createdSites: Sites[];
 
   @OneToMany(() => Sites, (site) => site.updatedBy)
   updatedSites: Sites[];

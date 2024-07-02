@@ -28,7 +28,7 @@ export class CreateSiteDto {
   country: string;
 
   @IsInt()
-  createdBy: Users;
+  createdBy: number;
 
   isNew: boolean;
 }
