@@ -55,17 +55,23 @@ export class Sites {
     })
     country: string;
   
-  @ManyToOne(() => Users, (user) => user.createdSites)
-  @JoinColumn({
-    name: 'created_by',
-  })
-  createdBy: Users;
+  // @ManyToOne(() => Users, (user) => user.createdSites)
+  // @JoinColumn({
+  //   name: 'created_by',
+  // })
+  // createdBy: Users;
 
-  @ManyToOne(() => Users, (user) => user.updatedSites)
-  @JoinColumn({
-    name: 'updated_by',
-  })
-  updatedBy: Users;
+  @Column({ name: 'created_by' })
+  createdBy: number;
+
+  // @ManyToOne(() => Users, (user) => user.updatedSites)
+  // @JoinColumn({
+  //   name: 'updated_by',
+  // })
+  // updatedBy: Users;
+
+  @Column({ name: 'updated_by', nullable: true })
+  updatedBy: number;
 
   @CreateDateColumn({
     name: 'created_at',

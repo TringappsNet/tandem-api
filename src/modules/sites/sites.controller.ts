@@ -28,11 +28,9 @@ export class SitesController {
   async createSite(@Body() createSiteDto: CreateSiteDto): Promise<Sites> {
     return this.sitesService.createSite(createSiteDto);
   }
-
-  @Get('createdBy/:createdBy')
-  @HttpCode(HttpStatus.OK)
-  async getSitesByCreatedBy(@Param('createdBy') createdBy: number): Promise<Sites[]> {
-    return this.sitesService.getSitesByCreatedBy(createdBy);
+  @Get()
+  async getAllSites(): Promise<Sites[]> {
+    return this.sitesService.getAllSites();
   }
 
   @Get('site/:id')
@@ -48,7 +46,7 @@ export class SitesController {
     @Param('id') id: number,
     @Body() updateSiteDto: UpdateSiteDto,
   ): Promise<Sites> {
-    return this.sitesService.updateSiteById(id, updateSiteDto);
+    return this.sitesService.updateSite(id, updateSiteDto);
   }
 
   @Delete('site/:id')
