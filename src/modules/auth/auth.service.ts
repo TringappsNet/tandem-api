@@ -142,7 +142,9 @@ export class AuthService {
       const option = 'View Invitation';
       const text = 'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
 
-      return await this.mailService.sendMail(inviteDTO.email, subject, link, text, option);
+      await this.mailService.sendMail(inviteDTO.email, subject, link, text, option);
+
+      return { message: 'Invite sent successfully' };
     } catch (error) {
       throw error;
     }
@@ -212,7 +214,9 @@ export class AuthService {
       const text = 'To reset your password, please click the following link:';
       const option = 'Reset password';
 
-      return await this.mailService.sendMail(user.email, subject, link, text, option);
+      await this.mailService.sendMail(user.email, subject, link, text, option);
+
+      return { message: 'Password reset email sent successfully'};
     } catch (error) {
       throw error;
     }
