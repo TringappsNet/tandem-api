@@ -9,6 +9,8 @@ import { UserRoleModule } from './modules/user-role/user-role.module';
 import { DealsModule } from './modules/deals/deals.module';
 import { BrokerModule } from './modules/broker/broker.module';
 import { SupportModule } from './modules/support/support.module';
+import { LandlordModule } from './modules/landlord/landlord.module';
+import { SitesModule} from './modules/sites/sites.module';
 
 @Module({
   imports: [
@@ -19,8 +21,10 @@ import { SupportModule } from './modules/support/support.module';
     DealsModule,
     BrokerModule,
     SupportModule,
+    SitesModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
+    LandlordModule,
   ],
 })
 export class AppModule {}

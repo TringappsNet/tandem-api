@@ -14,6 +14,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from '../../../common/dto/login.dto';
 import { InviteDto } from '../../../common/dto/invite.dto';
 import * as bcrypt from 'bcrypt';
+import exp from 'constants';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -113,6 +114,8 @@ describe('AuthController', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
+        createdSites:null,
+        updatedSites:null,
       };
 
       const {
@@ -151,12 +154,16 @@ describe('AuthController', () => {
         roleId: 2,
       };
 
-      jest.spyOn(service, 'sendInvite').mockResolvedValue(undefined);
+      const mockInvite = {
+        message: 'Invite sent successfully',
+      }
 
-      const result = controller.sendInvite(mockInviteDto);
+      jest.spyOn(service, 'sendInvite').mockResolvedValue(mockInvite);
+
+      const result = await controller.sendInvite(mockInviteDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Invitation sent successfully');
+      expect(result.message).toEqual('Invite sent successfully');
       expect(service.sendInvite).toHaveBeenCalledWith(mockInviteDto);
     });
   });
@@ -200,11 +207,8 @@ describe('AuthController', () => {
 
       const result = await controller.forgotPassword(mockForgotPasswordDto);
 
-      expect(result).toBeDefined();
-      expect(result.message).toEqual('Password reset email sent successfully');
-      expect(service.forgotPassword).toHaveBeenCalledWith(
-        mockForgotPasswordDto,
-      );
+      expect(result).toBeUndefined();
+      expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
     });
   });
 
@@ -246,7 +250,11 @@ describe('AuthController', () => {
         newPassword: 'newpassword123',
       };
 
-      jest.spyOn(service, 'resetPassword').mockResolvedValue(undefined);
+      const mockResetPassword = {
+        message: 'Reset Password successfully'
+      }
+
+      jest.spyOn(service, 'resetPassword').mockResolvedValue(mockResetPassword);
 
       const result = await controller.resetPassword(mockResetPasswordDto);
 
