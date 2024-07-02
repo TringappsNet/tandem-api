@@ -142,10 +142,11 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Invitation to join our platform';
-      const text = `Hello! You have been invited to join our platform. Please click on the following link to complete your registration: ${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}
-                    NOTE: this token is valid for only 24 hours`;
+      const link =  `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
+      const option = 'View Invitation';
+      const text = 'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
 
-      await this.mailService.sendMail(inviteDTO.email, subject, text);
+      await this.mailService.sendMail(inviteDTO.email, subject, link, text, option);
     } catch (error) {
       throw error;
     }
@@ -204,13 +205,13 @@ export class AuthService {
 
       await this.userRepository.save(user);
 
-      const resetUrl = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
+      const link = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
 
       const subject = 'Password Reset Request';
-      const text = `Hello! To reset your password, please click the following link: ${resetUrl}
-                    This link is valid for 1 hour.`;
+      const text = 'To reset your password, please click the following link:';
+      const option = 'Reset password';
 
-      await this.mailService.sendMail(user.email, subject, text);
+      await this.mailService.sendMail(user.email, subject, link, text, option);
     } catch (error) {
       throw error;
     }

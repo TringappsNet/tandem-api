@@ -30,14 +30,15 @@ describe('EmailService', () => {
       const email = 'test@gmail.com';
       const subject = 'test';
       const text = 'test';
+      const link = 'test link';
+      const option = 'test option';
 
       jest.spyOn(mailerService, 'sendMail').mockResolvedValue(true);
 
-      const result = await mailService.sendMail(email, subject, text);
+      const result = await mailService.sendMail(email, subject, link, text, option);
 
       expect(result).toBeUndefined();
       expect(mailerService.sendMail).toHaveBeenCalled();
     });
   });
-  
 });
