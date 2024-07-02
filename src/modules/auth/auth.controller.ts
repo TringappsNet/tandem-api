@@ -43,7 +43,7 @@ export class AuthController {
   async login(@Body() loginDTO: LoginDto) {
     try {
       const result = await this.authService.login(loginDTO);
-      return { message: 'Login successful', data: result };
+      return  result ;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw new CustomUnauthorizedException();

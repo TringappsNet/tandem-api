@@ -176,7 +176,7 @@ describe('AuthController', () => {
       const result = await controller.register(mockRegisterDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Registered Successfully!');
+      expect(result.message).toEqual('Registration successful');
       expect(service.register).toHaveBeenCalledWith(mockRegisterDto);
     });
   });
@@ -214,7 +214,7 @@ describe('AuthController', () => {
       const result = await controller.changePassword(resetToken, mockChangePasswordDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Password has been reset successfully');
+      expect(result.message).toEqual('Password changed successfully');
       expect(service.changePassword).toHaveBeenCalledWith(resetToken, mockChangePasswordDto);
     });
   });
