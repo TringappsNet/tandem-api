@@ -8,6 +8,11 @@ import { ApiTags } from '@nestjs/swagger';
 export class BrokerController {
   constructor(private readonly brokerService: BrokerService) {}
 
+  @Get('all-users')
+  async findAll(): Promise<Users[]> {
+    return await this.brokerService.findAll();
+  }
+
   @Get('/')
   async getUsersByRoleId(): Promise<any> {
     return this.brokerService.findByRoleId();

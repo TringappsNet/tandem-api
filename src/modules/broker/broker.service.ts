@@ -20,15 +20,16 @@ export class BrokerService {
     return await this.brokerRepository.find();
   }
 
-  async findByRoleId(roleId: number = 2): Promise<any> {
+  async findByRoleId(roleId: number[] = [1, 2]): Promise<any> {
+
     const usersWithRole = await this.userRoleRepository
       .createQueryBuilder('userRole')
       .innerJoinAndSelect('userRole.user', 'user')
-      .where('userRole.roleId = :roleId', { roleId })
+      .where('userRole.roleId IN (:...roleIds)', { roleIds: roleId})
       .getMany();
 
     if (usersWithRole.length === 0) {
-      throw new NotFoundException(`No Brokers were found`);
+      throw new NotFoundException(`No Users were found`);
     }
 
     const brokers = await Promise.all(

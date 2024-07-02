@@ -117,7 +117,7 @@ export class AuthService {
 
       const inviteUser = new InviteUser();
       inviteUser.email = inviteDTO.email;
-      inviteUser.roleId = inviteDTO.roleId;
+      inviteUser.roleId = Number(inviteDTO.roleId);
       inviteUser.inviteToken = crypto
         .randomBytes(50)
         .toString('hex')
