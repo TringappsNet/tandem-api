@@ -3,25 +3,39 @@ import {
   Controller,
   Headers,
   HttpCode,
-  HttpException,
   HttpStatus,
   Post,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
+  BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
+  ConflictException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
 import { LoginDto } from '../../common/dto/login.dto';
 import { InviteDto } from '../../common/dto/invite.dto';
 import { ForgotPasswordDto } from '../../common/dto/forgot-password.dto';
 import { ResetPasswordDto } from '../../common/dto/reset-password.dto';
 import { RegisterDto } from '../../common/dto/register.dto';
 import { ChangePasswordDto } from '../../common/dto/change-password.dto';
-import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  CustomNotFoundException,
+  CustomBadRequestException,
+  CustomUnauthorizedException,
+  CustomForbiddenException,
+  CustomConflictException,
+  CustomUnprocessableEntityException,
+  CustomInternalServerErrorException,
+} from '../../exceptions/custom-exceptions';
 
 @ApiTags('Auth')
 @Controller('api/auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -29,16 +43,14 @@ export class AuthController {
   async login(@Body() loginDTO: LoginDto) {
     try {
       const result = await this.authService.login(loginDTO);
-      return result;
+      return { message: 'Login successful', data: result };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof UnauthorizedException) {
+        throw new CustomUnauthorizedException();
+      } else if (error instanceof BadRequestException) {
+        throw new CustomBadRequestException();
       } else {
-
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('login');
       }
     }
   }
@@ -51,33 +63,30 @@ export class AuthController {
       await this.authService.sendInvite(inviteDTO);
       return { message: 'Invitation sent successfully' };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof ConflictException) {
+        throw new CustomConflictException('Invite');
+      } else if (error instanceof BadRequestException) {
+        throw new CustomBadRequestException();
       } else {
-
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('sendInvite');
       }
     }
   }
 
   @Post('register')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   async register(@Body() registerData: RegisterDto) {
     try {
-      return await this.authService.register(registerData);
+      const result = await this.authService.register(registerData);
+      return { message: 'Registration successful', data: result };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof ConflictException) {
+        throw new CustomConflictException('User');
+      } else if (error instanceof UnprocessableEntityException) {
+        throw new CustomUnprocessableEntityException();
       } else {
-
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('register');
       }
     }
   }
@@ -85,21 +94,17 @@ export class AuthController {
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async forgotPassword(
-    @Body() forgotPasswordLinkDTO: ForgotPasswordDto,
-  ) {
+  async forgotPassword(@Body() forgotPasswordDTO: ForgotPasswordDto) {
     try {
-      await this.authService.forgotPassword(forgotPasswordLinkDTO);
+      await this.authService.forgotPassword(forgotPasswordDTO);
       return { message: 'Password reset email sent successfully' };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException('User');
+      } else if (error instanceof UnprocessableEntityException) {
+        throw new CustomUnprocessableEntityException();
       } else {
-
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('forgotPassword');
       }
     }
   }
@@ -112,20 +117,15 @@ export class AuthController {
     @Body() changePasswordDTO: ChangePasswordDto,
   ) {
     try {
-      const result = await this.authService.changePassword(
-        resetToken,
-        changePasswordDTO,
-      );
-      return result;
+      const result = await this.authService.changePassword(resetToken, changePasswordDTO);
+      return { message: 'Password changed successfully', data: result };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof BadRequestException) {
+        throw new CustomBadRequestException();
+      } else if (error instanceof UnauthorizedException) {
+        throw new CustomUnauthorizedException();
       } else {
-
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('changePassword');
       }
     }
   }
@@ -138,14 +138,12 @@ export class AuthController {
       await this.authService.resetPassword(resetPasswordDTO);
       return { message: 'Password reset successfully' };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof UnprocessableEntityException) {
+        throw new CustomUnprocessableEntityException();
+      } else if (error instanceof BadRequestException) {
+        throw new CustomBadRequestException();
       } else {
-
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('resetPassword');
       }
     }
   }
@@ -155,15 +153,14 @@ export class AuthController {
   async logout(@Headers('Authorization') token: string) {
     try {
       const result = await this.authService.logout(token);
-      return result;
+      return { message: 'Logout successful', data: result };
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof UnauthorizedException) {
+        throw new CustomUnauthorizedException();
+      } else if (error instanceof ForbiddenException) {
+        throw new CustomForbiddenException();
       } else {
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new CustomInternalServerErrorException('logout');
       }
     }
   }

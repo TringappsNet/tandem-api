@@ -10,15 +10,32 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
-  NotFoundException,
-  BadRequestException,
   ParseIntPipe,
+  NotFoundException,
+    BadRequestException,
+    UnauthorizedException,
+    ForbiddenException,
+    ConflictException,
+    UnprocessableEntityException,
+    
+    InternalServerErrorException,
+
 } from '@nestjs/common';
 import { SitesService } from './sites.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Sites } from '../../common/entities/sites.entity';
 import { CreateSiteDto } from '../../common/dto/create-site.dto';
 import { UpdateSiteDto } from '../../common/dto/update-site.dto';
+import {
+  CustomNotFoundException,
+  CustomBadRequestException,
+  CustomUnauthorizedException,
+  CustomForbiddenException,
+  CustomConflictException,
+  CustomUnprocessableEntityException,
+  CustomServiceException,
+  CustomInternalServerErrorException,
+} from '../../exceptions/custom-exceptions';
 
 @ApiTags('Sites')
 @Controller('api/sites')
@@ -32,12 +49,14 @@ export class SitesController {
     try {
       return await this.sitesService.createSite(createSiteDto);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      } else if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
+      if (error instanceof ConflictException) {
+        throw new CustomConflictException('Site');
+      } else if (error instanceof CustomBadRequestException) {
+        throw new BadRequestException();
+      } else if (error instanceof InternalServerErrorException) {
+        throw new CustomInternalServerErrorException('createSite');
       } else {
-        throw new BadRequestException('Failed to create site');
+        throw new CustomBadRequestException();
       }
     }
   }
@@ -48,14 +67,18 @@ export class SitesController {
     try {
       const sites = await this.sitesService.getSitesByCreatedBy(createdBy);
       if (!sites || sites.length === 0) {
-        throw new NotFoundException('No sites found for the specified creator');
+        throw new CustomNotFoundException('Sites');
       }
       return sites;
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
+        throw new CustomNotFoundException('Sites');
+      } else if (error instanceof UnauthorizedException) {
+        throw new CustomUnauthorizedException();
+      } else if (error instanceof InternalServerErrorException) {
+        throw new CustomInternalServerErrorException('getSitesByCreatedBy');
       } else {
-        throw new BadRequestException('Failed to retrieve sites');
+        throw new CustomBadRequestException();
       }
     }
   }
@@ -67,13 +90,17 @@ export class SitesController {
       return await this.sitesService.getSiteById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
+        throw new CustomNotFoundException(`Site with ID ${id}`);
+      } else if (error instanceof ForbiddenException) {
+        throw new CustomForbiddenException();
+      } else if (error instanceof CustomInternalServerErrorException ) {
+        throw new CustomServiceException('SitesService', 'getSiteById');
       } else {
-        throw new BadRequestException('Failed to retrieve site');
+        throw new CustomBadRequestException();
       }
     }
   }
-  
+
   @Put('site/:id')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
@@ -85,11 +112,13 @@ export class SitesController {
       return await this.sitesService.updateSiteById(id, updateSiteDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      } else if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
+        throw new CustomNotFoundException(`Site with ID ${id}`);
+      } else if (error instanceof UnprocessableEntityException) {
+        throw new CustomUnprocessableEntityException();
+      } else if (error instanceof ConflictException) {
+        throw new CustomConflictException('Site');
       } else {
-        throw new BadRequestException('Failed to update site');
+        throw new CustomBadRequestException();
       }
     }
   }
@@ -101,9 +130,13 @@ export class SitesController {
       return await this.sitesService.deleteSiteById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException(`Site with ID ${id} does not exist`);
+        throw new CustomNotFoundException(`Site with ID ${id}`);
+      } else if (error instanceof ForbiddenException) {
+        throw new CustomForbiddenException();
+      } else if (error instanceof InternalServerErrorException) {
+        throw new CustomServiceException('SitesService', 'deleteSiteById');
       } else {
-        throw new BadRequestException('Failed to delete site');
+        throw new CustomBadRequestException();
       }
     }
   }

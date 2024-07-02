@@ -28,7 +28,7 @@ export class BrokerService {
       .getMany();
 
     if (usersWithRole.length === 0) {
-      throw new NotFoundException(`No Brokers were found`);
+      throw new NotFoundException();
     }
 
     const brokers = await Promise.all(

@@ -17,12 +17,12 @@ export class SitesService {
     if (createSiteDto.isNew) {
       const user = await this.usersRepository.findOne({ where: { id: createSiteDto.createdBy.id } });
       if (!user) {
-        throw new NotFoundException(`User with ID ${createSiteDto.createdBy.id} not found`);
+        throw new NotFoundException(); 
       }
       const site = this.sitesRepository.create({ ...createSiteDto, createdBy: user, updatedBy: user });
       return this.sitesRepository.save(site);
     } else {
-      throw new BadRequestException(`It is not a new site ${createSiteDto.isNew}`);
+      throw new BadRequestException(); 
     }
   }
 
@@ -32,7 +32,7 @@ export class SitesService {
     });
 
     if (sites.length === 0) {
-      throw new NotFoundException(`No sites found for creator with ID ${createdBy}`);
+      throw new NotFoundException(); 
     }
 
     return sites;
@@ -42,7 +42,7 @@ export class SitesService {
     const site = await this.sitesRepository.findOne({ where: { id }, relations: ['createdBy', 'updatedBy'] });
 
     if (!site) {
-      throw new NotFoundException(`Site with ID ${id} not found`);
+      throw new NotFoundException(); 
     }
 
     return site;
@@ -52,7 +52,7 @@ export class SitesService {
     const site = await this.getSiteById(id);
     const user = await this.usersRepository.findOne({ where: { id: updateSiteDto.updatedBy.id } });
     if (!user) {
-      throw new NotFoundException(`User with ID ${updateSiteDto.updatedBy.id} not found`);
+      throw new NotFoundException(); 
     }
     const updatedSite = this.sitesRepository.merge(site, updateSiteDto, { updatedBy: user });
     return this.sitesRepository.save(updatedSite);
