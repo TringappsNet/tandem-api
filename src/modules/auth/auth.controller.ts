@@ -34,8 +34,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   sendInvite(@Body() inviteDTO: InviteDto) {
-    this.authService.sendInvite(inviteDTO);
-    return { message: 'Invitation sent successfully' };
+    return this.authService.sendInvite(inviteDTO);
   }
 
   @Post('register')
@@ -51,8 +50,7 @@ export class AuthController {
   async forgotPassword(
     @Body() forgotPasswordLinkDTO: ForgotPasswordDto,
   ) {
-    await this.authService.forgotPassword(forgotPasswordLinkDTO);
-    return { message: 'Password reset email sent successfully' };
+    return await this.authService.forgotPassword(forgotPasswordLinkDTO);
   }
 
   @Post('change-password')
@@ -73,14 +71,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async resetPassword(@Body() resetPasswordDTO: ResetPasswordDto) {
-    await this.authService.resetPassword(resetPasswordDTO);
-    return { message: 'Reset Password successfully' };
+    return await this.authService.resetPassword(resetPasswordDTO);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Headers('Authorization') token: string) {
-    // console.log(token);
     const result = await this.authService.logout(token);
     return result;
   }

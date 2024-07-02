@@ -3,6 +3,8 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -45,25 +47,22 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: { email: loginDTO.email },
       });
+
       if (!user) {
-        throw new HttpException(
-          'You are not a registered user',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new UnauthorizedException('You are not a registered user');
       }
+
       if (!user.isActive) {
-        throw new HttpException(
-          'User account is inactive. Please contact support.',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new UnauthorizedException('User account is inactive. Please contact support.');
       }
 
       const isPasswordValid = await bcrypt.compare(
         loginDTO.password,
         user.password,
       );
+
       if (!isPasswordValid) {
-        throw new HttpException('Incorrect Password', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException('Incorrect Password');
       }
 
       let session = await this.sessionRepository.findOne({
@@ -98,17 +97,14 @@ export class AuthService {
         where: { email: inviteDTO.email },
       });
       if (existingUser) {
-        throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Email already exists');
       }
 
       const existingInvite = await this.inviteRepository.findOne({
         where: { email: inviteDTO.email },
       });
       if (existingInvite) {
-        throw new HttpException(
-          'Invite already sent to this email',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new BadRequestException('Invite already sent to this email');
       }
 
       const role = await this.roleRepository.findOne({
@@ -116,7 +112,7 @@ export class AuthService {
       });
 
       if (!role) {
-        throw new HttpException('Invalid role ID', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid role ID');
       }
 
       const inviteUser = new InviteUser();
@@ -138,48 +134,56 @@ export class AuthService {
                     NOTE: this token is valid for only 24 hours`;
 
       await this.mailService.sendMail(inviteDTO.email, subject, text);
+
+      return {
+        message: 'Invite sent successfully',
+      }
     } catch (error) {
       throw error;
     }
   }
 
   async register(registerDTO: RegisterDto) {
-    const inviteUser = await this.inviteRepository.findOne({
-      where: { inviteToken: registerDTO.inviteToken },
-    });
-
-    if (!inviteUser) {
-      throw new BadRequestException('Invalid Invite Token');
+    try {
+      const inviteUser = await this.inviteRepository.findOne({
+        where: { inviteToken: registerDTO.inviteToken },
+      });
+  
+      if (!inviteUser) {
+        throw new BadRequestException('Invalid Invite Token');
+      }
+  
+      if (inviteUser.inviteTokenExpires < new Date()) {
+        throw new BadRequestException('Invite Token has expired');
+      }
+  
+      const user = new Users();
+  
+      user.email = inviteUser.email;
+      user.password = await bcrypt.hash(registerDTO.password, 10);
+      user.firstName = registerDTO.firstName;
+      user.lastName = registerDTO.lastName;
+      user.mobile = registerDTO.mobileNo;
+      user.address = registerDTO.address;
+      user.city = registerDTO.city;
+      user.state = registerDTO.state;
+      user.country = registerDTO.country;
+      user.zipcode = registerDTO.zipcode;
+      user.isActive = true;
+  
+      const savedUser = await this.userRepository.save(user);
+  
+      const userRole = new UserRole();
+      userRole.userId = savedUser.id;
+      userRole.roleId = inviteUser.roleId;
+      await this.userRoleRepository.save(userRole);
+  
+      await this.inviteRepository.remove(inviteUser);
+  
+      return { message: 'Registered Successfully!' };
+    } catch (error) {
+      throw error;
     }
-
-    if (inviteUser.inviteTokenExpires < new Date()) {
-      throw new BadRequestException('Invite Token has expired');
-    }
-
-    const user = new Users();
-
-    user.email = inviteUser.email;
-    user.password = await bcrypt.hash(registerDTO.password, 10);
-    user.firstName = registerDTO.firstName;
-    user.lastName = registerDTO.lastName;
-    user.mobile = registerDTO.mobileNo;
-    user.address = registerDTO.address;
-    user.city = registerDTO.city;
-    user.state = registerDTO.state;
-    user.country = registerDTO.country;
-    user.zipcode = registerDTO.zipcode;
-    user.isActive = true;
-
-    const savedUser = await this.userRepository.save(user);
-
-    const userRole = new UserRole();
-    userRole.userId = savedUser.id;
-    userRole.roleId = inviteUser.roleId;
-    await this.userRoleRepository.save(userRole);
-
-    await this.inviteRepository.remove(inviteUser);
-
-    return { message: 'Registered Successfully!' };
   }
 
   async forgotPassword(forgotPasswordDTO: ForgotPasswordDto) {
@@ -187,8 +191,9 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: { email: forgotPasswordDTO.email },
       });
+
       if (!user) {
-        throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+        throw new NotFoundException('Email not found');
       }
 
       user.resetToken = crypto.randomBytes(50).toString('hex').slice(0, 100);
@@ -203,6 +208,8 @@ export class AuthService {
                     This link is valid for 1 hour.`;
 
       await this.mailService.sendMail(user.email, subject, text);
+
+      return { message: 'Password reset email sent successfully' };
     } catch (error) {
       throw error;
     }
@@ -234,24 +241,26 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDTO: ResetPasswordDto) {
-    const user = await this.userRepository.findOne({
-      where: { id: resetPasswordDTO.userId },
-    });
-    if (!user) {
-      throw new HttpException(
-        'Invalid UserID Received',
-        HttpStatus.UNAUTHORIZED,
-      );
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: resetPasswordDTO.userId },
+      });
+  
+      if (!user) {
+        throw new BadRequestException('Invalid UserID Received');
+      }
+  
+      if (!user.isActive) {
+        throw new UnauthorizedException('User account is inactive. Please contact support.');
+      }
+  
+      const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
+      await this.userRepository.update(user.id, { password: updatedPassword });
+  
+      return { message: 'Reset Password successfully' };
+    } catch (error) {
+      throw error;
     }
-    if (!user.isActive) {
-      throw new HttpException(
-        'User account is inactive. Please contact support.',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
-    await this.userRepository.update(user.id, { password: updatedPassword });
   }
 
   async logout(token: string) {
@@ -261,10 +270,7 @@ export class AuthService {
       });
 
       if (!session) {
-        throw new HttpException(
-          'Invalid session token',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new BadRequestException('Invalid session token');
       }
 
       await this.sessionRepository.delete({ token: session.token });
