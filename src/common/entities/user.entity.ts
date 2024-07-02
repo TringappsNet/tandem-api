@@ -1,4 +1,3 @@
-import { MaxLength, MinLength } from 'class-validator';
 import {
   BaseEntity,
   Column,

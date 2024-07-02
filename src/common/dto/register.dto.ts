@@ -20,7 +20,7 @@ export class RegisterDto {
   country: string;
 
   zipcode: string;
-  
+
   @IsNotEmpty()
   inviteToken: string;
 }
