@@ -343,11 +343,15 @@ describe('AuthService', () => {
         country: 'test country',
         zipcode: '456789',
         inviteToken: 'qwertyuiop',
-        password: await bcrypt.hash('password123', 10)
+        password: await bcrypt.hash('password123', 10),
       };
 
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
-      jest.spyOn(userRepository, 'save').mockImplementation((user) => Promise.resolve({id:1, ...user} as Users));
+      jest
+        .spyOn(userRepository, 'save')
+        .mockImplementation((user) =>
+          Promise.resolve({ id: 1, ...user } as Users),
+        );
       jest.spyOn(userRoleRepository, 'save').mockResolvedValue(undefined);
       jest.spyOn(inviteRepository, 'remove').mockResolvedValue(undefined);
 
@@ -356,7 +360,6 @@ describe('AuthService', () => {
       expect(result).toBeDefined();
       expect(result.message).toEqual('Registered Successfully!');
       expect(userRepository.save).toHaveBeenCalled();
-
     });
 
     it('should throw BadRequestException if invalid invite token', async () => {
@@ -370,12 +373,14 @@ describe('AuthService', () => {
         country: 'test country',
         zipcode: '456789',
         inviteToken: 'qwertyuiop',
-        password: await bcrypt.hash('password123', 10)
+        password: await bcrypt.hash('password123', 10),
       };
 
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.register(mockRegisterDto)).rejects.toThrow(BadRequestException)
+      await expect(service.register(mockRegisterDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException if invite token has expired', async () => {
@@ -389,7 +394,7 @@ describe('AuthService', () => {
         country: 'test country',
         zipcode: '456789',
         inviteToken: 'qwertyuiop',
-        password: await bcrypt.hash('password123', 10)
+        password: await bcrypt.hash('password123', 10),
       };
 
       const mockInviteUser = {
@@ -404,14 +409,16 @@ describe('AuthService', () => {
 
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
 
-      await expect(service.register(mockRegisterDto)).rejects.toThrow(BadRequestException);
+      await expect(service.register(mockRegisterDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
   describe('forgotPassword', () => {
     it('should sent the password reset link if valid user found', async () => {
       const mockForgotPasswordDto = {
-        email: 'test@gmail.com'
+        email: 'test@gmail.com',
       };
 
       const mockUser = {
@@ -444,27 +451,30 @@ describe('AuthService', () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(userRepository, 'save').mockResolvedValue(null);
 
-      const spySendMail = jest.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
+      const spySendMail = jest
+        .spyOn(mailService, 'sendMail')
+        .mockResolvedValue(undefined);
 
       const result = await service.forgotPassword(mockForgotPasswordDto);
 
       expect(result).toBeUndefined();
       expect(userRepository.save).toHaveBeenCalled();
       expect(spySendMail).toHaveBeenCalledTimes(1);
-
     });
 
     it('should throw HttpException if valid user not found', async () => {
       const mockForgotPasswordDto = {
-        email: 'test@gmail.com'
+        email: 'test@gmail.com',
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.forgotPassword(mockForgotPasswordDto)).rejects.toThrow(HttpException);
+      await expect(
+        service.forgotPassword(mockForgotPasswordDto),
+      ).rejects.toThrow(HttpException);
     });
   });
-  
+
   describe('changePassword', () => {
     it('should reset password successfully with valid reset token', async () => {
       const mockChangePasswordDto = {
@@ -503,7 +513,10 @@ describe('AuthService', () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(userRepository, 'save').mockResolvedValue(null);
 
-      const result = await service.changePassword(resetToken, mockChangePasswordDto);
+      const result = await service.changePassword(
+        resetToken,
+        mockChangePasswordDto,
+      );
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password has been reset successfully');
@@ -546,7 +559,9 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.changePassword(resetToken, mockChangePasswordDto)).rejects.toThrow(HttpException);
+      await expect(
+        service.changePassword(resetToken, mockChangePasswordDto),
+      ).rejects.toThrow(HttpException);
     });
   });
 
@@ -556,7 +571,7 @@ describe('AuthService', () => {
         userId: 1,
         oldPassword: 'password123',
         newPassword: 'newpassword123',
-      }
+      };
 
       const mockUser = {
         id: 1,
@@ -591,7 +606,9 @@ describe('AuthService', () => {
       const result = await service.resetPassword(mockResetPasswordDto);
 
       expect(result).toBeUndefined();
-      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {password: expect.any(String)});
+      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {
+        password: expect.any(String),
+      });
     });
 
     it('should throw HttpException if invalid user id received', async () => {
@@ -603,7 +620,9 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.resetPassword(mockResetPasswordDto)).rejects.toThrow(HttpException);
+      await expect(service.resetPassword(mockResetPasswordDto)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw HttpException if user account is inactive', async () => {
@@ -642,10 +661,12 @@ describe('AuthService', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-      await expect(service.resetPassword(mockResetPasswordDto)).rejects.toThrow(HttpException);
+      await expect(service.resetPassword(mockResetPasswordDto)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
-  
+
   describe('logout', () => {
     it('should logout successfully with valid session token', async () => {
       const mockSessionToken = 'qwertyuiop';
@@ -656,7 +677,7 @@ describe('AuthService', () => {
         token: 'qwertyuiop',
         expiresAt: new Date(Date.now() + 1000),
         createdAt: new Date(Date.now()),
-      }
+      };
 
       jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(mockSession);
       jest.spyOn(sessionRepository, 'delete').mockResolvedValue(null);
@@ -673,7 +694,9 @@ describe('AuthService', () => {
 
       jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.logout(mockSessionToken)).rejects.toThrow(HttpException);
+      await expect(service.logout(mockSessionToken)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 });

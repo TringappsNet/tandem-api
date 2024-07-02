@@ -80,7 +80,15 @@ export class AuthService {
 
       await this.sessionRepository.save(session);
 
-      const { password, createdAt, updatedAt, isActive,resetToken, resetTokenExpires, ...userObject } = user;
+      const {
+        password,
+        createdAt,
+        updatedAt,
+        isActive,
+        resetToken,
+        resetTokenExpires,
+        ...userObject
+      } = user;
 
       return {
         message: 'Login successful',

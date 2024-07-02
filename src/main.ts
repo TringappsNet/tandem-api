@@ -8,7 +8,7 @@ import { seedRole } from './common/seeds/roleSeeder';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Seeder 
+  // Seeder
   // 1. To add the default user record of Admin details
   // 2. To add the default role records(Admin & Broker) of Role details
   const dataSource = app.get(DataSource);
@@ -21,7 +21,7 @@ async function bootstrap() {
   // Enabled the CORS
   app.enableCors();
 
-  await app.listen(3008);
+  await app.listen(3009);
   console.log(
     `Application is running on: ${(await app.getUrl()).replace('[::1]', 'localhost')}/api`,
   );

@@ -57,7 +57,7 @@ describe('AuthController', () => {
           provide: getRepositoryToken(UserRole),
           useClass: Repository,
         },
-      ]
+      ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -80,7 +80,7 @@ describe('AuthController', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  
+
   describe('login', () => {
     it('should return a login object with properties', async () => {
       const mockLoginDto: LoginDto = {
@@ -115,15 +115,26 @@ describe('AuthController', () => {
         updatedDeals: null,
       };
 
-      const { password, createdAt, updatedAt, isActive,resetToken, resetTokenExpires, ...userObject } = mockUser;
+      const {
+        password,
+        createdAt,
+        updatedAt,
+        isActive,
+        resetToken,
+        resetTokenExpires,
+        ...userObject
+      } = mockUser;
 
       const mockLogin = {
         message: 'Login successful',
         user: userObject,
-        session: { token: 'qwertyuiop', expiresAt: new Date(Date.now() + 1000)},
-      }
+        session: {
+          token: 'qwertyuiop',
+          expiresAt: new Date(Date.now() + 1000),
+        },
+      };
 
-      jest.spyOn(service, 'login').mockResolvedValue(mockLogin); 
+      jest.spyOn(service, 'login').mockResolvedValue(mockLogin);
 
       const result = await controller.login(mockLoginDto);
 
@@ -149,7 +160,7 @@ describe('AuthController', () => {
       expect(service.sendInvite).toHaveBeenCalledWith(mockInviteDto);
     });
   });
-  
+
   describe('register', () => {
     it('should return a register successful message', async () => {
       const mockRegisterDto = {
@@ -166,7 +177,7 @@ describe('AuthController', () => {
       };
 
       const mockRegister = {
-        message: 'Registered Successfully!' 
+        message: 'Registered Successfully!',
       };
 
       jest.spyOn(service, 'register').mockResolvedValue(mockRegister);
@@ -178,7 +189,7 @@ describe('AuthController', () => {
       expect(service.register).toHaveBeenCalledWith(mockRegisterDto);
     });
   });
-  
+
   describe('forgotPassword', () => {
     it('should return the reset mail successfully sent message', async () => {
       const mockForgotPasswordDto = {
@@ -191,7 +202,9 @@ describe('AuthController', () => {
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password reset email sent successfully');
-      expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
+      expect(service.forgotPassword).toHaveBeenCalledWith(
+        mockForgotPasswordDto,
+      );
     });
   });
 
@@ -207,16 +220,24 @@ describe('AuthController', () => {
         message: 'Password has been reset successfully',
       };
 
-      jest.spyOn(service, 'changePassword').mockResolvedValue(mockChangePassword);
+      jest
+        .spyOn(service, 'changePassword')
+        .mockResolvedValue(mockChangePassword);
 
-      const result = await controller.changePassword(resetToken, mockChangePasswordDto);
+      const result = await controller.changePassword(
+        resetToken,
+        mockChangePasswordDto,
+      );
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password has been reset successfully');
-      expect(service.changePassword).toHaveBeenCalledWith(resetToken, mockChangePasswordDto);
+      expect(service.changePassword).toHaveBeenCalledWith(
+        resetToken,
+        mockChangePasswordDto,
+      );
     });
   });
-  
+
   describe('resetPassword', () => {
     it('should return a password change successful message', async () => {
       const mockResetPasswordDto = {
@@ -234,15 +255,15 @@ describe('AuthController', () => {
       expect(service.resetPassword).toHaveBeenCalledWith(mockResetPasswordDto);
     });
   });
-  
+
   describe('logout', () => {
     it('should return a logout successful message', async () => {
       const token = 'qwertyuiop';
 
       const mockLogout = {
-        message: 'Logout successful'
+        message: 'Logout successful',
       };
-      
+
       jest.spyOn(service, 'logout').mockResolvedValue(mockLogout);
 
       const result = await controller.logout(token);
@@ -252,5 +273,4 @@ describe('AuthController', () => {
       expect(service.logout).toHaveBeenCalledWith(token);
     });
   });
-  
 });
