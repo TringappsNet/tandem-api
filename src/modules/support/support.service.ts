@@ -21,11 +21,11 @@ export class SupportService {
       const support = new Support();
       support.ticketSubject = raiseTicketDto.ticketSubject;
       support.ticketDescription = raiseTicketDto.ticketDescription;
-      support.createdBy = raiseTicketDto.createdBy;
+      support.createdBy = raiseTicketDto.senderId;
 
       await this.supportRepository.save(support);
 
-      const userId: number = raiseTicketDto.createdBy as unknown as number;
+      const userId: number = raiseTicketDto.senderId as unknown as number;
 
       const user = await this.userRepository.findOne({
         where: { id: userId },

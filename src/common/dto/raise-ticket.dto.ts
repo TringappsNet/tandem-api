@@ -9,5 +9,5 @@ export class RaiseTicketDto {
   ticketDescription: string;
 
   @IsInt()
-  createdBy: number;
+  senderId: number;
 }
