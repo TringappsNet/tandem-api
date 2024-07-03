@@ -47,13 +47,13 @@ export class Support {
   @JoinColumn({
     name: 'created_by',
   })
-  createdBy: Users;
+  createdBy: number;
 
   @ManyToOne(() => Users, (user) => user.id)
   @JoinColumn({
     name: 'updated_by',
   })
-  updatedBy: Users;
+  updatedBy: number;
 
   @CreateDateColumn({
     name: 'created_at',
