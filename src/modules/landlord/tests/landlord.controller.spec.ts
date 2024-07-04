@@ -45,6 +45,7 @@ describe('LandlordController', () => {
         state: '',
         country: '',
         zipcode: '',
+        isNew: true,
       };
       const result: Landlord = {
         name: '',

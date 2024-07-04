@@ -50,6 +50,7 @@ describe('LandlordService', () => {
         state: '',
         country: '',
         zipcode: '',
+        isNew: true,
       };
       const createdLandlord: Landlord = {
         id: 1,
