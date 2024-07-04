@@ -416,7 +416,7 @@ describe('AuthService', () => {
         createdAt: new Date(Date.now()),
       };
 
-      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
+      jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(null);
 
       await expect(service.register(mockRegisterDto)).rejects.toThrow(
         BadRequestException,
