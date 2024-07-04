@@ -161,6 +161,7 @@ export class AuthService {
       }
   
       if (inviteUser.inviteTokenExpires < new Date()) {
+        await this.inviteRepository.remove(inviteUser);
         throw new BadRequestException('Invite Token has expired');
       }
   
