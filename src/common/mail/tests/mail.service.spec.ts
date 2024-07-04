@@ -35,7 +35,13 @@ describe('EmailService', () => {
 
       jest.spyOn(mailerService, 'sendMail').mockResolvedValue(true);
 
-      const result = await mailService.sendMail(email, subject, link, text, option);
+      const result = await mailService.sendMail(
+        email,
+        subject,
+        link,
+        text,
+        option,
+      );
 
       expect(result).toBeUndefined();
       expect(mailerService.sendMail).toHaveBeenCalled();

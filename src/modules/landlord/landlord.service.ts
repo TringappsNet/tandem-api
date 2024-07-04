@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Landlord } from './entities/landlord.entity';
-import { CreateLandlordDto } from './dto/create-landlord.dto';
-import { UpdateLandlordDto } from './dto/update-landlord.dto';
+import { Landlord } from '../../common/entities/landlord.entity';
+import { CreateLandlordDto } from '../../common/dto/create-landlord.dto';
+import { UpdateLandlordDto } from '../../common/dto/update-landlord.dto';
 
 @Injectable()
 export class LandlordService {
@@ -29,7 +29,10 @@ export class LandlordService {
     return landlord;
   }
 
-  async update(id: number, updateLandlordDto: UpdateLandlordDto): Promise<Landlord> {
+  async update(
+    id: number,
+    updateLandlordDto: UpdateLandlordDto,
+  ): Promise<Landlord> {
     const landlord = await this.landlordRepository.preload({
       id: id,
       ...updateLandlordDto,

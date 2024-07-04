@@ -2,7 +2,11 @@ import { Support } from '../../common/entities/support.entity';
 import { Repository } from 'typeorm';
 import { RaiseTicketDto } from 'src/common/dto/raise-ticket.dto';
 import { MailService } from '../../common/mail/mail.service';
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/common/entities/user.entity';
 
@@ -36,7 +40,9 @@ export class SupportService {
       }
 
       if (!user.isActive) {
-        throw new UnauthorizedException('User account is inactive. Please contact support.');
+        throw new UnauthorizedException(
+          'User account is inactive. Please contact support.',
+        );
       }
 
       if (!user.email) {

@@ -117,9 +117,9 @@ describe('AuthController', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null,
-        lastModifiedBy:1,
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       const {
@@ -171,7 +171,7 @@ describe('AuthController', () => {
 
       const mockInvite = {
         message: 'Invite sent successfully',
-      }
+      };
 
       jest.spyOn(service, 'sendInvite').mockResolvedValue(mockInvite);
 
@@ -223,7 +223,9 @@ describe('AuthController', () => {
       const result = await controller.forgotPassword(mockForgotPasswordDto);
 
       expect(result).toBeUndefined();
-      expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
+      expect(service.forgotPassword).toHaveBeenCalledWith(
+        mockForgotPasswordDto,
+      );
     });
   });
 
@@ -266,8 +268,8 @@ describe('AuthController', () => {
       };
 
       const mockResetPassword = {
-        message: 'Reset Password successfully'
-      }
+        message: 'Reset Password successfully',
+      };
 
       jest.spyOn(service, 'resetPassword').mockResolvedValue(mockResetPassword);
 

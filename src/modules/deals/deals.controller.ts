@@ -42,7 +42,7 @@ export class DealsController {
   async getAllDealsData(): Promise<Deals[]> {
     return this.dealsService.findAllDealsData();
   }
-  
+
   @Get('createdBy/:createdBy')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)

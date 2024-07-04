@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { LandlordService } from './landlord.service';
-import { CreateLandlordDto } from './dto/create-landlord.dto';
-import { UpdateLandlordDto } from './dto/update-landlord.dto';
-import { Landlord } from './entities/landlord.entity';
+import { CreateLandlordDto } from '../../common/dto/create-landlord.dto';
+import { UpdateLandlordDto } from '../../common/dto/update-landlord.dto';
+import { Landlord } from '../../common/entities/landlord.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Landlord')
@@ -11,7 +19,9 @@ export class LandlordController {
   constructor(private readonly landlordService: LandlordService) {}
 
   @Post('landlord')
-  async create(@Body() createLandlordDto: CreateLandlordDto): Promise<Landlord> {
+  async create(
+    @Body() createLandlordDto: CreateLandlordDto,
+  ): Promise<Landlord> {
     return await this.landlordService.create(createLandlordDto);
   }
 
@@ -26,7 +36,10 @@ export class LandlordController {
   }
 
   @Patch('landlord/:id')
-  async update(@Param('id') id: number, @Body() updateLandlordDto: UpdateLandlordDto): Promise<Landlord> {
+  async update(
+    @Param('id') id: number,
+    @Body() updateLandlordDto: UpdateLandlordDto,
+  ): Promise<Landlord> {
     return await this.landlordService.update(id, updateLandlordDto);
   }
 

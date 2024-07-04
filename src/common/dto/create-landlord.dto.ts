@@ -36,4 +36,7 @@ export class CreateLandlordDto {
   @IsString()
   @IsNotEmpty()
   zipcode: string;
+
+  @IsNotEmpty()
+  isNew: boolean;
 }

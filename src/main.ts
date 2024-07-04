@@ -21,7 +21,7 @@ async function bootstrap() {
   // Enabled the CORS
   app.enableCors();
 
-  await app.listen(3008);
+  await app.listen(3010);
   console.log(
     `Application is running on: ${(await app.getUrl()).replace('[::1]', 'localhost')}/api`,
   );
