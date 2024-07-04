@@ -160,7 +160,9 @@ export class AuthService {
       }
   
      
-  
+      if (inviteUser.inviteTokenExpires < new Date()) {
+        throw new BadRequestException();
+      }
       const user = new Users();
   
       user.email = inviteUser.email;
