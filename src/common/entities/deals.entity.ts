@@ -98,13 +98,17 @@ export class Deals {
   })
   potentialCommission: number;
 
-  @ManyToOne(() => Users, (user) => user.createdDeals)
+  @ManyToOne(() => Users, (user) => user.createdDeals, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({
     name: 'created_by',
   })
   createdBy: Users;
 
-  @ManyToOne(() => Users, (user) => user.updatedDeals)
+  @ManyToOne(() => Users, (user) => user.updatedDeals, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({
     name: 'updated_by',
   })

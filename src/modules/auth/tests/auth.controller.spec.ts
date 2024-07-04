@@ -116,6 +116,7 @@ describe('AuthController', () => {
         updatedDeals: null,
         createdSites:null,
         updatedSites:null,
+        lastModifiedBy:1,
       };
 
       const {
