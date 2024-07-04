@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sites } from '../../common/entities/sites.entity';
@@ -16,14 +20,12 @@ export class SitesService {
     return await this.sitesRepository.save(site);
   }
 
-
-  
   async getAllSites(): Promise<Sites[]> {
     return await this.sitesRepository.find();
   }
 
   async getSiteById(id: number): Promise<Sites> {
-      const site = await this.sitesRepository.findOne({ where: { id }});
+    const site = await this.sitesRepository.findOne({ where: { id } });
 
     if (!site) {
       throw new NotFoundException(`Site with ID ${id} not found`);

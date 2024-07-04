@@ -1,8 +1,7 @@
-import { IsBoolean, IsNotEmpty } from "class-validator";
-
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class SetActiveBrokerDto {
-    @IsNotEmpty()
-    @IsBoolean()
-    isActive: boolean;
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
 }

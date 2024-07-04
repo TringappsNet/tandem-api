@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LandlordService } from '../landlord.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Landlord } from '../entities/landlord.entity';
-import { CreateLandlordDto } from '../dto/create-landlord.dto';
-import { UpdateLandlordDto } from '../dto/update-landlord.dto';
+import { Landlord } from '../../../common/entities/landlord.entity';
+import { CreateLandlordDto } from '../../../common/dto/create-landlord.dto';
+import { UpdateLandlordDto } from '../../../common/dto/update-landlord.dto';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
@@ -49,7 +49,7 @@ describe('LandlordService', () => {
         city: '',
         state: '',
         country: '',
-        zipcode: ''
+        zipcode: '',
       };
       const createdLandlord: Landlord = {
         id: 1,
@@ -65,7 +65,7 @@ describe('LandlordService', () => {
         updatedBy: 0,
         createdAt: undefined,
         updatedAt: undefined,
-        address2: ''
+        address2: '',
       };
 
       repository.create.mockReturnValue(createdLandlord);
@@ -82,7 +82,9 @@ describe('LandlordService', () => {
     it('should return an array of landlords', async () => {
       const landlords: Landlord[] = [
         {
-          id: 1, name: 'John Doe', email: 'john.doe@example.com',
+          id: 1,
+          name: 'John Doe',
+          email: 'john.doe@example.com',
           phoneNumber: '',
           address1: '',
           address2: '',
@@ -93,10 +95,12 @@ describe('LandlordService', () => {
           createdBy: 0,
           updatedBy: 0,
           createdAt: undefined,
-          updatedAt: undefined
+          updatedAt: undefined,
         },
         {
-          id: 2, name: 'Jane Doe', email: 'jane.doe@example.com',
+          id: 2,
+          name: 'Jane Doe',
+          email: 'jane.doe@example.com',
           phoneNumber: '',
           address1: '',
           address2: '',
@@ -107,7 +111,7 @@ describe('LandlordService', () => {
           createdBy: 0,
           updatedBy: 0,
           createdAt: undefined,
-          updatedAt: undefined
+          updatedAt: undefined,
         },
       ];
       repository.find.mockResolvedValue(landlords);
@@ -122,7 +126,9 @@ describe('LandlordService', () => {
     it('should return a landlord by id', async () => {
       const landlordId = 1;
       const landlord: Landlord = {
-        id: landlordId, name: 'John Doe', email: 'john.doe@example.com',
+        id: landlordId,
+        name: 'John Doe',
+        email: 'john.doe@example.com',
         phoneNumber: '',
         address1: '',
         address2: '',
@@ -133,7 +139,7 @@ describe('LandlordService', () => {
         createdBy: 0,
         updatedBy: 0,
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
       };
       repository.findOneBy.mockResolvedValue(landlord);
 
@@ -146,7 +152,9 @@ describe('LandlordService', () => {
       const landlordId = 1;
       repository.findOneBy.mockResolvedValue(null);
 
-      await expect(service.findOne(landlordId)).rejects.toThrowError(NotFoundException);
+      await expect(service.findOne(landlordId)).rejects.toThrowError(
+        NotFoundException,
+      );
     });
   });
 
@@ -154,16 +162,19 @@ describe('LandlordService', () => {
     it('should update a landlord', async () => {
       const landlordId = 1;
       const updateLandlordDto: UpdateLandlordDto = {
-        name: 'John Smith', email: 'john.smith@example.com',
+        name: 'John Smith',
+        email: 'john.smith@example.com',
         phoneNumber: '',
         address1: '',
         city: '',
         state: '',
         country: '',
-        zipcode: ''
+        zipcode: '',
       };
       const existingLandlord: Landlord = {
-        id: landlordId, name: 'John Doe', email: 'john.doe@example.com',
+        id: landlordId,
+        name: 'John Doe',
+        email: 'john.doe@example.com',
         phoneNumber: '',
         address1: '',
         address2: '',
@@ -174,34 +185,43 @@ describe('LandlordService', () => {
         createdBy: 0,
         updatedBy: 0,
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
       };
-      const updatedLandlord: Landlord = { ...existingLandlord, ...updateLandlordDto };
+      const updatedLandlord: Landlord = {
+        ...existingLandlord,
+        ...updateLandlordDto,
+      };
 
       repository.preload.mockResolvedValue(updatedLandlord);
       repository.save.mockResolvedValue(updatedLandlord);
 
       const result = await service.update(landlordId, updateLandlordDto);
       expect(result).toEqual(updatedLandlord);
-      expect(repository.preload).toHaveBeenCalledWith({ id: landlordId, ...updateLandlordDto });
+      expect(repository.preload).toHaveBeenCalledWith({
+        id: landlordId,
+        ...updateLandlordDto,
+      });
       expect(repository.save).toHaveBeenCalledWith(updatedLandlord);
     });
 
     it('should throw NotFoundException if landlord not found', async () => {
       const landlordId = 1;
       const updateLandlordDto: UpdateLandlordDto = {
-        name: 'John Smith', email: 'john.smith@example.com',
+        name: 'John Smith',
+        email: 'john.smith@example.com',
         phoneNumber: '',
         address1: '',
         city: '',
         state: '',
         country: '',
-        zipcode: ''
+        zipcode: '',
       };
 
       repository.preload.mockResolvedValue(null);
 
-      await expect(service.update(landlordId, updateLandlordDto)).rejects.toThrowError(NotFoundException);
+      await expect(
+        service.update(landlordId, updateLandlordDto),
+      ).rejects.toThrowError(NotFoundException);
     });
   });
 
@@ -209,7 +229,9 @@ describe('LandlordService', () => {
     it('should remove a landlord', async () => {
       const landlordId = 1;
       const landlord: Landlord = {
-        id: landlordId, name: 'John Doe', email: 'john.doe@example.com',
+        id: landlordId,
+        name: 'John Doe',
+        email: 'john.doe@example.com',
         phoneNumber: '',
         address1: '',
         address2: '',
@@ -220,7 +242,7 @@ describe('LandlordService', () => {
         createdBy: 0,
         updatedBy: 0,
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
       };
 
       repository.findOneBy.mockResolvedValue(landlord);
@@ -236,7 +258,9 @@ describe('LandlordService', () => {
 
       repository.findOneBy.mockResolvedValue(null);
 
-      await expect(service.remove(landlordId)).rejects.toThrowError(NotFoundException);
+      await expect(service.remove(landlordId)).rejects.toThrowError(
+        NotFoundException,
+      );
     });
   });
 });

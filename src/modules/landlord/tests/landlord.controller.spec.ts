@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LandlordController } from '../landlord.controller';
 import { LandlordService } from '../landlord.service';
-import { CreateLandlordDto } from '../dto/create-landlord.dto';
-import { UpdateLandlordDto } from '../dto/update-landlord.dto';
-import { Landlord } from '../entities/landlord.entity';
+import { CreateLandlordDto } from '../../../common/dto/create-landlord.dto';
+import { UpdateLandlordDto } from '../../../common/dto/update-landlord.dto';
+import { Landlord } from '../../../common/entities/landlord.entity';
 
 describe('LandlordController', () => {
   let controller: LandlordController;
@@ -44,7 +44,7 @@ describe('LandlordController', () => {
         city: '',
         state: '',
         country: '',
-        zipcode: ''
+        zipcode: '',
       };
       const result: Landlord = {
         name: '',
@@ -60,7 +60,7 @@ describe('LandlordController', () => {
         createdBy: 0,
         updatedBy: 0,
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
       };
 
       jest.spyOn(service, 'create').mockResolvedValue(result);
@@ -72,7 +72,9 @@ describe('LandlordController', () => {
 
   describe('findAll', () => {
     it('should return an array of landlords', async () => {
-      const result: Landlord[] = [/* fill with appropriate data */];
+      const result: Landlord[] = [
+        /* fill with appropriate data */
+      ];
 
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
@@ -97,7 +99,7 @@ describe('LandlordController', () => {
         createdAt: undefined,
         updatedAt: undefined,
         createdBy: 0,
-        updatedBy: 0
+        updatedBy: 0,
       };
       const id = 1;
 
@@ -118,7 +120,7 @@ describe('LandlordController', () => {
         city: '',
         state: '',
         country: '',
-        zipcode: ''
+        zipcode: '',
       };
       const result: Landlord = {
         id: 0,
@@ -134,7 +136,7 @@ describe('LandlordController', () => {
         createdAt: undefined,
         updatedAt: undefined,
         createdBy: 0,
-        updatedBy: 0
+        updatedBy: 0,
       };
       const id = 1;
 

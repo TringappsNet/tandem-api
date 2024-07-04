@@ -47,9 +47,7 @@ export class AuthController {
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async forgotPassword(
-    @Body() forgotPasswordLinkDTO: ForgotPasswordDto,
-  ) {
+  async forgotPassword(@Body() forgotPasswordLinkDTO: ForgotPasswordDto) {
     return await this.authService.forgotPassword(forgotPasswordLinkDTO);
   }
 

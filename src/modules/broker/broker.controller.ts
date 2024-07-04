@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Put,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { BrokerService } from './broker.service';
 import { Users } from 'src/common/entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
@@ -19,7 +31,6 @@ export class BrokerController {
   async getUsersByRoleId(): Promise<any> {
     return this.brokerService.findByRoleId();
   }
-
 
   @Put('update-broker/:id')
   @HttpCode(HttpStatus.OK)

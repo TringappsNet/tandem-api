@@ -10,7 +10,7 @@ import { DealsModule } from './modules/deals/deals.module';
 import { BrokerModule } from './modules/broker/broker.module';
 import { SupportModule } from './modules/support/support.module';
 import { LandlordModule } from './modules/landlord/landlord.module';
-import { SitesModule} from './modules/sites/sites.module';
+import { SitesModule } from './modules/sites/sites.module';
 
 @Module({
   imports: [
