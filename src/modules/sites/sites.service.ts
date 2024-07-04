@@ -16,8 +16,14 @@ export class SitesService {
   ) {}
 
   async createSite(createSiteDto: CreateSiteDto): Promise<Sites> {
-    const site = this.sitesRepository.create(createSiteDto);
-    return await this.sitesRepository.save(site);
+    if (createSiteDto.isNew) {
+      const site = this.sitesRepository.create(createSiteDto);
+      return await this.sitesRepository.save(site);
+    } else {
+      throw new BadRequestException(
+        `It is not a new deal ${createSiteDto.isNew}`,
+      );
+    }
   }
 
   async getAllSites(): Promise<Sites[]> {
