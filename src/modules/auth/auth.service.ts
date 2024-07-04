@@ -93,10 +93,12 @@ export class AuthService {
 
       const roleObject = await this.roleService.getRoleById(user.id);
 
+      const userDetails: any = userObject;
+      userDetails.roleId = roleObject.id;
+
       return {
         message: 'Login successful',
-        user: userObject,
-        role: roleObject,
+        user: userDetails,
         session: { token: session.token, expiresAt: session.expiresAt },
       };
     } catch (error) {
