@@ -27,7 +27,11 @@ export class DealsService {
     }
   }
 
-  async getAllDeals(): Promise<any> {
+  async getAllDeals(): Promise<Deals[]> {
+    return await this.dealsRepository.find();
+  }
+
+  async findAllDealsData(): Promise<any> {
     const deals = await this.dealsRepository.find();
     const totalDeals = deals.length;
     const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
