@@ -159,9 +159,7 @@ export class AuthService {
         throw new BadRequestException();
       }
   
-      if (inviteUser.inviteTokenExpires < new Date()) {
-        throw new BadRequestException();
-      }
+     
   
       const user = new Users();
   
