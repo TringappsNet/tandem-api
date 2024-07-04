@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Landlord } from '../../common/entities/landlord.entity';
@@ -13,8 +13,15 @@ export class LandlordService {
   ) {}
 
   async create(createLandlordDto: CreateLandlordDto): Promise<Landlord> {
-    const landlord = this.landlordRepository.create(createLandlordDto);
-    return await this.landlordRepository.save(landlord);
+    if (createLandlordDto.isNew) {
+      const landlord = this.landlordRepository.create(createLandlordDto);
+      return await this.landlordRepository.save(landlord);
+    } else {
+      throw new BadRequestException(
+        `It is not a new deal ${createLandlordDto.isNew}`,
+      );
+    }
+
   }
 
   async findAll(): Promise<Landlord[]> {
