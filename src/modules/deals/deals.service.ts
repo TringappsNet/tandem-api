@@ -21,34 +21,35 @@ export class DealsService {
       const saveData = await this.dealsRepository.save(dealData);
       return saveData;
     } else {
-      throw new BadRequestException(
-        `It is not a new deal ${createDealDto.isNew}`,
-      );
+      throw new BadRequestException();
     }
   }
 
   async getAllDeals(): Promise<any> {
-    const deals = await this.dealsRepository.find();
-    const totalDeals = deals.length;
-    const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
-    const dealsInProgress = deals.filter(
-      (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
-    ).length;
-    const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
-    const totalCommission = deals.reduce(
-      (sum, deal) => sum + deal.potentialCommission,
-      0,
-    );
-    return {
-      totalDeals,
-      dealsOpened,
-      dealsInProgress,
-      dealsClosed,
-      totalCommission,
-      deals,
-    };
+    try {
+      const deals = await this.dealsRepository.find();
+      const totalDeals = deals.length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+      const dealsInProgress = deals.filter(
+        (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+      ).length;
+      const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
+      const totalCommission = deals.reduce(
+        (sum, deal) => sum + deal.potentialCommission,
+        0,
+      );
+      return {
+        totalDeals,
+        dealsOpened,
+        dealsInProgress,
+        dealsClosed,
+        totalCommission,
+        deals,
+      };
+    } catch {
+      throw new BadRequestException();
+    }
   }
-
   // async getDealsByCreatedBy(createdBy: number): Promise<Deals[]> {
   //   return await this.dealsRepository.find({
   //     where: { createdBy: { id: createdBy } },
@@ -56,50 +57,83 @@ export class DealsService {
   // }
 
   async getDealsByCreatedBy(createdBy: number): Promise<any> {
-    const deals = await this.dealsRepository.find({
-      where: { createdBy: { id: createdBy } },
-    });
+    try {
+      const deals = await this.dealsRepository.find({
+        where: { createdBy: { id: createdBy } },
+      });
 
-    const totalDeals = deals.length;
-    const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
-    const dealsInProgress = deals.filter(
-      (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
-    ).length;
-    const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
-    const totalCommission = deals.reduce(
-      (sum, deal) => sum + deal.potentialCommission,
-      0,
-    );
+      if (!deals || deals.length === 0) {
+        throw new NotFoundException();
+      }
 
-    return {
-      totalDeals,
-      dealsOpened,
-      dealsInProgress,
-      dealsClosed,
-      totalCommission,
-      deals,
-    };
+      const totalDeals = deals.length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+      const dealsInProgress = deals.filter(
+        (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+      ).length;
+      const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
+      const totalCommission = deals.reduce(
+        (sum, deal) => sum + deal.potentialCommission,
+        0,
+      );
+
+      return {
+        totalDeals,
+        dealsOpened,
+        dealsInProgress,
+        dealsClosed,
+        totalCommission,
+        deals,
+      };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   async getDealById(id: number): Promise<Deals> {
-    const deal = await this.dealsRepository.findOneBy({ id });
-    if (!deal) {
-      throw new NotFoundException(`Deal with ID ${id} not found`);
+    try {
+      const deal = await this.dealsRepository.findOneBy({ id });
+
+      if (!deal) {
+        throw new NotFoundException();
+      }
+
+      return deal;
+    } catch {
+      throw new BadRequestException();
     }
-    return deal;
   }
+
 
   async updateDealById(
     id: number,
     updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
-    const existingData = await this.getDealById(id);
-    const updateData = this.dealsRepository.merge(existingData, updateDealDto);
-    return await this.dealsRepository.save(updateData);
+    try {
+      const existingDeal = await this.getDealById(id);
+
+      if (!existingDeal) {
+        throw new NotFoundException();
+      }
+
+      const updatedDeal = this.dealsRepository.merge(existingDeal, updateDealDto);
+      return await this.dealsRepository.save(updatedDeal);
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   async deleteDealById(id: number): Promise<Deals> {
-    const deleteData = await this.getDealById(id);
-    return await this.dealsRepository.remove(deleteData);
+    try {
+      const deal = await this.getDealById(id);
+
+      if (!deal) {
+        throw new NotFoundException();
+      }
+
+      return await this.dealsRepository.remove(deal);
+    } catch {
+      throw new BadRequestException();
+    }
   }
 }

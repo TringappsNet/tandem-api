@@ -49,11 +49,11 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException('You are not a registered user');
+        throw new UnauthorizedException();
       }
 
       if (!user.isActive) {
-        throw new UnauthorizedException('User account is inactive. Please contact support.');
+        throw new UnauthorizedException();
       }
 
       const isPasswordValid = await bcrypt.compare(
@@ -62,7 +62,7 @@ export class AuthService {
       );
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Incorrect Password');
+        throw new UnauthorizedException();
       }
 
       let session = await this.sessionRepository.findOne({
@@ -74,8 +74,8 @@ export class AuthService {
         session.userId = user.id;
       }
 
-      (session.token = crypto.randomBytes(50).toString('hex')),
-        (session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000));
+      session.token = crypto.randomBytes(50).toString('hex');
+      session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       await this.sessionRepository.save(session);
 
@@ -105,14 +105,14 @@ export class AuthService {
         where: { email: inviteDTO.email },
       });
       if (existingUser) {
-        throw new BadRequestException('Email already exists');
+        throw new BadRequestException();
       }
 
       const existingInvite = await this.inviteRepository.findOne({
         where: { email: inviteDTO.email },
       });
       if (existingInvite) {
-        throw new BadRequestException('Invite already sent to this email');
+        throw new BadRequestException();
       }
 
       const role = await this.roleRepository.findOne({
@@ -120,7 +120,7 @@ export class AuthService {
       });
 
       if (!role) {
-        throw new BadRequestException('Invalid role ID');
+        throw new BadRequestException();
       }
 
       const inviteUser = new InviteUser();
@@ -133,7 +133,6 @@ export class AuthService {
       inviteUser.inviteTokenExpires = new Date(
         Date.now() + 24 * 60 * 60 * 1000,
       );
-      // inviteUser.invitedBy = inviteDTO.invitedBy;
 
       await this.inviteRepository.save(inviteUser);
 
@@ -157,11 +156,11 @@ export class AuthService {
       });
   
       if (!inviteUser) {
-        throw new BadRequestException('Invalid Invite Token');
+        throw new BadRequestException();
       }
   
       if (inviteUser.inviteTokenExpires < new Date()) {
-        throw new BadRequestException('Invite Token has expired');
+        throw new BadRequestException();
       }
   
       const user = new Users();
@@ -200,7 +199,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('Email not found');
+        throw new NotFoundException();
       }
 
       user.resetToken = crypto.randomBytes(50).toString('hex').slice(0, 100);
@@ -247,24 +246,22 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPasswordDTO: ResetPasswordDto) {
+  async resetPassword(resetPasswordDTO: ResetPasswordDto):Promise <{ message: string }> {
     try {
       const user = await this.userRepository.findOne({
         where: { id: resetPasswordDTO.userId },
       });
-  
       if (!user) {
-        throw new BadRequestException('Invalid UserID Received');
+        throw new NotFoundException();
       }
-  
       if (!user.isActive) {
-        throw new UnauthorizedException('User account is inactive. Please contact support.');
+        throw new UnauthorizedException();
       }
-  
+
       const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
       await this.userRepository.update(user.id, { password: updatedPassword });
-  
-      return { message: 'Reset Password successfully' };
+      return { message: 'Password has been reset successfully' };
+
     } catch (error) {
       throw error;
     }
@@ -277,7 +274,7 @@ export class AuthService {
       });
 
       if (!session) {
-        throw new BadRequestException('Invalid session token');
+        throw new UnauthorizedException();
       }
 
       await this.sessionRepository.delete({ token: session.token });

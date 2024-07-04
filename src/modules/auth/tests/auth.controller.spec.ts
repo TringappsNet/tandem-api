@@ -163,7 +163,7 @@ describe('AuthController', () => {
       const result = await controller.sendInvite(mockInviteDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Invite sent successfully');
+      expect(result.message).toEqual('Invitation sent successfully');
       expect(service.sendInvite).toHaveBeenCalledWith(mockInviteDto);
     });
   });
@@ -192,7 +192,7 @@ describe('AuthController', () => {
       const result = await controller.register(mockRegisterDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Registered Successfully!');
+      expect(result.message).toEqual('Registration successful');
       expect(service.register).toHaveBeenCalledWith(mockRegisterDto);
     });
   });
@@ -202,12 +202,17 @@ describe('AuthController', () => {
       const mockForgotPasswordDto = {
         email: 'test@gmail.com',
       };
+      const mockForgotPassword = {
+        message: 'Password reset email sent successfully',
+      };
 
-      jest.spyOn(service, 'forgotPassword').mockResolvedValue(undefined);
+      jest.spyOn(service, 'forgotPassword').mockResolvedValue(mockForgotPassword);
 
       const result = await controller.forgotPassword(mockForgotPasswordDto);
+      expect(result).toEqual(mockForgotPassword);
 
-      expect(result).toBeUndefined();
+      expect(result.message).toEqual('Password reset email sent successfully');
+
       expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
     });
   });
@@ -234,7 +239,7 @@ describe('AuthController', () => {
       );
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Password has been reset successfully');
+      expect(result.message).toEqual('Password changed successfully');
       expect(service.changePassword).toHaveBeenCalledWith(
         resetToken,
         mockChangePasswordDto,
@@ -259,7 +264,7 @@ describe('AuthController', () => {
       const result = await controller.resetPassword(mockResetPasswordDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Reset Password successfully');
+      expect(result.message).toEqual('Password reset successfully');
       expect(service.resetPassword).toHaveBeenCalledWith(mockResetPasswordDto);
     });
   });

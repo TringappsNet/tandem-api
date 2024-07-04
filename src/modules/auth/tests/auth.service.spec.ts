@@ -624,7 +624,7 @@ describe('AuthService', () => {
       const result = await service.resetPassword(mockResetPasswordDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Reset Password successfully')
+      expect(result.message).toEqual('Password has been reset successfully')
       expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {password: expect.any(String)});
     });
 
