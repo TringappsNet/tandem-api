@@ -24,6 +24,7 @@ import { UserRole } from './../../common/entities/user-role.entity';
 import { InviteUser } from './../../common/entities/invite.entity';
 import { MailService } from './../../common/mail/mail.service';
 import { authConstants } from './../../common/constants/auth.constants';
+import { RoleService } from '../user-role/role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +41,7 @@ export class AuthService {
     private readonly userRoleRepository: Repository<UserRole>,
     private mailService: MailService,
     private jwtService: JwtService,
+    private roleService: RoleService,
   ) {}
 
   async login(loginDTO: LoginDto) {
@@ -89,9 +91,14 @@ export class AuthService {
         ...userObject
       } = user;
 
+      const roleObject = await this.roleService.getRoleById(user.id);
+
+      const userDetails: any = userObject;
+      userDetails.roleId = roleObject.id;
+
       return {
         message: 'Login successful',
-        user: userObject,
+        user: userDetails,
         session: { token: session.token, expiresAt: session.expiresAt },
       };
     } catch (error) {
