@@ -93,7 +93,8 @@ export class AuthService {
         ...userObject
       } = user;
 
-      const roleObject = await this.roleService.getRoleById(user.id);
+      const userRoleId = await this.userRoleRepository.findOne({ where: { id : user.id }})
+      const roleObject = await this.roleService.getRoleById(userRoleId.roleId);
 
       const userDetails: any = userObject;
       userDetails.roleId = roleObject.id;

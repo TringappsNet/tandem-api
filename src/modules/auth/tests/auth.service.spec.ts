@@ -138,9 +138,18 @@ describe('AuthService', () => {
         updatedAt: new Date(Date.now()),
       };
 
+      const mockUserRole = {
+        id: 1,
+        userId: 1,
+        roleId: 1,
+        user: mockUser,
+        role: mockRole,
+      }
+
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(sessionRepository, 'save').mockResolvedValue(mockSession);
+      jest.spyOn(userRoleRepository, 'findOne').mockResolvedValue(mockUserRole);
       jest.spyOn(roleService, 'getRoleById').mockResolvedValue(mockRole);
 
       const result = await service.login(mockLoginDto);
