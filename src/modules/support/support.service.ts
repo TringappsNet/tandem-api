@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/common/entities/user.entity';
+import { Users } from '../../common/entities/user.entity';
 
 @Injectable()
 export class SupportService {
@@ -22,13 +22,6 @@ export class SupportService {
 
   async raiseTicket(raiseTicketDto: RaiseTicketDto) {
     try {
-      const support = new Support();
-      support.ticketSubject = raiseTicketDto.ticketSubject;
-      support.ticketDescription = raiseTicketDto.ticketDescription;
-      support.createdBy = raiseTicketDto.senderId;
-
-      await this.supportRepository.save(support);
-
       const userId: number = raiseTicketDto.senderId as unknown as number;
 
       const user = await this.userRepository.findOne({
@@ -48,6 +41,13 @@ export class SupportService {
       if (!user.email) {
         throw new UnauthorizedException();
       }
+
+      const support = new Support();
+      support.ticketSubject = raiseTicketDto.ticketSubject;
+      support.ticketDescription = raiseTicketDto.ticketDescription;
+      support.createdBy = raiseTicketDto.senderId;
+
+      await this.supportRepository.save(support);
 
       const name = user.firstName + ' ' + user.lastName;
       const email = user.email;
