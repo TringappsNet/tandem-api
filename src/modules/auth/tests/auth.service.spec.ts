@@ -439,7 +439,6 @@ describe('AuthService', () => {
       };
 
       jest.spyOn(inviteRepository, 'findOne').mockResolvedValue(mockInviteUser);
-      jest.spyOn(inviteRepository, 'remove').mockResolvedValue(null);
 
       await expect(service.register(mockRegisterDto)).rejects.toThrow(
         BadRequestException,
@@ -651,10 +650,10 @@ describe('AuthService', () => {
       const result = await service.resetPassword(mockResetPasswordDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Reset Password successfully');
-      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {
-        password: expect.any(String),
-      });
+
+      expect(result.message).toEqual('Password has been reset successfully')
+      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {password: expect.any(String)});
+
     });
 
     it('should throw HttpException if invalid user id received', async () => {
