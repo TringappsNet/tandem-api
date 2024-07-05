@@ -105,29 +105,5 @@ export class BrokerController {
     return this.brokerService.deleteBroker(id);
   }
 
-  @Put('update-broker/:id')
-  @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
-  async updateBroker(
-    @Param('id') id: number,
-    @Body() updateBrokerDto: UpdateBrokerDto,
-  ) {
-    return this.brokerService.updateBroker(id, updateBrokerDto);
-  }
-
-  @Put('set-active-broker/:id')
-  @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
-  async setActiveBroker(
-    @Param('id') id: number,
-    @Body() setActiveBrokerDto: SetActiveBrokerDto,
-  ) {
-    return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
-  }
-
-  @Delete('delete-broker/:id')
-  @HttpCode(HttpStatus.OK)
-  async deleteBroker(@Param('id') id: number): Promise<any> {
-    return this.brokerService.deleteBroker(id);
-  }
+  
 }
