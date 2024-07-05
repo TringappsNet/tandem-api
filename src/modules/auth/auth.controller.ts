@@ -94,6 +94,7 @@ export class AuthController {
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
+
   async forgotPassword(@Body() forgotPasswordDTO: ForgotPasswordDto) {
     try {
       await this.authService.forgotPassword(forgotPasswordDTO);
@@ -107,6 +108,7 @@ export class AuthController {
         throw new CustomInternalServerErrorException('forgotPassword');
       }
     }
+
   }
 
   @Post('change-password')

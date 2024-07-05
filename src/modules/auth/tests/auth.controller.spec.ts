@@ -14,7 +14,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from '../../../common/dto/login.dto';
 import { InviteDto } from '../../../common/dto/invite.dto';
 import * as bcrypt from 'bcrypt';
-import exp from 'constants';
+import { RoleService } from '../../user-role/role/role.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -26,12 +26,14 @@ describe('AuthController', () => {
   let userRoleRepository: Repository<UserRole>;
   let mailService: MailService;
   let jwtService: JwtService;
+  let roleService: RoleService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         AuthService,
+        RoleService,
         MailService,
         JwtService,
         {
@@ -76,6 +78,7 @@ describe('AuthController', () => {
     );
     mailService = module.get<MailService>(MailService);
     jwtService = module.get<JwtService>(JwtService);
+    roleService = module.get<RoleService>(RoleService);
   });
 
   afterEach(() => {
@@ -114,8 +117,9 @@ describe('AuthController', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null,
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       const {
@@ -128,9 +132,20 @@ describe('AuthController', () => {
         ...userObject
       } = mockUser;
 
+      const roleObject = {
+        id: 1,
+        roleName: 'Admin',
+        description: 'Admin-Role',
+        createdBy: 1,
+        createdAt: new Date(Date.now()),
+        updatedBy: 1,
+        updatedAt: new Date(Date.now()),
+      };
+
       const mockLogin = {
         message: 'Login successful',
         user: userObject,
+        role: roleObject,
         session: {
           token: 'qwertyuiop',
           expiresAt: new Date(Date.now() + 1000),
@@ -156,7 +171,7 @@ describe('AuthController', () => {
 
       const mockInvite = {
         message: 'Invite sent successfully',
-      }
+      };
 
       jest.spyOn(service, 'sendInvite').mockResolvedValue(mockInvite);
 
@@ -213,7 +228,9 @@ describe('AuthController', () => {
 
       expect(result.message).toEqual('Password reset email sent successfully');
 
+
       expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
+
     });
   });
 
@@ -256,8 +273,8 @@ describe('AuthController', () => {
       };
 
       const mockResetPassword = {
-        message: 'Reset Password successfully'
-      }
+        message: 'Reset Password successfully',
+      };
 
       jest.spyOn(service, 'resetPassword').mockResolvedValue(mockResetPassword);
 

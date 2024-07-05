@@ -94,7 +94,9 @@ export class BrokerService {
         updateBrokerDto,
       );
       if (brokerData.affected == 0) {
+
         throw new NotFoundException();
+
       }
       const updatedBrokerData = await this.brokerRepository.findOne({
         where: { id },

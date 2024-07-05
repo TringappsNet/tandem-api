@@ -25,7 +25,7 @@ describe('SitesController', () => {
   };
 
   const mockCreateSiteDto: CreateSiteDto = {
-    isNew:true,
+    isNew: true,
     addressline1: '123 Main St',
     addressline2: 'Apt 4B',
     state: 'CA',
@@ -33,11 +33,9 @@ describe('SitesController', () => {
     zipcode: '90001',
     country: 'USA',
     createdBy: 1,
-    
   };
 
   const mockUpdateSiteDto: UpdateSiteDto = {
-    
     addressline1: '456 Elm St',
     addressline2: 'Suite 500',
     state: 'CA',
@@ -51,7 +49,9 @@ describe('SitesController', () => {
     createSite: jest.fn().mockResolvedValue(mockSite),
     getAllSites: jest.fn().mockResolvedValue([mockSite]),
     getSiteById: jest.fn().mockResolvedValue(mockSite),
-    updateSite: jest.fn().mockResolvedValue({ ...mockSite, ...mockUpdateSiteDto }),
+    updateSite: jest
+      .fn()
+      .mockResolvedValue({ ...mockSite, ...mockUpdateSiteDto }),
     deleteSiteById: jest.fn().mockResolvedValue(mockSite),
   };
 
@@ -98,8 +98,12 @@ describe('SitesController', () => {
     });
 
     it('should throw a NotFoundException if site not found', async () => {
-      jest.spyOn(service, 'getSiteById').mockRejectedValueOnce(new NotFoundException());
-      await expect(controller.getSiteById(999)).rejects.toThrow(NotFoundException);
+      jest
+        .spyOn(service, 'getSiteById')
+        .mockRejectedValueOnce(new NotFoundException());
+      await expect(controller.getSiteById(999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

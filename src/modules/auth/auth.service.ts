@@ -24,6 +24,7 @@ import { UserRole } from './../../common/entities/user-role.entity';
 import { InviteUser } from './../../common/entities/invite.entity';
 import { MailService } from './../../common/mail/mail.service';
 import { authConstants } from './../../common/constants/auth.constants';
+import { RoleService } from '../user-role/role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +41,7 @@ export class AuthService {
     private readonly userRoleRepository: Repository<UserRole>,
     private mailService: MailService,
     private jwtService: JwtService,
+    private roleService: RoleService,
   ) {}
 
   async login(loginDTO: LoginDto) {
@@ -53,7 +55,9 @@ export class AuthService {
       }
 
       if (!user.isActive) {
+
         throw new UnauthorizedException();
+
       }
 
       const isPasswordValid = await bcrypt.compare(
@@ -89,9 +93,14 @@ export class AuthService {
         ...userObject
       } = user;
 
+      const roleObject = await this.roleService.getRoleById(user.id);
+
+      const userDetails: any = userObject;
+      userDetails.roleId = roleObject.id;
+
       return {
         message: 'Login successful',
-        user: userObject,
+        user: userDetails,
         session: { token: session.token, expiresAt: session.expiresAt },
       };
     } catch (error) {
@@ -137,11 +146,18 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Invitation to join our platform';
-      const link =  `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
+      const link = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
       const option = 'View Invitation';
-      const text = 'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
+      const text =
+        'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
 
-      await this.mailService.sendMail(inviteDTO.email, subject, link, text, option);
+      await this.mailService.sendMail(
+        inviteDTO.email,
+        subject,
+        link,
+        text,
+        option,
+      );
 
       return { message: 'Invite sent successfully' };
     } catch (error) {
@@ -154,17 +170,20 @@ export class AuthService {
       const inviteUser = await this.inviteRepository.findOne({
         where: { inviteToken: registerDTO.inviteToken },
       });
-  
+
       if (!inviteUser) {
         throw new BadRequestException();
       }
+
   
      
+
       if (inviteUser.inviteTokenExpires < new Date()) {
         throw new BadRequestException();
       }
+
       const user = new Users();
-  
+
       user.email = inviteUser.email;
       user.password = await bcrypt.hash(registerDTO.password, 10);
       user.firstName = registerDTO.firstName;
@@ -176,16 +195,16 @@ export class AuthService {
       user.country = registerDTO.country;
       user.zipcode = registerDTO.zipcode;
       user.isActive = true;
-  
+
       const savedUser = await this.userRepository.save(user);
-  
+
       const userRole = new UserRole();
       userRole.userId = savedUser.id;
       userRole.roleId = inviteUser.roleId;
       await this.userRoleRepository.save(userRole);
-  
+
       await this.inviteRepository.remove(inviteUser);
-  
+
       return { message: 'Registered Successfully!' };
     } catch (error) {
       throw error;
@@ -215,7 +234,7 @@ export class AuthService {
 
       await this.mailService.sendMail(user.email, subject, link, text, option);
 
-      return { message: 'Password reset email sent successfully'};
+      return { message: 'Password reset email sent successfully' };
     } catch (error) {
       throw error;
     }
@@ -251,9 +270,11 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: { id: resetPasswordDTO.userId },
       });
+
       if (!user) {
         throw new NotFoundException();
       }
+
       if (!user.isActive) {
         throw new UnauthorizedException();
       }
@@ -261,6 +282,7 @@ export class AuthService {
       const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
       await this.userRepository.update(user.id, { password: updatedPassword });
       return { message: 'Password has been reset successfully' };
+
 
     } catch (error) {
       throw error;

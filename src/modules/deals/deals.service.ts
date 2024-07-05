@@ -25,6 +25,7 @@ export class DealsService {
     }
   }
 
+
   async getAllDeals(): Promise<any> {
     try {
       const deals = await this.dealsRepository.find();
@@ -49,6 +50,7 @@ export class DealsService {
     } catch {
       throw new BadRequestException();
     }
+
   }
   // async getDealsByCreatedBy(createdBy: number): Promise<Deals[]> {
   //   return await this.dealsRepository.find({

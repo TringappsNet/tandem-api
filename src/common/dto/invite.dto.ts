@@ -5,6 +5,6 @@ export class InviteDto {
   email: string;
 
   @IsNotEmpty()
-  @IsInt({ message: 'RoleId should be an number'})
+  @IsInt({ message: 'RoleId should be an number' })
   roleId: number;
 }

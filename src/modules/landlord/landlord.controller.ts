@@ -1,14 +1,16 @@
+
 import { Controller, Get, Post, Body, Patch, Param, Delete , NotFoundException,
   BadRequestException,
   ForbiddenException,
   ConflictException,
   UnprocessableEntityException,    
   InternalServerErrorException,
+
 } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
-import { CreateLandlordDto } from './dto/create-landlord.dto';
-import { UpdateLandlordDto } from './dto/update-landlord.dto';
-import { Landlord } from './entities/landlord.entity';
+import { CreateLandlordDto } from '../../common/dto/create-landlord.dto';
+import { UpdateLandlordDto } from '../../common/dto/update-landlord.dto';
+import { Landlord } from '../../common/entities/landlord.entity';
 import { ApiTags } from '@nestjs/swagger';
 import {
   CustomNotFoundException,
@@ -27,6 +29,7 @@ export class LandlordController {
   constructor(private readonly landlordService: LandlordService) {}
 
   @Post('landlord')
+
   async create(@Body() createLandlordDto: CreateLandlordDto): Promise<Landlord> {
     try{ return await this.landlordService.create(createLandlordDto);}
     catch(error){
@@ -39,6 +42,7 @@ export class LandlordController {
     }
   }
     
+
   }
 
   @Get('/')
@@ -68,6 +72,7 @@ export class LandlordController {
   }
 
   @Patch('landlord/:id')
+
   async update(@Param('id') id: number, @Body() updateLandlordDto: UpdateLandlordDto): Promise<Landlord> {
     try{return await this.landlordService.update(id, updateLandlordDto);}
     catch(error){
@@ -81,6 +86,7 @@ export class LandlordController {
         throw new CustomBadRequestException();
       }
     }
+
   }
 
   @Delete('landlord/:id')

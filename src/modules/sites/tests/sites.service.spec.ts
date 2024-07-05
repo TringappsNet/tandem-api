@@ -8,9 +8,6 @@ import { NotFoundException } from '@nestjs/common';
 import { CreateSiteDto } from '../../../common/dto/create-site.dto';
 import { UpdateSiteDto } from '../../../common/dto/update-site.dto';
 
-
-
-
 describe('SitesService', () => {
   let service: SitesService;
   let sitesRepository: Repository<Sites>;
@@ -39,7 +36,7 @@ describe('SitesService', () => {
   describe('createSite', () => {
     it('should create and return a site', async () => {
       const createSiteDto: CreateSiteDto = {
-        isNew:true,
+        isNew: true,
         addressline1: '123 Main St',
         addressline2: 'Apt 4B',
         state: 'CA',
@@ -159,7 +156,4 @@ describe('SitesService', () => {
       expect(await service.updateSite(1, updateSiteDto)).toEqual(updatedSite);
     });
   });
-
- 
 });
-

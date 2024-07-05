@@ -11,5 +11,4 @@ import { Users } from 'src/common/entities/user.entity';
   controllers: [SupportController],
   providers: [SupportService],
 })
-
 export class SupportModule {}

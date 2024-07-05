@@ -10,6 +10,7 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+
   NotFoundException,
     BadRequestException,
     ForbiddenException,
@@ -22,6 +23,7 @@ import { Users } from 'src/common/entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateBrokerDto } from 'src/common/dto/update-broker.dto';
 import { SetActiveBrokerDto } from 'src/common/dto/set-active-broker.dto';
+
 import {
   CustomNotFoundException,
   CustomBadRequestException,
@@ -32,6 +34,7 @@ import {
   CustomInternalServerErrorException,
 } from '../../exceptions/custom-exceptions';
 
+
 @ApiTags('Broker')
 @Controller('api/brokers')
 export class BrokerController {
@@ -39,12 +42,14 @@ export class BrokerController {
 
   @Get('all-users')
   async findAll(): Promise<object> {
+
    try{ return await this.brokerService.findAll();}
    catch(error){
     if (error instanceof NotFoundException) {
       throw new CustomNotFoundException(`Users`);
     }
    }
+
   }
 
   @Get('/')
@@ -82,6 +87,32 @@ export class BrokerController {
         throw new CustomBadRequestException();
       }
     }
+  }
+
+  @Put('set-active-broker/:id')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationPipe)
+  async setActiveBroker(
+    @Param('id') id: number,
+    @Body() setActiveBrokerDto: SetActiveBrokerDto,
+  ) {
+    return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
+  }
+
+  @Delete('delete-broker/:id')
+  @HttpCode(HttpStatus.OK)
+  async deleteBroker(@Param('id') id: number): Promise<any> {
+    return this.brokerService.deleteBroker(id);
+  }
+
+  @Put('update-broker/:id')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationPipe)
+  async updateBroker(
+    @Param('id') id: number,
+    @Body() updateBrokerDto: UpdateBrokerDto,
+  ) {
+    return this.brokerService.updateBroker(id, updateBrokerDto);
   }
 
   @Put('set-active-broker/:id')

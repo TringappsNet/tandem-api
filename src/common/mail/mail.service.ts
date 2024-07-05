@@ -6,8 +6,8 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendMail(
-    email: string, 
-    subject: string, 
+    email: string,
+    subject: string,
     link: string,
     text: string,
     option: string,

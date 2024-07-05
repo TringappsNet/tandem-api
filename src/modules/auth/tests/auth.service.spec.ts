@@ -12,6 +12,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { RoleService } from '../../user-role/role/role.service';
+import { RoleModule } from 'src/modules/user-role/role/role.module';
+import { UserRoleModule } from 'src/modules/user-role/user-role.module';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -22,12 +25,14 @@ describe('AuthService', () => {
   let userRoleRepository: Repository<UserRole>;
   let mailService: MailService;
   let jwtService: JwtService;
+  let roleService: RoleService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         MailService,
+        RoleService,
         JwtService,
         {
           provide: MailerService,
@@ -70,6 +75,7 @@ describe('AuthService', () => {
     );
     mailService = module.get<MailService>(MailService);
     jwtService = module.get<JwtService>(JwtService);
+    roleService = module.get<RoleService>(RoleService);
   });
 
   afterEach(() => {
@@ -108,8 +114,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       const mockSession = {
@@ -121,9 +128,20 @@ describe('AuthService', () => {
         createdAt: new Date(Date.now()),
       };
 
+      const mockRole = {
+        id: 1,
+        roleName: 'Admin',
+        description: 'Admin-Role',
+        createdBy: 1,
+        createdAt: new Date(Date.now()),
+        updatedBy: 1,
+        updatedAt: new Date(Date.now()),
+      };
+
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(sessionRepository, 'save').mockResolvedValue(mockSession);
+      jest.spyOn(roleService, 'getRoleById').mockResolvedValue(mockRole);
 
       const result = await service.login(mockLoginDto);
 
@@ -132,6 +150,7 @@ describe('AuthService', () => {
       expect(result.user.id).toEqual(mockUser.id);
       expect(result.session.token).toEqual(expect.any(String));
       expect(sessionRepository.save).toHaveBeenCalledTimes(1);
+      expect(roleService.getRoleById).toHaveBeenCalled();
     });
 
     it('should throw HttpException if user does not exist', async () => {
@@ -171,8 +190,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockInactiveUser);
@@ -211,8 +231,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       const mockLoginDto = {
@@ -283,8 +304,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       const mockInviteDto = { email: 'invite@gmail.com', roleId: 2 };
@@ -455,8 +477,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -469,7 +492,7 @@ describe('AuthService', () => {
       const result = await service.forgotPassword(mockForgotPasswordDto);
 
       expect(result).toBeDefined();
-      expect(result.message).toEqual('Password reset email sent successfully')
+      expect(result.message).toEqual('Password reset email sent successfully');
       expect(userRepository.save).toHaveBeenCalled();
       expect(spySendMail).toHaveBeenCalledTimes(1);
     });
@@ -520,8 +543,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -569,8 +593,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -614,8 +639,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null,
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -624,8 +650,10 @@ describe('AuthService', () => {
       const result = await service.resetPassword(mockResetPasswordDto);
 
       expect(result).toBeDefined();
+
       expect(result.message).toEqual('Password has been reset successfully')
       expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {password: expect.any(String)});
+
     });
 
     it('should throw HttpException if invalid user id received', async () => {
@@ -674,8 +702,9 @@ describe('AuthService', () => {
         reload: null,
         createdDeals: null,
         updatedDeals: null,
-        createdSites:null,
-        updatedSites:null,
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);

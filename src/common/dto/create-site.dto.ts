@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsString, IsInt, IsOptional } from 'class-validator';
 import { Users } from '../entities/user.entity';
 
-
 export class CreateSiteDto {
   @IsNotEmpty()
   @IsString()
@@ -30,5 +29,6 @@ export class CreateSiteDto {
   @IsInt()
   createdBy: number;
 
+  @IsNotEmpty()
   isNew: boolean;
 }

@@ -1,3 +1,4 @@
+
 import { BadRequestException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,6 +13,7 @@ export class SitesService {
   ) {}
 
   async createSite(createSiteDto: CreateSiteDto): Promise<Sites> {
+
     const { addressline1} = createSiteDto;
     const existingSite = await this.sitesRepository.findOne({
       where: { addressline1},
@@ -25,7 +27,7 @@ export class SitesService {
   }  
 
 
-  
+
   async getAllSites(): Promise<Sites[]> {
     const sites = await this.sitesRepository.find();
     if (sites.length === 0) {
@@ -35,7 +37,7 @@ export class SitesService {
   }
 
   async getSiteById(id: number): Promise<Sites> {
-      const site = await this.sitesRepository.findOne({ where: { id }});
+    const site = await this.sitesRepository.findOne({ where: { id } });
 
     if (!site) {
       throw new NotFoundException();
