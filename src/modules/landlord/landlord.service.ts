@@ -13,25 +13,27 @@ export class LandlordService {
   ) {}
 
   async create(createLandlordDto: CreateLandlordDto): Promise<Landlord> {
-    if (createLandlordDto.isNew) {
-      const landlord = this.landlordRepository.create(createLandlordDto);
-      return await this.landlordRepository.save(landlord);
-    } else {
-      throw new BadRequestException(
-        `It is not a new deal ${createLandlordDto.isNew}`,
-      );
+
+    const landlord = this.landlordRepository.create(createLandlordDto);
+    if (!landlord) {
+      throw new BadRequestException();
     }
+    return await this.landlordRepository.save(landlord);
 
   }
 
   async findAll(): Promise<Landlord[]> {
-    return await this.landlordRepository.find();
+    const Landlord=await this.landlordRepository.find();
+    if (Landlord.length === 0) {
+      throw new NotFoundException();
+    }
+    return Landlord;
   }
 
   async findOne(id: number): Promise<Landlord> {
     const landlord = await this.landlordRepository.findOneBy({ id });
     if (!landlord) {
-      throw new NotFoundException(`Landlord with ID ${id} not found`);
+      throw new NotFoundException();
     }
     return landlord;
   }
@@ -45,13 +47,16 @@ export class LandlordService {
       ...updateLandlordDto,
     });
     if (!landlord) {
-      throw new NotFoundException(`Landlord with ID ${id} not found`);
+      throw new NotFoundException();
     }
     return await this.landlordRepository.save(landlord);
   }
 
   async remove(id: number): Promise<void> {
     const landlord = await this.findOne(id);
+    if (!landlord) {
+      throw new NotFoundException(); 
+    }
     await this.landlordRepository.remove(landlord);
   }
 }

@@ -47,7 +47,7 @@ export class BrokerService {
       .getMany();
 
     if (usersWithRole.length === 0) {
-      throw new NotFoundException(`No Users were found`);
+      throw new NotFoundException();
     }
 
     const brokers = await Promise.all(
@@ -94,7 +94,9 @@ export class BrokerService {
         updateBrokerDto,
       );
       if (brokerData.affected == 0) {
-        throw new NotFoundException(`Broker with id ${id} not found`);
+
+        throw new NotFoundException();
+
       }
       const updatedBrokerData = await this.brokerRepository.findOne({
         where: { id },

@@ -6,10 +6,15 @@ import {
   Post,
   UsePipes,
   ValidationPipe,
+  
+  UnauthorizedException,
+
 } from '@nestjs/common';
 import { SupportService } from './support.service';
 import { RaiseTicketDto } from 'src/common/dto/raise-ticket.dto';
 import { ApiTags } from '@nestjs/swagger';
+import {
+  CustomUnauthorizedException,} from '../../exceptions/custom-exceptions';
 
 @ApiTags('Support')
 @Controller('api/support')
@@ -20,6 +25,14 @@ export class SupportController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async raiseTicket(@Body() raiseTicketDto: RaiseTicketDto) {
-    return await this.supportService.raiseTicket(raiseTicketDto);
+    try{return await this.supportService.raiseTicket(raiseTicketDto);}
+    catch(error){
+      if (error instanceof UnauthorizedException) {
+        throw new CustomUnauthorizedException();
+      } 
+      else {
+        throw new Error();
+      }
+    }
   }
 }

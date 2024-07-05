@@ -29,17 +29,17 @@ export class SupportService {
       });
 
       if (!user) {
-        throw new UnauthorizedException('You are not a registered user');
+        throw new UnauthorizedException();
       }
 
       if (!user.isActive) {
-        throw new UnauthorizedException(
-          'User account is inactive. Please contact support.',
-        );
+
+        throw new UnauthorizedException();
+
       }
 
       if (!user.email) {
-        throw new UnauthorizedException('User email is not verified.');
+        throw new UnauthorizedException();
       }
 
       const support = new Support();
