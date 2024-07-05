@@ -142,10 +142,12 @@ describe('AuthController', () => {
         updatedAt: new Date(Date.now()),
       };
 
+      const mockUserDetails: any = userObject;
+      mockUserDetails.roleId = roleObject.id;
+
       const mockLogin = {
         message: 'Login successful',
-        user: userObject,
-        role: roleObject,
+        user: mockUserDetails,
         session: {
           token: 'qwertyuiop',
           expiresAt: new Date(Date.now() + 1000),
