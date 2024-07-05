@@ -11,10 +11,9 @@ import {
 
 } from '@nestjs/common';
 import { SupportService } from './support.service';
-import { RaiseTicketDto } from 'src/common/dto/raise-ticket.dto';
+import { RaiseTicketDto } from '../../common/dto/raise-ticket.dto';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  CustomUnauthorizedException,} from '../../exceptions/custom-exceptions';
+import {CustomUnauthorizedException} from '../../exceptions/custom-exceptions';
 
 @ApiTags('Support')
 @Controller('api/support')

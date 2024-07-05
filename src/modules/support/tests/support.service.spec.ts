@@ -41,8 +41,8 @@ describe('SupportService', () => {
     supportRepository = module.get<Repository<Support>>(getRepositoryToken(Support));
   });
 
-  it('should be defined', () => {
-    expect(supportService).toBeDefined();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('raiseTicket', () => {
