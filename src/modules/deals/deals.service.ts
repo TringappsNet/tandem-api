@@ -25,8 +25,17 @@ export class DealsService {
     }
   }
 
+  
+  async getAllDeals(): Promise<Deals[]> {
+    const Landlord=await this.dealsRepository.find();
+    if (Landlord.length === 0) {
+      throw new NotFoundException();
+    }
+    return Landlord;
+  }
 
-  async getAllDeals(): Promise<any> {
+
+  async findAllDealsData(): Promise<any> {
     try {
       const deals = await this.dealsRepository.find();
       const totalDeals = deals.length;

@@ -75,7 +75,7 @@ export class DealsController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async getAllDealsData(): Promise<Deals[]> {
-    return this.dealsService.getAllDeals();
+    return this.dealsService.findAllDealsData();
   }
 
   @Get('createdBy/:createdBy')
