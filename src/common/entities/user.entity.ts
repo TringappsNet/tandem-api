@@ -1,4 +1,3 @@
-import { MaxLength, MinLength } from 'class-validator';
 import {
   BaseEntity,
   Column,
@@ -9,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Deals } from './deals.entity';
+import { Sites } from './sites.entity';
 
 @Entity('users')
 export class Users extends BaseEntity {
@@ -92,6 +92,14 @@ export class Users extends BaseEntity {
   isActive: boolean;
 
   @Column({
+    name: 'last_modified_by',
+    type: 'integer',
+    nullable: false,
+    default: 1,
+  })
+  lastModifiedBy: number;
+
+  @Column({
     name: 'reset_token',
     type: 'varchar',
     default: '',
@@ -117,9 +125,19 @@ export class Users extends BaseEntity {
   })
   updatedAt: Date = undefined;
 
-  @OneToMany(() => Deals, (deal) => deal.createdBy)
+  @OneToMany(() => Deals, (deal) => deal.createdBy, {
+    cascade: true,
+  })
   createdDeals: Deals[];
 
-  @OneToMany(() => Deals, (deal) => deal.updatedBy)
+  @OneToMany(() => Deals, (deal) => deal.updatedBy, {
+    cascade: true,
+  })
   updatedDeals: Deals[];
+
+  // @OneToMany(() => Sites, (site) => site.createdBy)
+  // createdSites: Sites[];
+
+  // @OneToMany(() => Sites, (site) => site.updatedBy)
+  // updatedSites: Sites[];
 }

@@ -10,10 +10,15 @@ import { Users } from 'src/common/entities/user.entity';
 import Session from 'src/common/entities/session.entity';
 import { Role } from 'src/common/entities/role.entity';
 import { UserRole } from 'src/common/entities/user-role.entity';
+import { UserRoleModule } from '../user-role/user-role.module';
+import { RoleModule } from '../user-role/role/role.module';
+import { RoleService } from '../user-role/role/role.service';
 
 @Module({
   imports: [
     MailModule,
+    UserRoleModule,
+    RoleModule,
     TypeOrmModule.forFeature([InviteUser, Users, Session, Role, UserRole]),
     JwtModule.register({
       global: true,
@@ -21,7 +26,7 @@ import { UserRole } from 'src/common/entities/user-role.entity';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, RoleService],
   controllers: [AuthController],
   exports: [AuthService],
 })

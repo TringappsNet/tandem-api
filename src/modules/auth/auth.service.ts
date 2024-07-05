@@ -3,6 +3,8 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -22,6 +24,7 @@ import { UserRole } from './../../common/entities/user-role.entity';
 import { InviteUser } from './../../common/entities/invite.entity';
 import { MailService } from './../../common/mail/mail.service';
 import { authConstants } from './../../common/constants/auth.constants';
+import { RoleService } from '../user-role/role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +41,7 @@ export class AuthService {
     private readonly userRoleRepository: Repository<UserRole>,
     private mailService: MailService,
     private jwtService: JwtService,
+    private roleService: RoleService,
   ) {}
 
   async login(loginDTO: LoginDto) {
@@ -45,25 +49,24 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: { email: loginDTO.email },
       });
+
       if (!user) {
-        throw new HttpException(
-          'You are not a registered user',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new UnauthorizedException();
       }
+
       if (!user.isActive) {
-        throw new HttpException(
-          'User account is inactive. Please contact support.',
-          HttpStatus.UNAUTHORIZED,
-        );
+
+        throw new UnauthorizedException();
+
       }
 
       const isPasswordValid = await bcrypt.compare(
         loginDTO.password,
         user.password,
       );
+
       if (!isPasswordValid) {
-        throw new HttpException('Incorrect Password', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException();
       }
 
       let session = await this.sessionRepository.findOne({
@@ -75,16 +78,29 @@ export class AuthService {
         session.userId = user.id;
       }
 
-      (session.token = crypto.randomBytes(50).toString('hex')),
-        (session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000));
+      session.token = crypto.randomBytes(50).toString('hex');
+      session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       await this.sessionRepository.save(session);
 
-      const { password, createdAt, updatedAt, isActive,resetToken, resetTokenExpires, ...userObject } = user;
+      const {
+        password,
+        createdAt,
+        updatedAt,
+        isActive,
+        resetToken,
+        resetTokenExpires,
+        ...userObject
+      } = user;
+
+      const roleObject = await this.roleService.getRoleById(user.id);
+
+      const userDetails: any = userObject;
+      userDetails.roleId = roleObject.id;
 
       return {
         message: 'Login successful',
-        user: userObject,
+        user: userDetails,
         session: { token: session.token, expiresAt: session.expiresAt },
       };
     } catch (error) {
@@ -98,17 +114,14 @@ export class AuthService {
         where: { email: inviteDTO.email },
       });
       if (existingUser) {
-        throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException();
       }
 
       const existingInvite = await this.inviteRepository.findOne({
         where: { email: inviteDTO.email },
       });
       if (existingInvite) {
-        throw new HttpException(
-          'Invite already sent to this email',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new BadRequestException();
       }
 
       const role = await this.roleRepository.findOne({
@@ -116,12 +129,12 @@ export class AuthService {
       });
 
       if (!role) {
-        throw new HttpException('Invalid role ID', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException();
       }
 
       const inviteUser = new InviteUser();
       inviteUser.email = inviteDTO.email;
-      inviteUser.roleId = inviteDTO.roleId;
+      inviteUser.roleId = Number(inviteDTO.roleId);
       inviteUser.inviteToken = crypto
         .randomBytes(50)
         .toString('hex')
@@ -129,57 +142,73 @@ export class AuthService {
       inviteUser.inviteTokenExpires = new Date(
         Date.now() + 24 * 60 * 60 * 1000,
       );
-      // inviteUser.invitedBy = inviteDTO.invitedBy;
 
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Invitation to join our platform';
-      const text = `Hello! You have been invited to join our platform. Please click on the following link to complete your registration: ${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}
-                    NOTE: this token is valid for only 24 hours`;
+      const link = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
+      const option = 'View Invitation';
+      const text =
+        'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
 
-      await this.mailService.sendMail(inviteDTO.email, subject, text);
+      await this.mailService.sendMail(
+        inviteDTO.email,
+        subject,
+        link,
+        text,
+        option,
+      );
+
+      return { message: 'Invite sent successfully' };
     } catch (error) {
       throw error;
     }
   }
 
   async register(registerDTO: RegisterDto) {
-    const inviteUser = await this.inviteRepository.findOne({
-      where: { inviteToken: registerDTO.inviteToken },
-    });
+    try {
+      const inviteUser = await this.inviteRepository.findOne({
+        where: { inviteToken: registerDTO.inviteToken },
+      });
 
-    if (!inviteUser) {
-      throw new BadRequestException('Invalid Invite Token');
+      if (!inviteUser) {
+        throw new BadRequestException();
+      }
+
+  
+     
+
+      if (inviteUser.inviteTokenExpires < new Date()) {
+        throw new BadRequestException();
+      }
+
+      const user = new Users();
+
+      user.email = inviteUser.email;
+      user.password = await bcrypt.hash(registerDTO.password, 10);
+      user.firstName = registerDTO.firstName;
+      user.lastName = registerDTO.lastName;
+      user.mobile = registerDTO.mobileNo;
+      user.address = registerDTO.address;
+      user.city = registerDTO.city;
+      user.state = registerDTO.state;
+      user.country = registerDTO.country;
+      user.zipcode = registerDTO.zipcode;
+      user.isActive = true;
+
+      const savedUser = await this.userRepository.save(user);
+
+      const userRole = new UserRole();
+      userRole.userId = savedUser.id;
+      userRole.roleId = inviteUser.roleId;
+      await this.userRoleRepository.save(userRole);
+
+      await this.inviteRepository.remove(inviteUser);
+
+      return { message: 'Registered Successfully!' };
+    } catch (error) {
+      throw error;
     }
-
-    if (inviteUser.inviteTokenExpires < new Date()) {
-      throw new BadRequestException('Invite Token has expired');
-    }
-
-    const user = new Users();
-
-    user.email = inviteUser.email;
-    user.password = await bcrypt.hash(registerDTO.password, 10);
-    user.firstName = registerDTO.firstName;
-    user.lastName = registerDTO.lastName;
-    user.mobile = registerDTO.mobileNo;
-    user.address = registerDTO.address;
-    user.city = registerDTO.city;
-    user.state = registerDTO.state;
-    user.country = registerDTO.country;
-    user.zipcode = registerDTO.zipcode;
-    user.isActive = true;
-
-    const savedUser = await this.userRepository.save(user);
-
-    const userRole = new UserRole();
-    userRole.userId = savedUser.id;
-    userRole.roleId = inviteUser.roleId;
-    await this.userRoleRepository.save(userRole);
-
-    await this.inviteRepository.remove(inviteUser);
-
-    return { message: 'Registered Successfully!' };
   }
 
   async forgotPassword(forgotPasswordDTO: ForgotPasswordDto) {
@@ -187,8 +216,9 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: { email: forgotPasswordDTO.email },
       });
+
       if (!user) {
-        throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+        throw new NotFoundException();
       }
 
       user.resetToken = crypto.randomBytes(50).toString('hex').slice(0, 100);
@@ -196,13 +226,15 @@ export class AuthService {
 
       await this.userRepository.save(user);
 
-      const resetUrl = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
+      const link = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
 
       const subject = 'Password Reset Request';
-      const text = `Hello! To reset your password, please click the following link: ${resetUrl}
-                    This link is valid for 1 hour.`;
+      const text = 'To reset your password, please click the following link:';
+      const option = 'Reset password';
 
-      await this.mailService.sendMail(user.email, subject, text);
+      await this.mailService.sendMail(user.email, subject, link, text, option);
+
+      return { message: 'Password reset email sent successfully' };
     } catch (error) {
       throw error;
     }
@@ -233,25 +265,28 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPasswordDTO: ResetPasswordDto) {
-    const user = await this.userRepository.findOne({
-      where: { id: resetPasswordDTO.userId },
-    });
-    if (!user) {
-      throw new HttpException(
-        'Invalid UserID Received',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-    if (!user.isActive) {
-      throw new HttpException(
-        'User account is inactive. Please contact support.',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
+  async resetPassword(resetPasswordDTO: ResetPasswordDto):Promise <{ message: string }> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: resetPasswordDTO.userId },
+      });
 
-    const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
-    await this.userRepository.update(user.id, { password: updatedPassword });
+      if (!user) {
+        throw new NotFoundException();
+      }
+
+      if (!user.isActive) {
+        throw new UnauthorizedException();
+      }
+
+      const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
+      await this.userRepository.update(user.id, { password: updatedPassword });
+      return { message: 'Password has been reset successfully' };
+
+
+    } catch (error) {
+      throw error;
+    }
   }
 
   async logout(token: string) {
@@ -261,10 +296,7 @@ export class AuthService {
       });
 
       if (!session) {
-        throw new HttpException(
-          'Invalid session token',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new UnauthorizedException();
       }
 
       await this.sessionRepository.delete({ token: session.token });
