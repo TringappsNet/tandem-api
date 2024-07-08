@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/common/entities/user.entity';
 import { UserRole } from 'src/common/entities/user-role.entity';
 import { Deals } from 'src/common/entities/deals.entity';
+import { Role } from 'src/common/entities/role.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, UserRole, Deals])],
+  imports: [TypeOrmModule.forFeature([Users, UserRole, Deals, Role])],
   controllers: [BrokerController],
   providers: [BrokerService],
 })

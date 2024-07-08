@@ -10,6 +10,7 @@ import { Deals } from '../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
 import { UpdateBrokerDto } from '../../common/dto/update-broker.dto';
 import { SetActiveBrokerDto } from '../../common/dto/set-active-broker.dto';
+import { Role } from 'src/common/entities/role.entity';
 
 @Injectable()
 export class BrokerService {
@@ -20,24 +21,31 @@ export class BrokerService {
     private readonly userRoleRepository: Repository<UserRole>,
     @InjectRepository(Deals)
     private readonly dealsRepository: Repository<Deals>,
+    @InjectRepository(Users) private readonly userRepository: Repository<Users>,
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+ 
   ) {}
 
-  async findAll(): Promise<object> {
-    const user = await this.brokerRepository.find();
-    const filteredUser = user.map((removeSensitiveData) => {
-      const {
-        password,
-        createdAt,
-        updatedAt,
-        isActive,
-        resetToken,
-        resetTokenExpires,
-        ...userObject
-      } = removeSensitiveData;
+  async findAll(): Promise<object[]> {
+    const users = await this.userRepository.find();
+    const filteredUsers = await Promise.all(users.map(async (user) => {
+      const { password, createdAt, updatedAt, isActive, resetToken, resetTokenExpires, ...userObject } = user;
+
+      // Fetch the role for the user
+      const userRole = await this.userRoleRepository.findOne({ where: { userId: user.id } });
+      if (userRole) {
+        const role = await this.roleRepository.findOne({ where: { id: userRole.roleId } });
+        if (role) {
+          userObject['roleId'] = role.id;
+        }
+      }
+
       return userObject;
-    });
-    return filteredUser;
+    }));
+
+    return filteredUsers;
   }
+
 
   async findByRoleId(roleId: number[] = [1, 2]): Promise<any> {
     const usersWithRole = await this.userRoleRepository
