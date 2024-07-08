@@ -53,8 +53,8 @@ export class BrokerController {
   }
 
   @Get('/')
-  async getUsersByRoleId(): Promise<any> {
-   try{ return this.brokerService.findByRoleId();}
+  async getAllUsers(): Promise<any> {
+   try{ return this.brokerService.findAllUsers();}
    catch(error){
     if (error instanceof NotFoundException) {
       throw new CustomNotFoundException(`User`);
