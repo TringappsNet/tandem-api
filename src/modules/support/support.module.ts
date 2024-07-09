@@ -5,9 +5,10 @@ import { Support } from 'src/common/entities/support.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from 'src/common/mail/mail.module';
 import { Users } from 'src/common/entities/user.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [MailModule, TypeOrmModule.forFeature([Support, Users])],
+  imports: [AuthModule, MailModule, TypeOrmModule.forFeature([Support, Users])],
   controllers: [SupportController],
   providers: [SupportService],
 })

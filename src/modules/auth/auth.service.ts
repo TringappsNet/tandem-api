@@ -307,4 +307,33 @@ export class AuthService {
       throw error;
     }
   }
+
+
+  async validateUser(userId: number, accessToken: string): Promise<boolean> {
+    try {
+      const session = await this.sessionRepository.findOne({
+        where: { userId, token: accessToken },
+      });
+
+      if (!session || session.expiresAt < new Date()) {
+        return false;
+      }
+
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      if (!user || !user.isActive) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid userId or accessToken');
+    }
+  }
+  
 }
+
+
+  

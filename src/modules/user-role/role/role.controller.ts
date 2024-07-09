@@ -12,12 +12,13 @@ import {
   ConflictException,
   UnprocessableEntityException,    
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from '../../../common/dto/create-role.dto';
 import { UpdateRoleDto } from '../../../common/dto/update-role.dto';
 import { Role } from '../../../common/entities/role.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
   CustomNotFoundException,
   CustomBadRequestException,
@@ -27,6 +28,8 @@ import {
   CustomServiceException,
   CustomInternalServerErrorException,
 } from '../../../exceptions/custom-exceptions';
+import { AuthGuard } from 'src/common/gaurds/auth/auth.gaurd';
+import { UserAuth } from 'src/common/gaurds/auth/user-auth.decorator';
 
 @ApiTags('Role')
 @Controller('api/roles')
@@ -34,7 +37,12 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post('role')
-  async createRole(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async createRole(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Body() createRoleDto: CreateRoleDto): Promise<Role> {
    try{ return this.roleService.createRole(createRoleDto);}
    catch(error){
     if (error instanceof BadRequestException) {
