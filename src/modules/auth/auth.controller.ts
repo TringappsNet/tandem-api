@@ -13,6 +13,7 @@ import {
   ForbiddenException,
   ConflictException,
   UnprocessableEntityException,
+  UseGuards,
 } from '@nestjs/common';
 import { LoginDto } from '../../common/dto/login.dto';
 import { InviteDto } from '../../common/dto/invite.dto';
@@ -21,7 +22,7 @@ import { ResetPasswordDto } from '../../common/dto/reset-password.dto';
 import { RegisterDto } from '../../common/dto/register.dto';
 import { ChangePasswordDto } from '../../common/dto/change-password.dto';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
   CustomNotFoundException,
   CustomBadRequestException,
@@ -31,6 +32,8 @@ import {
   CustomUnprocessableEntityException,
   CustomInternalServerErrorException,
 } from '../../exceptions/custom-exceptions';
+import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
+import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
 
 @ApiTags('Auth')
 @Controller('api/auth')
@@ -58,7 +61,12 @@ export class AuthController {
   @Post('invite')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async sendInvite(@Body() inviteDTO: InviteDto) {
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
+  @UseGuards(AuthGuard)
+  async sendInvite(
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Body() inviteDTO: InviteDto) {
     try {
       await this.authService.sendInvite(inviteDTO);
       return { message: 'Invitation sent successfully' };
@@ -138,7 +146,13 @@ export class AuthController {
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async resetPassword(@Body() resetPasswordDTO: ResetPasswordDto) {
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
+  @UseGuards(AuthGuard)
+  async resetPassword(
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Body() resetPasswordDTO: ResetPasswordDto
+  ) {
     try {
       await this.authService.resetPassword(resetPasswordDTO);
       return { message: 'Password reset successfully' };
@@ -152,7 +166,7 @@ export class AuthController {
       }
     }
   }
-
+  
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Headers('Authorization') token: string) {

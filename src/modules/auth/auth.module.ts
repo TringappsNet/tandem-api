@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
@@ -17,8 +17,8 @@ import { RoleService } from '../user-role/role/role.service';
 @Module({
   imports: [
     MailModule,
-    UserRoleModule,
-    RoleModule,
+    forwardRef(() => UserRoleModule), // Use forwardRef() to resolve circular dependency
+    forwardRef(() => RoleModule), // Use forwardRef() to resolve circular dependency
     TypeOrmModule.forFeature([InviteUser, Users, Session, Role, UserRole]),
     JwtModule.register({
       global: true,

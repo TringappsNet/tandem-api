@@ -12,12 +12,13 @@ import {
   ConflictException,
   UnprocessableEntityException,    
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from '../../../common/dto/create-role.dto';
 import { UpdateRoleDto } from '../../../common/dto/update-role.dto';
 import { Role } from '../../../common/entities/role.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
   CustomNotFoundException,
   CustomBadRequestException,
@@ -27,6 +28,9 @@ import {
   CustomServiceException,
   CustomInternalServerErrorException,
 } from '../../../exceptions/custom-exceptions';
+import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
+import { UserAuth } from '../../../common/gaurds/auth/user-auth.decorator';
+
 
 @ApiTags('Role')
 @Controller('api/roles')
@@ -34,7 +38,12 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post('role')
-  async createRole(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async createRole(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Body() createRoleDto: CreateRoleDto): Promise<Role> {
    try{ return this.roleService.createRole(createRoleDto);}
    catch(error){
     if (error instanceof BadRequestException) {
@@ -48,7 +57,12 @@ export class RoleController {
   }
 
   @Get()
-  async getRoles(): Promise<Role[]> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async getRoles(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+  ): Promise<Role[]> {
     try{return this.roleService.getRoles();}
     catch(error){
       if (error instanceof NotFoundException) {
@@ -58,7 +72,12 @@ export class RoleController {
   }
 
   @Get('role/:id')
-  async getRoleById(@Param('id') id: number): Promise<Role> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async getRoleById(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<Role> {
     try{return this.roleService.getRoleById(id);}
     catch(error){
       if (error instanceof NotFoundException) {
@@ -74,7 +93,11 @@ export class RoleController {
   }
 
   @Put('role/:id')
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async updateRole(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number,
     @Body() updateRoleDto: UpdateRoleDto,
   ): Promise<Role> {
@@ -93,7 +116,12 @@ export class RoleController {
   }
 
   @Delete('role/:id')
-  async deleteRole(@Param('id') id: number): Promise<void> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async deleteRole(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<void> {
    try{ return this.roleService.deleteRole(id);}
    catch(error){
     if (error instanceof NotFoundException) {

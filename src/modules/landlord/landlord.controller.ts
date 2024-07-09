@@ -5,13 +5,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete , NotFoundException,
   ConflictException,
   UnprocessableEntityException,    
   InternalServerErrorException,
+  UseGuards,
 
 } from '@nestjs/common';
 import { LandlordService } from './landlord.service';
 import { CreateLandlordDto } from '../../common/dto/create-landlord.dto';
 import { UpdateLandlordDto } from '../../common/dto/update-landlord.dto';
 import { Landlord } from '../../common/entities/landlord.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
   CustomNotFoundException,
   CustomBadRequestException,
@@ -21,6 +22,8 @@ import {
   CustomServiceException,
   CustomInternalServerErrorException,
 } from '../../exceptions/custom-exceptions';
+import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
+import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
 
 
 @ApiTags('Landlord')
@@ -29,8 +32,12 @@ export class LandlordController {
   constructor(private readonly landlordService: LandlordService) {}
 
   @Post('landlord')
-
-  async create(@Body() createLandlordDto: CreateLandlordDto): Promise<Landlord> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async create(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Body() createLandlordDto: CreateLandlordDto): Promise<Landlord> {
     try{ return await this.landlordService.create(createLandlordDto);}
     catch(error){
     if (error instanceof BadRequestException) {
@@ -46,7 +53,12 @@ export class LandlordController {
   }
 
   @Get('/')
-  async findAll(): Promise<Landlord[]> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async findAll(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+  ): Promise<Landlord[]> {
    try{ return await this.landlordService.findAll();}
    catch(error){
     if (error instanceof NotFoundException) {
@@ -56,7 +68,12 @@ export class LandlordController {
   }
 
   @Get('landlord/:id')
-  async findOne(@Param('id') id: number): Promise<Landlord> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async findOne(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<Landlord> {
    try{ return await this.landlordService.findOne(id);}
    catch(error){
     if (error instanceof NotFoundException) {
@@ -72,8 +89,12 @@ export class LandlordController {
   }
 
   @Patch('landlord/:id')
-
-  async update(@Param('id') id: number, @Body() updateLandlordDto: UpdateLandlordDto): Promise<Landlord> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async update(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number, @Body() updateLandlordDto: UpdateLandlordDto): Promise<Landlord> {
     try{return await this.landlordService.update(id, updateLandlordDto);}
     catch(error){
       if (error instanceof NotFoundException) {
@@ -90,7 +111,12 @@ export class LandlordController {
   }
 
   @Delete('landlord/:id')
-  async remove(@Param('id') id: number): Promise<void> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async remove(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<void> {
    try{ return await this.landlordService.remove(id);}
    catch(error){
     if (error instanceof NotFoundException) {

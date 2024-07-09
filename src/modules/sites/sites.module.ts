@@ -4,9 +4,10 @@ import { SitesService } from './sites.service';
 import { Sites } from '../../common/entities/sites.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/common/entities/user.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Sites, Users])],
+  imports: [AuthModule, TypeOrmModule.forFeature([Sites, Users])],
   controllers: [SitesController],
   providers: [SitesService],
 })

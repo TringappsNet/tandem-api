@@ -13,6 +13,7 @@ import { Session } from 'inspector';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from '../../../common/dto/login.dto';
 import { InviteDto } from '../../../common/dto/invite.dto';
+import { ResetPasswordDto } from '../../../common/dto/reset-password.dto';
 import * as bcrypt from 'bcrypt';
 import { RoleService } from '../../user-role/role/role.service';
 
@@ -175,9 +176,11 @@ describe('AuthController', () => {
         message: 'Invite sent successfully',
       };
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'sendInvite').mockResolvedValue(mockInvite);
 
-      const result = await controller.sendInvite(mockInviteDto);
+      const result = await controller.sendInvite(userAuth, mockInviteDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Invitation sent successfully');
@@ -230,9 +233,7 @@ describe('AuthController', () => {
 
       expect(result.message).toEqual('Password reset email sent successfully');
 
-
       expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
-
     });
   });
 
@@ -268,7 +269,7 @@ describe('AuthController', () => {
 
   describe('resetPassword', () => {
     it('should return a password change successful message', async () => {
-      const mockResetPasswordDto = {
+      const mockResetPasswordDto: ResetPasswordDto = {
         userId: 1,
         oldPassword: 'password123',
         newPassword: 'newpassword123',
@@ -278,9 +279,11 @@ describe('AuthController', () => {
         message: 'Reset Password successfully',
       };
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'resetPassword').mockResolvedValue(mockResetPassword);
 
-      const result = await controller.resetPassword(mockResetPasswordDto);
+      const result = await controller.resetPassword(userAuth, mockResetPasswordDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password reset successfully');
