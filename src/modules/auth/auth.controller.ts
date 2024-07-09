@@ -32,8 +32,8 @@ import {
   CustomUnprocessableEntityException,
   CustomInternalServerErrorException,
 } from '../../exceptions/custom-exceptions';
-import { AuthGuard } from 'src/common/gaurds/auth/auth.gaurd';
-import { UserAuth } from 'src/common/gaurds/auth/user-auth.decorator';
+import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
+import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
 
 @ApiTags('Auth')
 @Controller('api/auth')

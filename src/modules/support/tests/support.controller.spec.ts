@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { MailerService } from '@nestjs-modules/mailer';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SupportService } from '../support.service';
+import { AuthService } from '../../../modules/auth/auth.service';
+import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 import * as bcrypt from 'bcrypt';
 
 describe('SupportController', () => {
@@ -19,7 +21,7 @@ describe('SupportController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SupportController],
-      providers:[
+      providers: [
         SupportService,
         MailService,
         {
@@ -34,7 +36,14 @@ describe('SupportController', () => {
           provide: getRepositoryToken(Support),
           useClass: Repository,
         },
-      ]
+        {
+          provide: AuthService, // Provide the mock AuthService
+          useValue: {
+            validateUser: jest.fn().mockResolvedValue(true),
+          },
+        },
+        AuthGuard, // Provide the AuthGuard
+      ],
     }).compile();
 
     supportController = module.get<SupportController>(SupportController);
@@ -49,52 +58,54 @@ describe('SupportController', () => {
   });
 
   describe('raiseTicket', () => {
-    it('should raised the ticket and mail the appropriate details', async () => {
-        const mockUser = {
-            id: 1,
-            email: 'test@example.com',
-            password: await bcrypt.hash('password123', 10),
-            firstName: 'test',
-            lastName: 'test',
-            mobile: '1234567890',
-            address: 'test address',
-            city: 'test city',
-            state: 'test state',
-            country: 'test country',
-            zipcode: '456789',
-            resetToken: null,
-            resetTokenExpires: new Date(Date.now()),
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-            isActive: true,
-            hasId: null,
-            save: null,
-            remove: null,
-            softRemove: null,
-            recover: null,
-            reload: null,
-            createdDeals: null,
-            updatedDeals: null,
-            lastModifiedBy: null,
-        };
+    it('should raise the ticket and mail the appropriate details', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        lastModifiedBy: null,
+      };
 
-        const mockRaiseTicketDto = {
-            ticketSubject: 'New Ticket Subject',
-            ticketDescription: 'New Ticket Description',
-            senderId: mockUser.id,
-        };
+      const mockRaiseTicketDto = {
+        ticketSubject: 'New Ticket Subject',
+        ticketDescription: 'New Ticket Description',
+        senderId: mockUser.id,
+      };
 
-        const mockRaiseTicket = {
-            message: 'Ticket raised successfully',
-        }
+      const mockRaiseTicket = {
+        message: 'Ticket raised successfully',
+      };
 
-        jest.spyOn(supportService, 'raiseTicket').mockResolvedValue(mockRaiseTicket);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
 
-        const result = await supportController.raiseTicket(mockRaiseTicketDto);
+      jest.spyOn(supportService, 'raiseTicket').mockResolvedValue(mockRaiseTicket);
 
-        expect(result).toBeDefined();
-        expect(result.message).toEqual('Ticket raised successfully');
-        expect(supportService.raiseTicket).toHaveBeenCalledWith(mockRaiseTicketDto);
+      const result = await supportController.raiseTicket(userAuth, mockRaiseTicketDto);
+
+      expect(result).toBeDefined();
+      expect(result.message).toEqual('Ticket raised successfully');
+      expect(supportService.raiseTicket).toHaveBeenCalledWith(mockRaiseTicketDto);
     });
   });
 });

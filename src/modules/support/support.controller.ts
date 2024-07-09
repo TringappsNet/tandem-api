@@ -15,8 +15,8 @@ import { SupportService } from './support.service';
 import { RaiseTicketDto } from '../../common/dto/raise-ticket.dto';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import {CustomUnauthorizedException} from '../../exceptions/custom-exceptions';
-import { AuthGuard } from 'src/common/gaurds/auth/auth.gaurd';
-import { UserAuth } from 'src/common/gaurds/auth/user-auth.decorator';
+import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
+import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
 
 @ApiTags('Support')
 @Controller('api/support')
