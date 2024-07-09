@@ -56,7 +56,12 @@ export class RoleController {
   }
 
   @Get()
-  async getRoles(): Promise<Role[]> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async getRoles(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+  ): Promise<Role[]> {
     try{return this.roleService.getRoles();}
     catch(error){
       if (error instanceof NotFoundException) {
@@ -66,7 +71,12 @@ export class RoleController {
   }
 
   @Get('role/:id')
-  async getRoleById(@Param('id') id: number): Promise<Role> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async getRoleById(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<Role> {
     try{return this.roleService.getRoleById(id);}
     catch(error){
       if (error instanceof NotFoundException) {
@@ -82,7 +92,11 @@ export class RoleController {
   }
 
   @Put('role/:id')
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async updateRole(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number,
     @Body() updateRoleDto: UpdateRoleDto,
   ): Promise<Role> {
@@ -101,7 +115,12 @@ export class RoleController {
   }
 
   @Delete('role/:id')
-  async deleteRole(@Param('id') id: number): Promise<void> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async deleteRole(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<void> {
    try{ return this.roleService.deleteRole(id);}
    catch(error){
     if (error instanceof NotFoundException) {

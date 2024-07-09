@@ -61,7 +61,12 @@ export class AuthController {
   @Post('invite')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  async sendInvite(@Body() inviteDTO: InviteDto) {
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
+  @UseGuards(AuthGuard)
+  async sendInvite(
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Body() inviteDTO: InviteDto) {
     try {
       await this.authService.sendInvite(inviteDTO);
       return { message: 'Invitation sent successfully' };
