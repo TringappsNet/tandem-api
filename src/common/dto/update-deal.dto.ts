@@ -12,6 +12,9 @@ export class UpdateDealDto {
   brokerName: string;
 
   @IsNotEmpty()
+  brokerId: number;
+
+  @IsNotEmpty()
   propertyName: string;
 
   dealStartDate: Date;

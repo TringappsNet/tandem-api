@@ -98,17 +98,17 @@ export class DealsController {
     return this.dealsService.findAllDealsData();
   }
 
-  @Get('createdBy/:createdBy')
+  @Get('assignedTo/:assignedTo')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
   @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
-  async getDealsByCreatedBy(
+  async getDealsByAssignedTo(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('createdBy', ParseIntPipe) createdBy: number,
+    @Param('assignedTo', ParseIntPipe) assignedTo: number,
   ): Promise<Deals[]> {
     try {
-      const deals = await this.dealsService.getDealsByCreatedBy(createdBy);
+      const deals = await this.dealsService.getDealsByAssignedTo(assignedTo);
       if (!deals || deals.length === 0) {
         throw new CustomNotFoundException('Deals');
       }
@@ -119,7 +119,7 @@ export class DealsController {
       } else if (error instanceof UnauthorizedException) {
         throw new CustomUnauthorizedException();
       } else if (error instanceof InternalServerErrorException) {
-        throw new CustomServiceException('DealsService', 'getDealsByCreatedBy');
+        throw new CustomServiceException('DealsService', 'getDealsByAssignedTo');
       } else {
         throw new CustomBadRequestException();
       }

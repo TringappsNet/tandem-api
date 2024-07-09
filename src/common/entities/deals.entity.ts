@@ -37,6 +37,14 @@ export class Deals {
   brokerName: string;
 
   @Column({
+    name: 'assigned_to',
+    type: 'integer',
+    nullable: false,
+    default: 1,
+  })
+  assignedTo: number;
+
+  @Column({
     name: 'property_name',
     type: 'varchar',
   })
