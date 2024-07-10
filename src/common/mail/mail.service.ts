@@ -51,4 +51,17 @@ export class MailService {
       },
     });
   }
+
+  async dealsMail(
+    email: string,
+    subject: string,
+    context: {},
+  ) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: subject,
+      template: './deals',
+      context: context,
+    });
+  }
 }

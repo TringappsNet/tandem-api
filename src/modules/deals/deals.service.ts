@@ -8,17 +8,26 @@ import { CreateDealDto } from '../../common/dto/create-deal.dto';
 import { UpdateDealDto } from '../../common/dto/update-deal.dto';
 import { Deals } from '../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
+import { MailerService } from '@nestjs-modules/mailer';
+import { MailService } from 'src/common/mail/mail.service';
+import { Users } from 'src/common/entities/user.entity';
+// import { sendDealsEmail } from 'src/common/methods/smtp.deals';
 
 @Injectable()
 export class DealsService {
   constructor(
     @InjectRepository(Deals) private dealsRepository: Repository<Deals>,
+    @InjectRepository(Users) private usersRepository: Repository<Users>,
+    private mailService: MailService,
   ) {}
 
   async createDeal(createDealDto: CreateDealDto): Promise<Deals> {
     if (createDealDto.isNew) {
       const dealData = this.dealsRepository.create(createDealDto);
       const saveData = await this.dealsRepository.save(dealData);
+      if(saveData.activeStep === 1){
+        await this.mailService.dealsMail('test@example.com', 'Deal Has Been Started', {});
+      }
       return saveData;
     } else {
       throw new BadRequestException();
@@ -122,15 +131,48 @@ export class DealsService {
   ): Promise<Deals> {
     try {
       const existingDeal = await this.getDealById(id);
+      const existingActiveStep = existingDeal.activeStep;
+      const latestActiveStep = updateDealDto.activeStep;
+      const listOfDealStatus = [
+        'dealStartDate', 'proposalDate', 'loiExecuteDate', 'leaseSignedDate', 
+        'noticeToProceedDate', 'commercialOperationDate', 'potentialCommissionDate'
+      ]
+      // const assignedToRecord = await this.usersRepository.findOne({
+      //   where: { id: updateDealDto.updatedBy }
+      // })
 
       if (!existingDeal) {
         throw new NotFoundException();
       }
 
       const updatedDeal = this.dealsRepository.merge(existingDeal, updateDealDto);
-      return await this.dealsRepository.save(updatedDeal);
-    } catch {
-      throw new BadRequestException();
+      const savedDeal = null// await this.dealsRepository.save(updatedDeal);
+
+      var dealStatus: string = 'In-Progress';
+      if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
+        if (existingActiveStep === latestActiveStep) {
+          console.log('Deal Completed');
+          // await this.mailService.dealsMail()
+          return savedDeal;
+        }
+        const milestones = []
+        for (let index = existingActiveStep; index < latestActiveStep; index++) {
+          const element = listOfDealStatus[index];
+          if(latestActiveStep === 7 && updatedDeal.status === 'Completed') {
+            dealStatus = updatedDeal.status;
+            const element = listOfDealStatus[latestActiveStep-1];
+            milestones.push({milestones: [element, updatedDeal[element]]});
+            break;
+          }
+          milestones.push({milestones: [element, updatedDeal[element]]});
+        }
+        console.log(milestones, dealStatus);
+        return savedDeal;
+      } else {
+        throw new BadRequestException('Invalid Active Step');
+      }
+    } catch (error) {
+      throw error;
     }
   }
 

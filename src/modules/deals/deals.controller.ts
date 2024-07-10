@@ -139,7 +139,7 @@ export class DealsController {
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'updateDealById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error);
       }
     }
   }
