@@ -3,7 +3,6 @@ import { SitesService } from '../sites.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Sites } from '../../../common/entities/sites.entity';
 import { Repository } from 'typeorm';
-import { mock, MockProxy } from 'jest-mock-extended';
 import { NotFoundException } from '@nestjs/common';
 import { CreateSiteDto } from '../../../common/dto/create-site.dto';
 import { UpdateSiteDto } from '../../../common/dto/update-site.dto';

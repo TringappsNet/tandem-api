@@ -76,10 +76,10 @@ export class DealsService {
   //   });
   // }
 
-  async getDealsByCreatedBy(createdBy: number): Promise<any> {
+  async getDealsByAssignedTo(assignedTo: number): Promise<any> {
     try {
       const deals = await this.dealsRepository.find({
-        where: { createdBy: { id: createdBy } },
+        where: { assignedTo: assignedTo },
       });
 
       if (!deals || deals.length === 0) {

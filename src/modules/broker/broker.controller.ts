@@ -17,10 +17,11 @@ import {
     ConflictException,
     UnprocessableEntityException,    
     InternalServerErrorException,
+    UseGuards,
 } from '@nestjs/common';
 import { BrokerService } from './broker.service';
 import { Users } from 'src/common/entities/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { UpdateBrokerDto } from 'src/common/dto/update-broker.dto';
 import { SetActiveBrokerDto } from 'src/common/dto/set-active-broker.dto';
 
@@ -33,16 +34,23 @@ import {
   CustomServiceException,
   CustomInternalServerErrorException,
 } from '../../exceptions/custom-exceptions';
+import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
+import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
 
 
 @ApiTags('Broker')
 @Controller('api/brokers')
+
 export class BrokerController {
   constructor(private readonly brokerService: BrokerService) {}
 
   @Get('all-users')
-  async findAll(): Promise<object> {
-
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
+  async findAll(
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+  ): Promise<object> {
    try{ return await this.brokerService.findAll();}
    catch(error){
     if (error instanceof NotFoundException) {
@@ -53,7 +61,12 @@ export class BrokerController {
   }
 
   @Get('/')
-  async getAllUsers(): Promise<any> {
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  async getAllUsers(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+  ): Promise<any> {
    try{ return this.brokerService.findAllUsers();}
    catch(error){
     if (error instanceof NotFoundException) {
@@ -71,7 +84,11 @@ export class BrokerController {
   @Put('update-broker/:id')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async updateBroker(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number,
     @Body() updateBrokerDto: UpdateBrokerDto,
   ) {
@@ -90,9 +107,13 @@ export class BrokerController {
   }
 
   @Put('set-active-broker/:id')
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async setActiveBroker(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number,
     @Body() setActiveBrokerDto: SetActiveBrokerDto,
   ) {
@@ -100,8 +121,13 @@ export class BrokerController {
   }
 
   @Delete('delete-broker/:id')
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   @HttpCode(HttpStatus.OK)
-  async deleteBroker(@Param('id') id: number): Promise<any> {
+  async deleteBroker(
+    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @Param('id') id: number): Promise<any> {
     return this.brokerService.deleteBroker(id);
   }
 
