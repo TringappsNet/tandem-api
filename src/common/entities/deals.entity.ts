@@ -33,6 +33,7 @@ export class Deals {
   @Column({
     name: 'broker_name',
     type: 'varchar',
+    nullable: true,
   })
   brokerName: string;
 

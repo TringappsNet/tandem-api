@@ -45,9 +45,9 @@ export class DealsController {
   @Post('deal')
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard)
-  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  // @UseGuards(AuthGuard)
+  // @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  // @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async createDeal(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Body() createDealDto: CreateDealDto): Promise<Deals> {
@@ -61,7 +61,7 @@ export class DealsController {
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'createDeal');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error);
       }
     }
   }
@@ -152,9 +152,9 @@ export class DealsController {
   @Put('deal/:id')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard)
-  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  // @UseGuards(AuthGuard)
+  // @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  // @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async updateDealById(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id', ParseIntPipe) id: number,

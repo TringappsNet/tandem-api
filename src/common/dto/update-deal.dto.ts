@@ -8,7 +8,6 @@ export class UpdateDealDto {
   @IsNotEmpty()
   status: string;
 
-  @IsNotEmpty()
   brokerName: string;
 
   @IsNotEmpty()

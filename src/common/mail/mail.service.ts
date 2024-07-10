@@ -55,13 +55,16 @@ export class MailService {
   async dealsMail(
     email: string,
     subject: string,
-    context: {},
+    context: any,
+    mailTemplate: string,
   ) {
     await this.mailerService.sendMail({
       to: email,
       subject: subject,
-      template: './deals',
-      context: context,
+      template: mailTemplate,
+      context: {
+        ...context,
+      },
     });
   }
 }

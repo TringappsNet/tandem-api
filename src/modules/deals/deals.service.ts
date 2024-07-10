@@ -22,18 +22,35 @@ export class DealsService {
   ) {}
 
   async createDeal(createDealDto: CreateDealDto): Promise<Deals> {
-    if (createDealDto.isNew) {
-      const dealData = this.dealsRepository.create(createDealDto);
-      const saveData = await this.dealsRepository.save(dealData);
-      if(saveData.activeStep === 1){
-        await this.mailService.dealsMail('test@example.com', 'Deal Has Been Started', {});
+    try {
+      if (createDealDto.isNew) {
+        const dealData = this.dealsRepository.create(createDealDto);
+        const saveData = await this.dealsRepository.save(dealData);
+        const mailTemplate = './newDeal'
+  
+        const assignedToRecord = await this.usersRepository.findOne({
+          where: { id: createDealDto.brokerId }
+        })
+        if(saveData.activeStep === 1){
+          await this.mailService.dealsMail(assignedToRecord.email, 'Deal Has Been Started', {
+            name: assignedToRecord.firstName + " " + assignedToRecord.lastName,
+            dealId: saveData.id,
+            date: new Date(saveData.dealStartDate).toDateString(),
+            dealStatus: saveData.status,
+            propertyName: saveData.propertyName,
+            commission: saveData.potentialCommission,
+          },
+          mailTemplate,
+        );
+        }
+        return saveData;
+      } else {
+        throw new BadRequestException('Already this deal exists');
       }
-      return saveData;
-    } else {
-      throw new BadRequestException();
+    } catch (error) {
+      throw error;
     }
   }
-
   
   async getAllDeals(): Promise<Deals[]> {
     const Landlord=await this.dealsRepository.find();
@@ -42,7 +59,6 @@ export class DealsService {
     }
     return Landlord;
   }
-
 
   async findAllDealsData(): Promise<any> {
     try {
@@ -124,12 +140,12 @@ export class DealsService {
     }
   }
 
-
   async updateDealById(
     id: number,
     updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
     try {
+      const mailTemplate = './deals'
       const existingDeal = await this.getDealById(id);
       const existingActiveStep = existingDeal.activeStep;
       const latestActiveStep = updateDealDto.activeStep;
@@ -137,22 +153,36 @@ export class DealsService {
         'dealStartDate', 'proposalDate', 'loiExecuteDate', 'leaseSignedDate', 
         'noticeToProceedDate', 'commercialOperationDate', 'potentialCommissionDate'
       ]
-      // const assignedToRecord = await this.usersRepository.findOne({
-      //   where: { id: updateDealDto.updatedBy }
-      // })
+      const listOfMilestones = [
+        'Deal Start', 'Proposal', 'LOI Execution', 'Lease Signed',
+        'Notice To Proceed', 'Commercial Operation', 'Potential Commission'
+      ]
+      const assignedToRecord = await this.usersRepository.findOne({
+        where: { id: updateDealDto.brokerId }
+      })
 
       if (!existingDeal) {
         throw new NotFoundException();
       }
 
       const updatedDeal = this.dealsRepository.merge(existingDeal, updateDealDto);
-      const savedDeal = null// await this.dealsRepository.save(updatedDeal);
+      const savedDeal = await this.dealsRepository.save(updatedDeal);
 
       var dealStatus: string = 'In-Progress';
       if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
         if (existingActiveStep === latestActiveStep) {
           console.log('Deal Completed');
-          // await this.mailService.dealsMail()
+          dealStatus = updatedDeal.status;
+          await this.mailService.dealsMail(assignedToRecord.email, 'Milestones Update', {
+            name: assignedToRecord.firstName + " " + assignedToRecord.lastName,
+            dealId: existingDeal.id,
+            milestones: {milestones:listOfMilestones[-1], date: new Date(updatedDeal[listOfDealStatus[-1]]).toDateString()},
+            dealStatus: dealStatus,
+            propertyName: updatedDeal.propertyName,
+            commission: updatedDeal.potentialCommission,
+          },
+          mailTemplate,
+        )
           return savedDeal;
         }
         const milestones = []
@@ -161,12 +191,22 @@ export class DealsService {
           if(latestActiveStep === 7 && updatedDeal.status === 'Completed') {
             dealStatus = updatedDeal.status;
             const element = listOfDealStatus[latestActiveStep-1];
-            milestones.push({milestones: [element, updatedDeal[element]]});
+            milestones.push({milestones: listOfMilestones[index], date: new Date(updatedDeal[element]).toDateString() });
             break;
           }
-          milestones.push({milestones: [element, updatedDeal[element]]});
+          milestones.push({milestones: listOfMilestones[index], date: new Date(updatedDeal[element]).toUTCString() });
         }
         console.log(milestones, dealStatus);
+        await this.mailService.dealsMail(assignedToRecord.email, 'Milestones Update', {
+          name: assignedToRecord.firstName + " " + assignedToRecord.lastName,
+          dealId: existingDeal.id,
+          milestones: milestones,
+          dealStatus: dealStatus,
+          propertyName: updatedDeal.propertyName,
+          commission: updatedDeal.potentialCommission,
+        },
+        mailTemplate,
+      )
         return savedDeal;
       } else {
         throw new BadRequestException('Invalid Active Step');
