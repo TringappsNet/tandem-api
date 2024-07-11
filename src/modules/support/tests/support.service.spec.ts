@@ -73,6 +73,7 @@ describe('SupportService', () => {
         createdDeals: null,
         updatedDeals: null,
         lastModifiedBy: null,
+        isAdmin: false,
       };
 
       const mockRaiseTicketDto = {
@@ -144,6 +145,7 @@ describe('SupportService', () => {
             createdDeals: null,
             updatedDeals: null,
             lastModifiedBy: null,
+            isAdmin: false,
         };
 
         const mockRaiseTicketDto = {
@@ -184,6 +186,7 @@ describe('SupportService', () => {
             createdDeals: null,
             updatedDeals: null,
             lastModifiedBy: null,
+            isAdmin: false,
         };
 
         const mockRaiseTicketDto = {

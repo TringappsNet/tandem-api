@@ -117,6 +117,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       const mockSession = {
@@ -202,6 +203,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockInactiveUser);
@@ -243,6 +245,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       const mockLoginDto = {
@@ -316,6 +319,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       const mockInviteDto = { email: 'invite@gmail.com', roleId: 2 };
@@ -489,6 +493,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -555,6 +560,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -605,6 +611,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
@@ -651,6 +658,7 @@ describe('AuthService', () => {
         createdSites: null,
         updatedSites: null,
         lastModifiedBy: 1,
+        isAdmin: false,
       };
   
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
