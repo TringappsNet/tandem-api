@@ -144,27 +144,28 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
-  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
-  @UseGuards(AuthGuard)
-  async resetPassword(
-    @UserAuth() userAuth: { userId: number; accessToken: string },
-    @Body() resetPasswordDTO: ResetPasswordDto
-  ) {
-    try {
-      await this.authService.resetPassword(resetPasswordDTO);
-    } catch (error) {
-      if (error instanceof UnprocessableEntityException) {
-        throw new CustomUnprocessableEntityException();
-      } else if (error instanceof BadRequestException) {
-        throw new CustomBadRequestException();
-      } else {
-        throw new CustomInternalServerErrorException('resetPassword');
-      }
+@HttpCode(HttpStatus.OK)
+@UsePipes(ValidationPipe)
+@ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+@ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
+@UseGuards(AuthGuard)
+async resetPassword(
+  @UserAuth() userAuth: { userId: number; accessToken: string },
+  @Body() resetPasswordDTO: ResetPasswordDto
+) {
+  try {
+    const result = await this.authService.resetPassword(resetPasswordDTO);
+    return { message: 'Password reset successfully', data: result }; 
+  } catch (error) {
+    if (error instanceof UnprocessableEntityException) {
+      throw new CustomUnprocessableEntityException();
+    } else if (error instanceof BadRequestException) {
+      throw new CustomBadRequestException();
+    } else {
+      throw new CustomInternalServerErrorException('resetPassword');
     }
   }
+}
   
   @Post('logout')
   @HttpCode(HttpStatus.OK)
