@@ -103,7 +103,7 @@ export class Deals {
   @Column({
     name: 'potential_commission',
     type: 'int',
-    default: null,
+    default: 0,
   })
   potentialCommission: number;
 

@@ -11,6 +11,3 @@
 //     console.error('Error sending deals email:', error);
 //   }
 // }
-
-
-
