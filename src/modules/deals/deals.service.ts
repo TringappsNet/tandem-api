@@ -189,7 +189,6 @@ export class DealsService {
       const updatedDeal = this.dealsRepository.merge(existingDeal, updateDealDto);
       const savedDeal = await this.dealsRepository.save(updatedDeal);
 
-      // var dealStatus: string = 'In-Progress';
       if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
         if (existingActiveStep === latestActiveStep) {
           throw new BadRequestException('Invalid Operations on Deals Tracker');
