@@ -284,7 +284,6 @@ export class AuthService {
       await this.userRepository.update(user.id, { password: updatedPassword });
       return { message: 'Password reset successfully' };
     } catch (error) {
-      console.error('Error resetting password:', error);
       if (!(error instanceof NotFoundException || error instanceof UnauthorizedException)) {
         throw new InternalServerErrorException('An error occurred while resetting the password');
       }
