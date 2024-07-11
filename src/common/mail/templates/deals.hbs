@@ -1,0 +1,30 @@
+<p>
+    Hi {{ name }},
+</p>
+<p>
+    We have a new update on your milestones!!!
+</p>
+<p>
+    <b>Milestones for the deal id:</b> {{ dealId }}
+</p>
+<p>
+    <b>Deal Status:</b> {{ dealStatus }}<br>
+    <b>Property Name:</b> {{ propertyName }}<br>
+    <b>Total Commission Received:</b> {{ commission }}<br>
+</p>
+<table>
+    <tbody>
+        <tr>
+            <td><b>Deal Milestone</b></td>
+            <td> </td>
+            <td><b>Milestone Date</b></td>
+        </tr>
+        {{#each milestones}}
+        <tr>
+            <td>{{ this.milestones }}</td>
+            <td> </td>
+            <td>{{ this.date }}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

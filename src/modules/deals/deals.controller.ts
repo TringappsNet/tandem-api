@@ -61,7 +61,7 @@ export class DealsController {
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'createDeal');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error);
       }
     }
   }
@@ -172,7 +172,7 @@ export class DealsController {
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'updateDealById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error);
       }
     }
   }
