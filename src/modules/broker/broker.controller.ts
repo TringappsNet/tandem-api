@@ -81,25 +81,23 @@ export class BrokerController {
    }
   }
 
-  @Put('update-broker/:id')
-  @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
+  @Put('broker/:id')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
   @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async updateBroker(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number,
-    @Body() updateBrokerDto: UpdateBrokerDto,
-  ) {
-    try{return this.brokerService.updateBroker(id, updateBrokerDto);}
+    @Body() UpdateBrokerDto: UpdateBrokerDto,
+  ): Promise<Users> {
+    try{return this.brokerService.updateBroker(id, UpdateBrokerDto);}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`User with ID ${id}`);
+        throw new CustomNotFoundException(`Role with ID ${id}`);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
-        throw new CustomConflictException('User');
+        throw new CustomConflictException('Role');
       } else {
         throw new CustomBadRequestException();
       }

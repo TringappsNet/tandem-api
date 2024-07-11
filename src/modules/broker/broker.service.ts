@@ -89,40 +89,24 @@ export class BrokerService {
     return brokers;
   }
   
-  async updateBroker(id: number, updateBrokerDto: UpdateBrokerDto) {
-    try {
-      const brokerData = await this.brokerRepository.update(
-        id,
-        updateBrokerDto,
-      );
-      if (brokerData.affected == 0) {
 
-        throw new NotFoundException();
-
-      }
-      const updatedBrokerData = await this.brokerRepository.findOne({
-        where: { id },
-      });
-      if (!updatedBrokerData) {
-        throw new NotFoundException('User not found');
-      }
-      return {
-        updatedBrokerData,
-        message: 'Broker updated successfully',
-      };
-    } catch (error) {
-      throw error;
+  async updateBroker(id: number, UpdateBrokerDto: UpdateBrokerDto): Promise<Users> {
+    const role = await this.getBrokerById(id);
+    Object.assign(role, UpdateBrokerDto);
+    if (!role) {
+      throw new NotFoundException();
     }
-    // const existingUser = await this.brokerRepository.findOne({ where: { id } });
-    // const userData = this.brokerRepository.merge(
-    //   existingUser,
-    //   updateBrokerDto,
-    // );
-    // return await this.brokerRepository.save(
-    //   userData,
-    // );
+    // this.logger.log(`Role with ID ${id} updated`);
+    return await this.brokerRepository.save(role);
   }
 
+  async getBrokerById(id: number): Promise<Users> {
+    const role = await this.brokerRepository.findOne({ where: { id } });
+    if (!role) {
+      throw new NotFoundException();
+    }
+    return role;
+  }
   async setActiveBroker(id: number, setActiveBrokerDto: SetActiveBrokerDto) {
     try {
       const checkStatus = await this.brokerRepository.findOne({
