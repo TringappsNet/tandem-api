@@ -123,7 +123,7 @@ export class DealsService {
   async getDealsByAssignedTo(assignedTo: number): Promise<any> {
     try {
       const deals = await this.dealsRepository.find({
-        where: { assignedTo: assignedTo },
+        where: { brokerId: assignedTo },
       });
 
       if (!deals || deals.length === 0) {
