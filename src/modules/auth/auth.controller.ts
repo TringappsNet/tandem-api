@@ -155,7 +155,6 @@ export class AuthController {
   ) {
     try {
       await this.authService.resetPassword(resetPasswordDTO);
-      return { message: 'Password reset successfully' };
     } catch (error) {
       if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
