@@ -97,7 +97,6 @@ export class BrokerService {
     if (!role) {
       throw new NotFoundException();
     }
-    // this.logger.log(`Role with ID ${id} updated`);
     return await this.brokerRepository.save(role);
   }
 

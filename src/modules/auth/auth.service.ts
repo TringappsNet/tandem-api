@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -266,26 +267,26 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPasswordDTO: ResetPasswordDto):Promise <{ message: string }> {
+  async resetPassword(resetPasswordDTO: ResetPasswordDto): Promise<{ message: string }> {
     try {
-      const user = await this.userRepository.findOne({
-        where: { id: resetPasswordDTO.userId },
-      });
-
+      const user = await this.userRepository.findOne({ where: { id: resetPasswordDTO.userId } });
       if (!user) {
-        throw new NotFoundException();
+        throw new NotFoundException('User not found');
       }
-
       if (!user.isActive) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('User is not active');
       }
-
+      const isOldPasswordValid = await bcrypt.compare(resetPasswordDTO.oldPassword, user.password);
+      if (!isOldPasswordValid) {
+        throw new UnauthorizedException('Old password is incorrect');
+      }
       const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
       await this.userRepository.update(user.id, { password: updatedPassword });
-      return { message: 'Password has been reset successfully' };
-
-
+      return { message: 'Password reset successfully' };
     } catch (error) {
+      if (!(error instanceof NotFoundException || error instanceof UnauthorizedException)) {
+        throw new InternalServerErrorException('An error occurred while resetting the password');
+      }
       throw error;
     }
   }
