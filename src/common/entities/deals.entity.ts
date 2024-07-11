@@ -43,7 +43,7 @@ export class Deals {
     nullable: false,
     default: 1,
   })
-  assignedTo: number;
+  brokerId: number;
 
   @Column({
     name: 'property_name',
