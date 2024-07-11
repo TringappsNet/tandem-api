@@ -1,13 +1,14 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../../common/entities/user.entity';
 import { UserRole } from '../../common/entities/user-role.entity';
 import { Deals } from '../../common/entities/deals.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { UpdateBrokerDto } from '../../common/dto/update-broker.dto';
 import { SetActiveBrokerDto } from '../../common/dto/set-active-broker.dto';
 
@@ -89,40 +90,24 @@ export class BrokerService {
     return brokers;
   }
   
-  async updateBroker(id: number, updateBrokerDto: UpdateBrokerDto) {
-    try {
-      const brokerData = await this.brokerRepository.update(
-        id,
-        updateBrokerDto,
-      );
-      if (brokerData.affected == 0) {
 
-        throw new NotFoundException();
-
-      }
-      const updatedBrokerData = await this.brokerRepository.findOne({
-        where: { id },
-      });
-      if (!updatedBrokerData) {
-        throw new NotFoundException('User not found');
-      }
-      return {
-        updatedBrokerData,
-        message: 'Broker updated successfully',
-      };
-    } catch (error) {
-      throw error;
+  async updateBroker(id: number, UpdateBrokerDto: UpdateBrokerDto): Promise<Users> {
+    const role = await this.getBrokerById(id);
+    Object.assign(role, UpdateBrokerDto);
+    if (!role) {
+      throw new NotFoundException();
     }
-    // const existingUser = await this.brokerRepository.findOne({ where: { id } });
-    // const userData = this.brokerRepository.merge(
-    //   existingUser,
-    //   updateBrokerDto,
-    // );
-    // return await this.brokerRepository.save(
-    //   userData,
-    // );
+    // this.logger.log(`Role with ID ${id} updated`);
+    return await this.brokerRepository.save(role);
   }
 
+  async getBrokerById(id: number): Promise<Users> {
+    const role = await this.brokerRepository.findOne({ where: { id } });
+    if (!role) {
+      throw new NotFoundException();
+    }
+    return role;
+  }
   async setActiveBroker(id: number, setActiveBrokerDto: SetActiveBrokerDto) {
     try {
       const checkStatus = await this.brokerRepository.findOne({
@@ -171,16 +156,20 @@ export class BrokerService {
 
   async deleteBroker(id: number): Promise<any> {
     try {
-      const deleteData = await this.brokerRepository.findOne({ where: { id } });
-      if (!deleteData) {
+      const result = await this.brokerRepository.delete(id);
+      if (result.affected === 0) {
         throw new NotFoundException(`Broker with id ${id} not found`);
       }
-      await this.brokerRepository.remove(deleteData);
       return {
         message: 'Broker deleted successfully',
       };
     } catch (error) {
-      throw error;
+      if (error instanceof QueryFailedError && error.message.includes('a foreign key constraint fails')) {
+        throw new BadRequestException('This broker has assigned deals and cannot be deleted');
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
     }
   }
+
+
 }

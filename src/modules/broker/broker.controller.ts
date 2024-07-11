@@ -81,25 +81,24 @@ export class BrokerController {
    }
   }
 
-  @Put('update-broker/:id')
+  @Put('broker/:id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
   @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
   async updateBroker(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number,
-    @Body() updateBrokerDto: UpdateBrokerDto,
-  ) {
-    try{return this.brokerService.updateBroker(id, updateBrokerDto);}
+    @Body() UpdateBrokerDto: UpdateBrokerDto,
+  ): Promise<Users> {
+    try{return this.brokerService.updateBroker(id, UpdateBrokerDto);}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`User with ID ${id}`);
+        throw new CustomNotFoundException(`Role with ID ${id}`);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
-        throw new CustomConflictException('User');
+        throw new CustomConflictException('Role');
       } else {
         throw new CustomBadRequestException();
       }
@@ -120,16 +119,27 @@ export class BrokerController {
     return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
   }
 
-  @Delete('delete-broker/:id')
+
+  @Delete('broker/:id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
   @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
-  @HttpCode(HttpStatus.OK)
   async deleteBroker(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('id') id: number): Promise<any> {
-    return this.brokerService.deleteBroker(id);
+    @Param('id') id: number): Promise<void> {
+   try{ return this.brokerService.deleteBroker(id);}
+   catch(error){
+    if (error instanceof NotFoundException) {
+      throw new CustomNotFoundException(`role with ID ${id}`);
+    } else if (error instanceof ForbiddenException) {
+      throw new CustomForbiddenException();
+    } else if (error instanceof InternalServerErrorException) {
+      throw new CustomServiceException('brokerService', 'deleteBroker');
+    } else {
+      throw new CustomBadRequestException();
+    }
+   }
   }
-
   
 }
