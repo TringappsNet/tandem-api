@@ -177,9 +177,6 @@ export class AuthService {
         throw new BadRequestException();
       }
 
-  
-     
-
       if (inviteUser.inviteTokenExpires < new Date()) {
         throw new BadRequestException();
       }
@@ -197,6 +194,10 @@ export class AuthService {
       user.country = registerDTO.country;
       user.zipcode = registerDTO.zipcode;
       user.isActive = true;
+
+      if (inviteUser.roleId === 1) {
+        user.isAdmin = true;
+      }
 
       const savedUser = await this.userRepository.save(user);
 
