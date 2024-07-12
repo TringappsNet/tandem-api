@@ -54,7 +54,7 @@ export class BrokerController {
    try{ return await this.brokerService.findAll();}
    catch(error){
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`Users`);
+      throw new CustomNotFoundException(error.message);
     }
    }
 
@@ -70,13 +70,13 @@ export class BrokerController {
    try{ return this.brokerService.findAllUsers();}
    catch(error){
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`User`);
+      throw new CustomNotFoundException(error.message);
     } else if (error instanceof ForbiddenException) {
       throw new CustomForbiddenException();
     } else if (error instanceof CustomInternalServerErrorException ) {
       throw new CustomServiceException('BrokerService', 'getSiteById');
     } else {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     }
    }
   }
@@ -94,13 +94,13 @@ export class BrokerController {
     try{return this.brokerService.updateBroker(id, UpdateBrokerDto);}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Role with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
-        throw new CustomConflictException('Role');
+        throw new CustomConflictException('Broker');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -116,7 +116,19 @@ export class BrokerController {
     @Param('id') id: number,
     @Body() setActiveBrokerDto: SetActiveBrokerDto,
   ) {
-    return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
+    try {
+      return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else if (error instanceof UnprocessableEntityException) {
+        throw new CustomUnprocessableEntityException();
+      } else if (error instanceof ConflictException) {
+        throw new CustomConflictException('Broker');
+      } else {
+        throw new CustomBadRequestException(error.message);
+      }
+    }
   }
 
 

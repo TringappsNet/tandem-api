@@ -49,9 +49,9 @@ export class AuthController {
       return result;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
-        throw new CustomUnauthorizedException();
+        throw new CustomUnauthorizedException(error.message);
       } else if (error instanceof BadRequestException) {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       } else {
         throw new CustomInternalServerErrorException('login');
       }
@@ -74,7 +74,7 @@ export class AuthController {
       if (error instanceof ConflictException) {
         throw new CustomConflictException('Invite');
       } else if (error instanceof BadRequestException) {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       } else {
         throw new CustomInternalServerErrorException('sendInvite');
       }
@@ -93,6 +93,8 @@ export class AuthController {
         throw new CustomConflictException('User');
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
+      } else if (error instanceof BadRequestException) {
+        throw new CustomBadRequestException(error.message);
       } else {
         throw new CustomInternalServerErrorException('register');
       }
@@ -109,9 +111,9 @@ export class AuthController {
       return { message: 'Password reset email sent successfully' };
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException('User');
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
-        throw new CustomUnprocessableEntityException();
+        throw new CustomUnprocessableEntityException('User');
       } else {
         throw new CustomInternalServerErrorException('forgotPassword');
       }
@@ -134,9 +136,9 @@ export class AuthController {
       return { message: 'Password changed successfully', data: result };
     } catch (error) {
       if (error instanceof BadRequestException) {
-        throw new CustomBadRequestException();
-      } else if (error instanceof UnauthorizedException) {
-        throw new CustomUnauthorizedException();
+        throw new CustomBadRequestException(error.message);
+      } else if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
       } else {
         throw new CustomInternalServerErrorException('changePassword');
       }
@@ -159,8 +161,10 @@ async resetPassword(
   } catch (error) {
     if (error instanceof UnprocessableEntityException) {
       throw new CustomUnprocessableEntityException();
-    } else if (error instanceof BadRequestException) {
-      throw new CustomBadRequestException();
+    } else if (error instanceof NotFoundException) {
+      throw new CustomNotFoundException(error.message);
+    } else if (error instanceof UnauthorizedException) {
+      throw new CustomUnauthorizedException(error.message);
     } else {
       throw new CustomInternalServerErrorException('resetPassword');
     }
@@ -175,7 +179,7 @@ async resetPassword(
       return { message: 'Logout successful', data: result };
     } catch (error) {
       if (error instanceof UnauthorizedException) {
-        throw new CustomUnauthorizedException();
+        throw new CustomUnauthorizedException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
       } else {

@@ -29,17 +29,17 @@ export class SupportService {
       });
 
       if (!user) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('The user account is invalid');
       }
 
       if (!user.isActive) {
 
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('The user account is currently inactive');
 
       }
 
       if (!user.email) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('The user email is invalid');
       }
 
       const support = new Support();
@@ -63,7 +63,7 @@ export class SupportService {
         message: 'Ticket raised successfully',
       };
     } catch (error) {
-      throw new Error('Error while raising ticket ' + error);
+      throw error;
     }
   }
 }

@@ -11,6 +11,7 @@ import { Deals } from '../../common/entities/deals.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { UpdateBrokerDto } from '../../common/dto/update-broker.dto';
 import { SetActiveBrokerDto } from '../../common/dto/set-active-broker.dto';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class BrokerService {
@@ -24,31 +25,39 @@ export class BrokerService {
   ) {}
 
   async findAll(): Promise<object> {
-    const user = await this.brokerRepository.find();
-    const filteredUser = user.map((removeSensitiveData) => {
-      const {
-        password,
-        createdAt,
-        updatedAt,
-        isActive,
-        resetToken,
-        resetTokenExpires,
-        ...userObject
-      } = removeSensitiveData;
-      return userObject;
-    });
-    return filteredUser;
+    try {
+      const user = await this.brokerRepository.find();
+      if(!user) {
+        throw new NotFoundException('Brokers');
+      }
+      const filteredUser = user.map((removeSensitiveData) => {
+        const {
+          password,
+          createdAt,
+          updatedAt,
+          isActive,
+          resetToken,
+          resetTokenExpires,
+          ...userObject
+        } = removeSensitiveData;
+        return userObject;
+      });
+      return filteredUser;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findAllUsers(roleId: number[] = [1, 2]): Promise<any> {
-    const usersWithRole = await this.userRoleRepository
+    try {
+      const usersWithRole = await this.userRoleRepository
       .createQueryBuilder('userRole')
       .innerJoinAndSelect('userRole.user', 'user')
       .where('userRole.roleId IN (:...roleIds)', { roleIds: roleId })
       .getMany();
   
     if (usersWithRole.length === 0) {
-      throw new NotFoundException();
+      throw new NotFoundException('The user with the specified role was');
     }
   
     const brokers = await Promise.all(
@@ -88,32 +97,44 @@ export class BrokerService {
     );
   
     return brokers;
+    } catch (error) {
+      throw error;
+    }
   }
   
 
   async updateBroker(id: number, UpdateBrokerDto: UpdateBrokerDto): Promise<Users> {
-    const role = await this.getBrokerById(id);
-    Object.assign(role, UpdateBrokerDto);
-    if (!role) {
-      throw new NotFoundException();
+    try {
+      const role = await this.getBrokerById(id);
+      Object.assign(role, UpdateBrokerDto);
+      if (!role) {
+        throw new NotFoundException(`Broker with ID ${id}`);
+      }
+      return await this.brokerRepository.save(role);
+    } catch (error) {
+      throw error;
     }
-    return await this.brokerRepository.save(role);
   }
 
   async getBrokerById(id: number): Promise<Users> {
-    const role = await this.brokerRepository.findOne({ where: { id } });
-    if (!role) {
-      throw new NotFoundException();
+    try {
+      const role = await this.brokerRepository.findOne({ where: { id } });
+      if (!role) {
+        throw new NotFoundException(`Broker with ID ${id}`);
+      }
+      return role;
+    } catch (error) {
+      throw error;
     }
-    return role;
   }
+
   async setActiveBroker(id: number, setActiveBrokerDto: SetActiveBrokerDto) {
     try {
       const checkStatus = await this.brokerRepository.findOne({
         where: { id },
       });
       if (!checkStatus) {
-        throw new NotFoundException(`Broker with id ${id} not found`);
+        throw new NotFoundException(`Broker with id ${id}`);
       }
       if (checkStatus.isActive == true && setActiveBrokerDto.isActive == true) {
         throw new BadRequestException(
@@ -136,7 +157,7 @@ export class BrokerService {
         where: { id },
       });
       if (!updatedBrokerData) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('The account associated with this user was');
       }
 
       var status: string = 'deactivated';
