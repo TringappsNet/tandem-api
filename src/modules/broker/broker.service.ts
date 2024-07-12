@@ -155,20 +155,24 @@ export class BrokerService {
 
   async deleteBroker(id: number): Promise<any> {
     try {
+      const countOfDeals = await this.dealsRepository.count({
+        where: { brokerId: id }
+      })
+      
+      if (countOfDeals > 0) {
+        throw new BadRequestException(`This broker has assigned with ${countOfDeals} deals and cannot be deleted`);
+      }
+
       const result = await this.brokerRepository.delete(id);
       if (result.affected === 0) {
-        throw new NotFoundException(`Broker with id ${id} not found`);
+        throw new NotFoundException(`Broker with id ${id}`);
       }
+
       return {
         message: 'Broker deleted successfully',
       };
     } catch (error) {
-      if (error instanceof QueryFailedError && error.message.includes('a foreign key constraint fails')) {
-        throw new BadRequestException('This broker has assigned deals and cannot be deleted');
-      }
-      throw new InternalServerErrorException('An unexpected error occurred');
+      throw error;
     }
   }
-
-
 }

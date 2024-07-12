@@ -128,16 +128,18 @@ export class BrokerController {
   async deleteBroker(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number): Promise<void> {
-   try{ return this.brokerService.deleteBroker(id);}
-   catch(error){
+   try{ 
+    const deleteBroker = await this.brokerService.deleteBroker(id);
+    return deleteBroker
+  } catch(error) {
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`role with ID ${id}`);
+      throw new CustomNotFoundException(error.message);
     } else if (error instanceof ForbiddenException) {
       throw new CustomForbiddenException();
     } else if (error instanceof InternalServerErrorException) {
       throw new CustomServiceException('brokerService', 'deleteBroker');
     } else {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     }
    }
   }

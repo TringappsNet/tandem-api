@@ -10,7 +10,7 @@ import {
   
   export class CustomNotFoundException extends NotFoundException {
     constructor(resource: string, query?: string) {
-      super(`'${resource}'${query ? ` with matching '${query}'` : ''} not found`);
+      super(`${resource} ${query?` with matching '${query}'` : ''}not found`);
     }
   }
   
