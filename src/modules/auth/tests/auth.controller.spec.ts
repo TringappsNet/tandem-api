@@ -226,14 +226,18 @@ describe('AuthController', () => {
         message: 'Password reset email sent successfully',
       };
 
-      jest.spyOn(service, 'forgotPassword').mockResolvedValue(mockForgotPassword);
+      jest
+        .spyOn(service, 'forgotPassword')
+        .mockResolvedValue(mockForgotPassword);
 
       const result = await controller.forgotPassword(mockForgotPasswordDto);
       expect(result).toEqual(mockForgotPassword);
 
       expect(result.message).toEqual('Password reset email sent successfully');
 
-      expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
+      expect(service.forgotPassword).toHaveBeenCalledWith(
+        mockForgotPasswordDto,
+      );
     });
   });
 
@@ -283,7 +287,10 @@ describe('AuthController', () => {
 
       jest.spyOn(service, 'resetPassword').mockResolvedValue(mockResetPassword);
 
-      const result = await controller.resetPassword(userAuth, mockResetPasswordDto);
+      const result = await controller.resetPassword(
+        userAuth,
+        mockResetPasswordDto,
+      );
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password reset successfully');

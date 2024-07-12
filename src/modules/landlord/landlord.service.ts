@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Landlord } from '../../common/entities/landlord.entity';
@@ -13,17 +17,15 @@ export class LandlordService {
   ) {}
 
   async create(createLandlordDto: CreateLandlordDto): Promise<Landlord> {
-
     const landlord = this.landlordRepository.create(createLandlordDto);
     if (!landlord) {
       throw new BadRequestException();
     }
     return await this.landlordRepository.save(landlord);
-
   }
 
   async findAll(): Promise<Landlord[]> {
-    const Landlord=await this.landlordRepository.find();
+    const Landlord = await this.landlordRepository.find();
     if (Landlord.length === 0) {
       throw new NotFoundException();
     }
@@ -55,7 +57,7 @@ export class LandlordService {
   async remove(id: number): Promise<void> {
     const landlord = await this.findOne(id);
     if (!landlord) {
-      throw new NotFoundException(); 
+      throw new NotFoundException();
     }
     await this.landlordRepository.remove(landlord);
   }

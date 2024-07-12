@@ -11,8 +11,8 @@ import { mailConfigAsync } from 'src/common/configurations/email.config';
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forFeature([Deals, Users]), 
-    MailerModule.forRootAsync(mailConfigAsync)
+    TypeOrmModule.forFeature([Deals, Users]),
+    MailerModule.forRootAsync(mailConfigAsync),
   ],
   controllers: [DealsController],
   providers: [DealsService],

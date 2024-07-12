@@ -145,7 +145,7 @@ describe('AuthService', () => {
         roleId: 1,
         user: mockUser,
         role: mockRole,
-      }
+      };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(sessionRepository, 'findOne').mockResolvedValue(null);
@@ -629,7 +629,7 @@ describe('AuthService', () => {
         oldPassword: 'password123',
         newPassword: 'newpassword123',
       };
-  
+
       const mockUser = {
         id: 1,
         email: 'test@gmail.com',
@@ -660,18 +660,20 @@ describe('AuthService', () => {
         lastModifiedBy: 1,
         isAdmin: false,
       };
-  
+
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(userRepository, 'update').mockResolvedValue(undefined);
-  
+
       const result = await service.resetPassword(mockResetPasswordDto);
-  
+
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password reset successfully'); // Updated expected message
-      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, { password: expect.any(String) });
+      expect(userRepository.update).toHaveBeenCalledWith(mockUser.id, {
+        password: expect.any(String),
+      });
     });
   });
-  
+
   describe('logout', () => {
     it('should logout successfully with valid session token', async () => {
       const mockSessionToken = 'qwertyuiop';

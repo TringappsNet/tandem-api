@@ -46,20 +46,20 @@ export class BrokerService {
       .innerJoinAndSelect('userRole.user', 'user')
       .where('userRole.roleId IN (:...roleIds)', { roleIds: roleId })
       .getMany();
-  
+
     if (usersWithRole.length === 0) {
       throw new NotFoundException();
     }
-  
+
     const brokers = await Promise.all(
       usersWithRole.map(async (userRole) => {
         const user = userRole.user;
         const roleId = userRole.roleId;
-  
+
         const deals = await this.dealsRepository.find({
           where: { createdBy: { id: user.id } },
         });
-  
+
         const totalDeals = deals.length;
         const dealsOpened = deals.filter(
           (deal) => deal.activeStep === 1,
@@ -74,7 +74,7 @@ export class BrokerService {
           (sum, deal) => sum + deal.potentialCommission,
           0,
         );
-  
+
         return {
           user,
           roleId,
@@ -86,12 +86,14 @@ export class BrokerService {
         };
       }),
     );
-  
+
     return brokers;
   }
-  
 
-  async updateBroker(id: number, UpdateBrokerDto: UpdateBrokerDto): Promise<Users> {
+  async updateBroker(
+    id: number,
+    UpdateBrokerDto: UpdateBrokerDto,
+  ): Promise<Users> {
     const role = await this.getBrokerById(id);
     Object.assign(role, UpdateBrokerDto);
     if (!role) {
@@ -156,11 +158,13 @@ export class BrokerService {
   async deleteBroker(id: number): Promise<any> {
     try {
       const countOfDeals = await this.dealsRepository.count({
-        where: { brokerId: id }
-      })
-      
+        where: { brokerId: id },
+      });
+
       if (countOfDeals > 0) {
-        throw new BadRequestException(`This broker has assigned with ${countOfDeals} deals and cannot be deleted`);
+        throw new BadRequestException(
+          `This broker has assigned with ${countOfDeals} deals and cannot be deleted`,
+        );
       }
 
       const result = await this.brokerRepository.delete(id);

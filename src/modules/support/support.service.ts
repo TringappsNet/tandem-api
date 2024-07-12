@@ -33,9 +33,7 @@ export class SupportService {
       }
 
       if (!user.isActive) {
-
         throw new UnauthorizedException();
-
       }
 
       if (!user.email) {

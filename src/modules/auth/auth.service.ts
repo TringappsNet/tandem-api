@@ -56,9 +56,7 @@ export class AuthService {
       }
 
       if (!user.isActive) {
-
         throw new UnauthorizedException();
-
       }
 
       const isPasswordValid = await bcrypt.compare(
@@ -94,7 +92,9 @@ export class AuthService {
         ...userObject
       } = user;
 
-      const userRoleId = await this.userRoleRepository.findOne({ where: { id : user.id }})
+      const userRoleId = await this.userRoleRepository.findOne({
+        where: { id: user.id },
+      });
       const roleObject = await this.roleService.getRoleById(userRoleId.roleId);
 
       const userDetails: any = userObject;
@@ -268,25 +268,42 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPasswordDTO: ResetPasswordDto): Promise<{ message: string }> {
+  async resetPassword(
+    resetPasswordDTO: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     try {
-      const user = await this.userRepository.findOne({ where: { id: resetPasswordDTO.userId } });
+      const user = await this.userRepository.findOne({
+        where: { id: resetPasswordDTO.userId },
+      });
       if (!user) {
         throw new NotFoundException('User not found');
       }
       if (!user.isActive) {
         throw new UnauthorizedException('User is not active');
       }
-      const isOldPasswordValid = await bcrypt.compare(resetPasswordDTO.oldPassword, user.password);
+      const isOldPasswordValid = await bcrypt.compare(
+        resetPasswordDTO.oldPassword,
+        user.password,
+      );
       if (!isOldPasswordValid) {
         throw new UnauthorizedException('Old password is incorrect');
       }
-      const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
+      const updatedPassword = await bcrypt.hash(
+        resetPasswordDTO.newPassword,
+        10,
+      );
       await this.userRepository.update(user.id, { password: updatedPassword });
       return { message: 'Password reset successfully' };
     } catch (error) {
-      if (!(error instanceof NotFoundException || error instanceof UnauthorizedException)) {
-        throw new InternalServerErrorException('An error occurred while resetting the password');
+      if (
+        !(
+          error instanceof NotFoundException ||
+          error instanceof UnauthorizedException
+        )
+      ) {
+        throw new InternalServerErrorException(
+          'An error occurred while resetting the password',
+        );
       }
       throw error;
     }
@@ -309,7 +326,6 @@ export class AuthService {
       throw error;
     }
   }
-
 
   async validateUser(userId: number, accessToken: string): Promise<boolean> {
     try {
@@ -334,8 +350,4 @@ export class AuthService {
       throw new UnauthorizedException('Invalid userId or accessToken');
     }
   }
-  
 }
-
-
-  

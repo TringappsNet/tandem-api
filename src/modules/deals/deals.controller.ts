@@ -47,10 +47,15 @@ export class DealsController {
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async createDeal(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Body() createDealDto: CreateDealDto): Promise<Deals> {
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Body() createDealDto: CreateDealDto,
+  ): Promise<Deals> {
     try {
       return await this.dealsService.createDeal(createDealDto);
     } catch (error) {
@@ -70,10 +75,13 @@ export class DealsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getAllDeals(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-
+    @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<Deals[]> {
     try {
       return await this.dealsService.getAllDeals();
@@ -90,10 +98,13 @@ export class DealsController {
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getAllDealsData(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-
+    @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<Deals[]> {
     return this.dealsService.findAllDealsData();
   }
@@ -102,9 +113,13 @@ export class DealsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getDealsByAssignedTo(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
     @Param('assignedTo', ParseIntPipe) assignedTo: number,
   ): Promise<Deals[]> {
     try {
@@ -119,7 +134,10 @@ export class DealsController {
       } else if (error instanceof UnauthorizedException) {
         throw new CustomUnauthorizedException();
       } else if (error instanceof InternalServerErrorException) {
-        throw new CustomServiceException('DealsService', 'getDealsByAssignedTo');
+        throw new CustomServiceException(
+          'DealsService',
+          'getDealsByAssignedTo',
+        );
       } else {
         throw new CustomBadRequestException();
       }
@@ -130,10 +148,15 @@ export class DealsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getDealById(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('id', ParseIntPipe) id: number): Promise<Deals> {
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Deals> {
     try {
       return await this.dealsService.getDealById(id);
     } catch (error) {
@@ -154,9 +177,13 @@ export class DealsController {
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async updateDealById(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
@@ -181,10 +208,15 @@ export class DealsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async deleteDealById(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('id', ParseIntPipe) id: number): Promise<Deals> {
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Deals> {
     try {
       return await this.dealsService.deleteDealById(id);
     } catch (error) {
