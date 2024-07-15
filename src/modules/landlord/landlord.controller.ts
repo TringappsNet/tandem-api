@@ -41,11 +41,11 @@ export class LandlordController {
     try{ return await this.landlordService.create(createLandlordDto);}
     catch(error){
     if (error instanceof BadRequestException) {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     } else if (error instanceof InternalServerErrorException) {
       throw new CustomInternalServerErrorException('createLandlord');
     } else {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     }
   }
     
@@ -62,7 +62,7 @@ export class LandlordController {
    try{ return await this.landlordService.findAll();}
    catch(error){
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`Landlords`);
+      throw new CustomNotFoundException(error.message);
     }
    }
   }
@@ -77,13 +77,13 @@ export class LandlordController {
    try{ return await this.landlordService.findOne(id);}
    catch(error){
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`Landlord with ID ${id}`);
+      throw new CustomNotFoundException(error.message);
     } else if (error instanceof ForbiddenException) {
       throw new CustomForbiddenException();
     } else if (error instanceof CustomInternalServerErrorException ) {
       throw new CustomServiceException('LandlordService', 'findOne');
     } else {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     }
    }
   }
@@ -98,13 +98,13 @@ export class LandlordController {
     try{return await this.landlordService.update(id, updateLandlordDto);}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Landlord with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
         throw new CustomConflictException('Landlord');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
 
@@ -117,18 +117,19 @@ export class LandlordController {
   async remove(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Param('id') id: number): Promise<void> {
-   try{ return await this.landlordService.remove(id);}
+   try { 
+    return await this.landlordService.remove(id);
+  }
    catch(error){
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`Landlord with ID ${id}`);
+      throw new CustomNotFoundException(error.message);
     } else if (error instanceof ForbiddenException) {
-      throw new CustomForbiddenException();
+      throw new CustomForbiddenException(error.message);
     } else if (error instanceof InternalServerErrorException) {
       throw new CustomServiceException('LandlordService', 'remove');
     } else {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     }
-
    }
   }
 }

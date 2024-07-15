@@ -57,11 +57,11 @@ export class DealsController {
       if (error instanceof ConflictException) {
         throw new CustomConflictException('Deal');
       } else if (error instanceof BadRequestException) {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'createDeal');
       } else {
-        throw new CustomBadRequestException(error);
+        throw new CustomNotFoundException(error.message);
       }
     }
   }
@@ -80,8 +80,11 @@ export class DealsController {
     } catch (error) {
       if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'getAllDeals');
+      } else if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else {
+        throw new CustomBadRequestException(error.message);
       }
-      throw new CustomBadRequestException();
     }
   }
 
@@ -95,7 +98,17 @@ export class DealsController {
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
 
   ): Promise<Deals[]> {
-    return this.dealsService.findAllDealsData();
+    try {
+      return this.dealsService.findAllDealsData();
+    } catch (error) {
+      if (error instanceof InternalServerErrorException) {
+        throw new CustomServiceException('DealsService', 'getAllDeals');
+      } else if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else {
+        throw new CustomBadRequestException(error.message);
+      }
+    }
   }
 
   @Get('assignedTo/:assignedTo')
@@ -115,13 +128,13 @@ export class DealsController {
       return deals;
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException('Deals');
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnauthorizedException) {
-        throw new CustomUnauthorizedException();
+        throw new CustomUnauthorizedException(error.message);
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'getDealsByAssignedTo');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -138,13 +151,13 @@ export class DealsController {
       return await this.dealsService.getDealById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Deal with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'getDealById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -164,7 +177,7 @@ export class DealsController {
       return await this.dealsService.updateDealById(id, updateDealDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Deal with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
@@ -172,7 +185,7 @@ export class DealsController {
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'updateDealById');
       } else {
-        throw new CustomBadRequestException(error);
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -189,13 +202,13 @@ export class DealsController {
       return await this.dealsService.deleteDealById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Deal with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('DealsService', 'deleteDealById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }

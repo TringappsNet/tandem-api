@@ -12,6 +12,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { MailService } from 'src/common/mail/mail.service';
 import { Users } from 'src/common/entities/user.entity';
 import { listOfDealStatus, listOfMilestones } from 'src/common/constants/deals.constants';
+import { error } from 'console';
 
 @Injectable()
 export class DealsService {
@@ -81,11 +82,15 @@ export class DealsService {
   }
   
   async getAllDeals(): Promise<Deals[]> {
-    const Landlord=await this.dealsRepository.find();
-    if (Landlord.length === 0) {
-      throw new NotFoundException();
+    try {
+      const Landlord=await this.dealsRepository.find();
+      if (Landlord.length === 0) {
+        throw new NotFoundException('Deals');
+      }
+      return Landlord;
+    } catch (error) {
+      throw error;
     }
-    return Landlord;
   }
 
   async findAllDealsData(): Promise<any> {
@@ -110,7 +115,7 @@ export class DealsService {
         deals,
       };
     } catch {
-      throw new BadRequestException();
+      throw new NotFoundException('Deals');
     }
 
   }
@@ -127,7 +132,7 @@ export class DealsService {
       });
 
       if (!deals || deals.length === 0) {
-        throw new NotFoundException();
+        throw new NotFoundException('Deals');
       }
 
       const totalDeals = deals.length;
@@ -149,8 +154,8 @@ export class DealsService {
         totalCommission,
         deals,
       };
-    } catch {
-      throw new BadRequestException();
+    } catch(error) {
+      throw error;
     }
   }
 
@@ -159,12 +164,12 @@ export class DealsService {
       const deal = await this.dealsRepository.findOneBy({ id });
 
       if (!deal) {
-        throw new NotFoundException();
+        throw new NotFoundException(`Deals with ID ${id}`);
       }
 
       return deal;
-    } catch {
-      throw new BadRequestException();
+    } catch(error) {
+      throw error;
     }
   }
 
@@ -183,7 +188,7 @@ export class DealsService {
       })
 
       if (!existingDeal) {
-        throw new NotFoundException();
+        throw new NotFoundException(`Deals with ID ${id}`);
       }
 
       const updatedDeal = this.dealsRepository.merge(existingDeal, updateDealDto);
@@ -213,12 +218,12 @@ export class DealsService {
       const deal = await this.getDealById(id);
 
       if (!deal) {
-        throw new NotFoundException();
+        throw new NotFoundException(`Deals with ID ${id}`);
       }
 
       return await this.dealsRepository.remove(deal);
-    } catch {
-      throw new BadRequestException();
+    } catch (error) {
+      throw error;
     }
   }
 }

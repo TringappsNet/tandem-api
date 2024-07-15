@@ -14,7 +14,7 @@ import {
 import { SupportService } from './support.service';
 import { RaiseTicketDto } from '../../common/dto/raise-ticket.dto';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
-import {CustomUnauthorizedException} from '../../exceptions/custom-exceptions';
+import {CustomInternalServerErrorException, CustomUnauthorizedException} from '../../exceptions/custom-exceptions';
 import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
 import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
 
@@ -32,13 +32,14 @@ export class SupportController {
   async raiseTicket(
     @UserAuth() userAuth: { userId: number; accessToken: string }, 
     @Body() raiseTicketDto: RaiseTicketDto) {
-    try{return await this.supportService.raiseTicket(raiseTicketDto);}
-    catch(error){
+    try {
+      return await this.supportService.raiseTicket(raiseTicketDto);
+    } catch(error) {
       if (error instanceof UnauthorizedException) {
-        throw new CustomUnauthorizedException();
+        throw new CustomUnauthorizedException(error.message);
       } 
       else {
-        throw new Error();
+        throw new CustomInternalServerErrorException('raise-ticket');
       }
     }
   }

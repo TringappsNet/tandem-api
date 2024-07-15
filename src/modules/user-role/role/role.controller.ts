@@ -47,11 +47,11 @@ export class RoleController {
    try{ return this.roleService.createRole(createRoleDto);}
    catch(error){
     if (error instanceof BadRequestException) {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     } else if (error instanceof InternalServerErrorException) {
       throw new CustomInternalServerErrorException('createRole');
     } else {
-      throw new CustomBadRequestException();
+      throw new NotFoundException(error.message);
     }
    }
   }
@@ -66,7 +66,7 @@ export class RoleController {
     try{return this.roleService.getRoles();}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Roles`);
+        throw new CustomNotFoundException(error.message);
       }
     }
   }
@@ -81,13 +81,13 @@ export class RoleController {
     try{return this.roleService.getRoleById(id);}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Role with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
       } else if (error instanceof CustomInternalServerErrorException ) {
         throw new CustomServiceException('RoleService', 'getRoleById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -104,13 +104,13 @@ export class RoleController {
     try{return this.roleService.updateRole(id, updateRoleDto);}
     catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Role with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
         throw new CustomConflictException('Role');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -125,13 +125,13 @@ export class RoleController {
    try{ return this.roleService.deleteRole(id);}
    catch(error){
     if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(`role with ID ${id}`);
+      throw new CustomNotFoundException(error.message);
     } else if (error instanceof ForbiddenException) {
       throw new CustomForbiddenException();
     } else if (error instanceof InternalServerErrorException) {
       throw new CustomServiceException('roleService', 'deleteRole');
     } else {
-      throw new CustomBadRequestException();
+      throw new CustomBadRequestException(error.message);
     }
    }
   }

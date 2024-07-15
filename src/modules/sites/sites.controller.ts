@@ -61,7 +61,7 @@ export class SitesController {
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomInternalServerErrorException('createSite');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -75,7 +75,7 @@ export class SitesController {
     try{    return this.sitesService.getAllSites();
     }catch(error){
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Sites`);
+        throw new CustomNotFoundException(error.message);
       }
     }
   }
@@ -92,13 +92,13 @@ export class SitesController {
       return await this.sitesService.getSiteById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Site with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
       } else if (error instanceof CustomInternalServerErrorException ) {
         throw new CustomServiceException('SitesService', 'getSiteById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -118,13 +118,13 @@ export class SitesController {
       return await this.sitesService.updateSite(id, updateSiteDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Site with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
         throw new CustomUnprocessableEntityException();
       } else if (error instanceof ConflictException) {
         throw new CustomConflictException('Site');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
@@ -141,13 +141,13 @@ export class SitesController {
       return await this.sitesService.deleteSiteById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new CustomNotFoundException(`Site with ID ${id}`);
+        throw new CustomNotFoundException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
       } else if (error instanceof InternalServerErrorException) {
         throw new CustomServiceException('SitesService', 'deleteSiteById');
       } else {
-        throw new CustomBadRequestException();
+        throw new CustomBadRequestException(error.message);
       }
     }
   }
