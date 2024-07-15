@@ -27,7 +27,7 @@ export class BrokerService {
   async findAll(): Promise<object> {
     try {
       const user = await this.brokerRepository.find();
-      if(!user) {
+      if (!user) {
         throw new NotFoundException('Brokers');
       }
       const filteredUser = user.map((removeSensitiveData) => {
@@ -51,59 +51,61 @@ export class BrokerService {
   async findAllUsers(roleId: number[] = [1, 2]): Promise<any> {
     try {
       const usersWithRole = await this.userRoleRepository
-      .createQueryBuilder('userRole')
-      .innerJoinAndSelect('userRole.user', 'user')
-      .where('userRole.roleId IN (:...roleIds)', { roleIds: roleId })
-      .getMany();
-  
-    if (usersWithRole.length === 0) {
-      throw new NotFoundException('The user with the specified role was');
-    }
-  
-    const brokers = await Promise.all(
-      usersWithRole.map(async (userRole) => {
-        const user = userRole.user;
-        const roleId = userRole.roleId;
-  
-        const deals = await this.dealsRepository.find({
-          where: { createdBy: { id: user.id } },
-        });
-  
-        const totalDeals = deals.length;
-        const dealsOpened = deals.filter(
-          (deal) => deal.activeStep === 1,
-        ).length;
-        const dealsInProgress = deals.filter(
-          (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
-        ).length;
-        const dealsClosed = deals.filter(
-          (deal) => deal.activeStep === 7,
-        ).length;
-        const totalCommission = deals.reduce(
-          (sum, deal) => sum + deal.potentialCommission,
-          0,
-        );
-  
-        return {
-          user,
-          roleId,
-          totalDeals,
-          dealsOpened,
-          dealsInProgress,
-          dealsClosed,
-          totalCommission,
-        };
-      }),
-    );
-  
-    return brokers;
+        .createQueryBuilder('userRole')
+        .innerJoinAndSelect('userRole.user', 'user')
+        .where('userRole.roleId IN (:...roleIds)', { roleIds: roleId })
+        .getMany();
+
+      if (usersWithRole.length === 0) {
+        throw new NotFoundException('The user with the specified role was');
+      }
+
+      const brokers = await Promise.all(
+        usersWithRole.map(async (userRole) => {
+          const user = userRole.user;
+          const roleId = userRole.roleId;
+
+          const deals = await this.dealsRepository.find({
+            where: { createdBy: { id: user.id } },
+          });
+
+          const totalDeals = deals.length;
+          const dealsOpened = deals.filter(
+            (deal) => deal.activeStep === 1,
+          ).length;
+          const dealsInProgress = deals.filter(
+            (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+          ).length;
+          const dealsClosed = deals.filter(
+            (deal) => deal.activeStep === 7,
+          ).length;
+          const totalCommission = deals.reduce(
+            (sum, deal) => sum + deal.potentialCommission,
+            0,
+          );
+
+          return {
+            user,
+            roleId,
+            totalDeals,
+            dealsOpened,
+            dealsInProgress,
+            dealsClosed,
+            totalCommission,
+          };
+        }),
+      );
+
+      return brokers;
     } catch (error) {
       throw error;
     }
   }
-  
 
-  async updateBroker(id: number, UpdateBrokerDto: UpdateBrokerDto): Promise<Users> {
+  async updateBroker(
+    id: number,
+    UpdateBrokerDto: UpdateBrokerDto,
+  ): Promise<Users> {
     try {
       const role = await this.getBrokerById(id);
       Object.assign(role, UpdateBrokerDto);
@@ -157,7 +159,9 @@ export class BrokerService {
         where: { id },
       });
       if (!updatedBrokerData) {
-        throw new NotFoundException('The account associated with this user was');
+        throw new NotFoundException(
+          'The account associated with this user was',
+        );
       }
 
       var status: string = 'deactivated';
@@ -177,11 +181,13 @@ export class BrokerService {
   async deleteBroker(id: number): Promise<any> {
     try {
       const countOfDeals = await this.dealsRepository.count({
-        where: { brokerId: id }
-      })
-      
+        where: { brokerId: id },
+      });
+
       if (countOfDeals > 0) {
-        throw new BadRequestException(`This broker has assigned with ${countOfDeals} deals and cannot be deleted`);
+        throw new BadRequestException(
+          `This broker has assigned with ${countOfDeals} deals and cannot be deleted`,
+        );
       }
 
       const result = await this.brokerRepository.delete(id);

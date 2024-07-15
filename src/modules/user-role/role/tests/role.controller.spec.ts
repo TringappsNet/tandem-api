@@ -185,9 +185,16 @@ describe('RoleController', () => {
         updatedAt: expect.any(Date),
       };
       const userAuth = { userId: 1, accessToken: 'some-token' };
-      const result = await controller.updateRole(userAuth, roleId, updateRoleDto);
+      const result = await controller.updateRole(
+        userAuth,
+        roleId,
+        updateRoleDto,
+      );
       expect(result).toEqual(updatedRole);
-      expect(roleService.updateRole).toHaveBeenCalledWith(roleId, updateRoleDto);
+      expect(roleService.updateRole).toHaveBeenCalledWith(
+        roleId,
+        updateRoleDto,
+      );
     });
   });
 

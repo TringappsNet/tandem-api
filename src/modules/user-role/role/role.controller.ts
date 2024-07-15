@@ -10,7 +10,7 @@ import {
   BadRequestException,
   ForbiddenException,
   ConflictException,
-  UnprocessableEntityException,    
+  UnprocessableEntityException,
   InternalServerErrorException,
   UseGuards,
 } from '@nestjs/common';
@@ -31,7 +31,6 @@ import {
 import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 import { UserAuth } from '../../../common/gaurds/auth/user-auth.decorator';
 
-
 @ApiTags('Role')
 @Controller('api/roles')
 export class RoleController {
@@ -40,31 +39,42 @@ export class RoleController {
   @Post('role')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async createRole(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Body() createRoleDto: CreateRoleDto): Promise<Role> {
-   try{ return this.roleService.createRole(createRoleDto);}
-   catch(error){
-    if (error instanceof BadRequestException) {
-      throw new CustomBadRequestException(error.message);
-    } else if (error instanceof InternalServerErrorException) {
-      throw new CustomInternalServerErrorException('createRole');
-    } else {
-      throw new NotFoundException(error.message);
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Body() createRoleDto: CreateRoleDto,
+  ): Promise<Role> {
+    try {
+      return this.roleService.createRole(createRoleDto);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw new CustomBadRequestException(error.message);
+      } else if (error instanceof InternalServerErrorException) {
+        throw new CustomInternalServerErrorException('createRole');
+      } else {
+        throw new NotFoundException(error.message);
+      }
     }
-   }
   }
 
   @Get()
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getRoles(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<Role[]> {
-    try{return this.roleService.getRoles();}
-    catch(error){
+    try {
+      return this.roleService.getRoles();
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
       }
@@ -74,17 +84,23 @@ export class RoleController {
   @Get('role/:id')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getRoleById(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('id') id: number): Promise<Role> {
-    try{return this.roleService.getRoleById(id);}
-    catch(error){
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Param('id') id: number,
+  ): Promise<Role> {
+    try {
+      return this.roleService.getRoleById(id);
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
       } else if (error instanceof ForbiddenException) {
         throw new CustomForbiddenException();
-      } else if (error instanceof CustomInternalServerErrorException ) {
+      } else if (error instanceof CustomInternalServerErrorException) {
         throw new CustomServiceException('RoleService', 'getRoleById');
       } else {
         throw new CustomBadRequestException(error.message);
@@ -95,14 +111,19 @@ export class RoleController {
   @Put('role/:id')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async updateRole(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
     @Param('id') id: number,
     @Body() updateRoleDto: UpdateRoleDto,
   ): Promise<Role> {
-    try{return this.roleService.updateRole(id, updateRoleDto);}
-    catch(error){
+    try {
+      return this.roleService.updateRole(id, updateRoleDto);
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
@@ -118,21 +139,27 @@ export class RoleController {
   @Delete('role/:id')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async deleteRole(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('id') id: number): Promise<void> {
-   try{ return this.roleService.deleteRole(id);}
-   catch(error){
-    if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(error.message);
-    } else if (error instanceof ForbiddenException) {
-      throw new CustomForbiddenException();
-    } else if (error instanceof InternalServerErrorException) {
-      throw new CustomServiceException('roleService', 'deleteRole');
-    } else {
-      throw new CustomBadRequestException(error.message);
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Param('id') id: number,
+  ): Promise<void> {
+    try {
+      return this.roleService.deleteRole(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else if (error instanceof ForbiddenException) {
+        throw new CustomForbiddenException();
+      } else if (error instanceof InternalServerErrorException) {
+        throw new CustomServiceException('roleService', 'deleteRole');
+      } else {
+        throw new CustomBadRequestException(error.message);
+      }
     }
-   }
   }
 }

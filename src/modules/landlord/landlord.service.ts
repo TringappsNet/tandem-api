@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Landlord } from '../../common/entities/landlord.entity';
@@ -16,7 +20,9 @@ export class LandlordService {
     try {
       const landlord = this.landlordRepository.create(createLandlordDto);
       if (!landlord) {
-        throw new BadRequestException('The specified landlord is not created properly');
+        throw new BadRequestException(
+          'The specified landlord is not created properly',
+        );
       }
       return await this.landlordRepository.save(landlord);
     } catch (error) {
@@ -26,7 +32,7 @@ export class LandlordService {
 
   async findAll(): Promise<Landlord[]> {
     try {
-      const Landlord=await this.landlordRepository.find();
+      const Landlord = await this.landlordRepository.find();
       if (Landlord.length === 0) {
         throw new NotFoundException('Landlords');
       }
@@ -70,7 +76,7 @@ export class LandlordService {
     try {
       const landlord = await this.findOne(id);
       if (!landlord) {
-        throw new NotFoundException(`Landlord with ID ${id}`); 
+        throw new NotFoundException(`Landlord with ID ${id}`);
       }
       await this.landlordRepository.remove(landlord);
     } catch (error) {

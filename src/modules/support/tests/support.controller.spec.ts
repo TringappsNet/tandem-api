@@ -50,7 +50,9 @@ describe('SupportController', () => {
     supportService = module.get<SupportService>(SupportService);
     mailService = module.get<MailService>(MailService);
     userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
-    supportRepository = module.get<Repository<Support>>(getRepositoryToken(Support));
+    supportRepository = module.get<Repository<Support>>(
+      getRepositoryToken(Support),
+    );
   });
 
   afterEach(() => {
@@ -99,13 +101,20 @@ describe('SupportController', () => {
 
       const userAuth = { userId: 1, accessToken: 'some-token' };
 
-      jest.spyOn(supportService, 'raiseTicket').mockResolvedValue(mockRaiseTicket);
+      jest
+        .spyOn(supportService, 'raiseTicket')
+        .mockResolvedValue(mockRaiseTicket);
 
-      const result = await supportController.raiseTicket(userAuth, mockRaiseTicketDto);
+      const result = await supportController.raiseTicket(
+        userAuth,
+        mockRaiseTicketDto,
+      );
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Ticket raised successfully');
-      expect(supportService.raiseTicket).toHaveBeenCalledWith(mockRaiseTicketDto);
+      expect(supportService.raiseTicket).toHaveBeenCalledWith(
+        mockRaiseTicketDto,
+      );
     });
   });
 });

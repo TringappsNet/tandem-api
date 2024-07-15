@@ -4,8 +4,8 @@ import { LandlordService } from '../landlord.service';
 import { CreateLandlordDto } from '../../../common/dto/create-landlord.dto';
 import { UpdateLandlordDto } from '../../../common/dto/update-landlord.dto';
 import { Landlord } from '../../../common/entities/landlord.entity';
-import { AuthService } from '../../auth/auth.service'; 
-import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd'; 
+import { AuthService } from '../../auth/auth.service';
+import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 
 describe('LandlordController', () => {
   let controller: LandlordController;
@@ -160,7 +160,9 @@ describe('LandlordController', () => {
 
       jest.spyOn(service, 'update').mockResolvedValue(result);
 
-      expect(await controller.update(userAuth, id, updateLandlordDto)).toBe(result);
+      expect(await controller.update(userAuth, id, updateLandlordDto)).toBe(
+        result,
+      );
       expect(service.update).toHaveBeenCalledWith(id, updateLandlordDto);
     });
   });

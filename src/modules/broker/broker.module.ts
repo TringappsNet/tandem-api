@@ -9,7 +9,10 @@ import { Role } from 'src/common/entities/role.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([Users, UserRole, Deals, Role])],
+  imports: [
+    AuthModule,
+    TypeOrmModule.forFeature([Users, UserRole, Deals, Role]),
+  ],
   controllers: [BrokerController],
   providers: [BrokerService],
 })

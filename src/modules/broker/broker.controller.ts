@@ -10,14 +10,13 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
-
   NotFoundException,
-    BadRequestException,
-    ForbiddenException,
-    ConflictException,
-    UnprocessableEntityException,    
-    InternalServerErrorException,
-    UseGuards,
+  BadRequestException,
+  ForbiddenException,
+  ConflictException,
+  UnprocessableEntityException,
+  InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { BrokerService } from './broker.service';
 import { Users } from 'src/common/entities/user.entity';
@@ -37,62 +36,74 @@ import {
 import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
 import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
 
-
 @ApiTags('Broker')
 @Controller('api/brokers')
-
 export class BrokerController {
   constructor(private readonly brokerService: BrokerService) {}
 
   @Get('all-users')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' }) 
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async findAll(
     @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<object> {
-   try{ return await this.brokerService.findAll();}
-   catch(error){
-    if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(error.message);
+    try {
+      return await this.brokerService.findAll();
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      }
     }
-   }
-
   }
 
   @Get('/')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async getAllUsers(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<any> {
-   try{ return this.brokerService.findAllUsers();}
-   catch(error){
-    if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(error.message);
-    } else if (error instanceof ForbiddenException) {
-      throw new CustomForbiddenException();
-    } else if (error instanceof CustomInternalServerErrorException ) {
-      throw new CustomServiceException('BrokerService', 'getSiteById');
-    } else {
-      throw new CustomBadRequestException(error.message);
+    try {
+      return this.brokerService.findAllUsers();
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else if (error instanceof ForbiddenException) {
+        throw new CustomForbiddenException();
+      } else if (error instanceof CustomInternalServerErrorException) {
+        throw new CustomServiceException('BrokerService', 'getSiteById');
+      } else {
+        throw new CustomBadRequestException(error.message);
+      }
     }
-   }
   }
 
   @Put('broker/:id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async updateBroker(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
     @Param('id') id: number,
     @Body() UpdateBrokerDto: UpdateBrokerDto,
   ): Promise<Users> {
-    try{return this.brokerService.updateBroker(id, UpdateBrokerDto);}
-    catch(error){
+    try {
+      return this.brokerService.updateBroker(id, UpdateBrokerDto);
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
       } else if (error instanceof UnprocessableEntityException) {
@@ -108,11 +119,15 @@ export class BrokerController {
   @Put('set-active-broker/:id')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async setActiveBroker(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
+    @UserAuth() userAuth: { userId: number; accessToken: string },
     @Param('id') id: number,
     @Body() setActiveBrokerDto: SetActiveBrokerDto,
   ) {
@@ -131,29 +146,32 @@ export class BrokerController {
     }
   }
 
-
   @Delete('broker/:id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
-  @ApiHeader({ name: 'access-token', required: true, description: 'Access Token' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
   async deleteBroker(
-    @UserAuth() userAuth: { userId: number; accessToken: string }, 
-    @Param('id') id: number): Promise<void> {
-   try{ 
-    const deleteBroker = await this.brokerService.deleteBroker(id);
-    return deleteBroker
-  } catch(error) {
-    if (error instanceof NotFoundException) {
-      throw new CustomNotFoundException(error.message);
-    } else if (error instanceof ForbiddenException) {
-      throw new CustomForbiddenException();
-    } else if (error instanceof InternalServerErrorException) {
-      throw new CustomServiceException('brokerService', 'deleteBroker');
-    } else {
-      throw new CustomBadRequestException(error.message);
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Param('id') id: number,
+  ): Promise<void> {
+    try {
+      const deleteBroker = await this.brokerService.deleteBroker(id);
+      return deleteBroker;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else if (error instanceof ForbiddenException) {
+        throw new CustomForbiddenException();
+      } else if (error instanceof InternalServerErrorException) {
+        throw new CustomServiceException('brokerService', 'deleteBroker');
+      } else {
+        throw new CustomBadRequestException(error.message);
+      }
     }
-   }
   }
-  
 }
