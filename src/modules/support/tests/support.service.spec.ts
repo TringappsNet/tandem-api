@@ -38,7 +38,9 @@ describe('SupportService', () => {
     supportService = module.get<SupportService>(SupportService);
     mailService = module.get<MailService>(MailService);
     userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
-    supportRepository = module.get<Repository<Support>>(getRepositoryToken(Support));
+    supportRepository = module.get<Repository<Support>>(
+      getRepositoryToken(Support),
+    );
   });
 
   afterEach(() => {
@@ -95,8 +97,10 @@ describe('SupportService', () => {
 
       jest.spyOn(supportRepository, 'save').mockResolvedValue(mockSupport);
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
-      
-      const spySupportMail = jest.spyOn(mailService, 'supportMail').mockResolvedValue(undefined);
+
+      const spySupportMail = jest
+        .spyOn(mailService, 'supportMail')
+        .mockResolvedValue(undefined);
 
       const result = await supportService.raiseTicket(mockRaiseTicketDto);
 
@@ -106,98 +110,104 @@ describe('SupportService', () => {
       expect(spySupportMail).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw UnauthorizedException if not a registered user', async () => {    
-        const mockRaiseTicketDto = {
-            ticketSubject: 'New Ticket Subject',
-            ticketDescription: 'New Ticket Description',
-            senderId: 2,
-        };
+    it('should throw UnauthorizedException if not a registered user', async () => {
+      const mockRaiseTicketDto = {
+        ticketSubject: 'New Ticket Subject',
+        ticketDescription: 'New Ticket Description',
+        senderId: 2,
+      };
 
-        jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-        await expect(supportService.raiseTicket(mockRaiseTicketDto)).rejects.toThrow(Error);
+      await expect(
+        supportService.raiseTicket(mockRaiseTicketDto),
+      ).rejects.toThrow(Error);
     });
 
-    it('should throw UnauthorizedException if a inactive user', async () => {   
-        const mockUser = {
-            id: 1,
-            email: 'test@example.com',
-            password: await bcrypt.hash('password123', 10),
-            firstName: 'test',
-            lastName: 'test',
-            mobile: '1234567890',
-            address: 'test address',
-            city: 'test city',
-            state: 'test state',
-            country: 'test country',
-            zipcode: '456789',
-            resetToken: null,
-            resetTokenExpires: new Date(Date.now()),
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-            isActive: false,
-            hasId: null,
-            save: null,
-            remove: null,
-            softRemove: null,
-            recover: null,
-            reload: null,
-            createdDeals: null,
-            updatedDeals: null,
-            lastModifiedBy: null,
-            isAdmin: false,
-        };
+    it('should throw UnauthorizedException if a inactive user', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: false,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        lastModifiedBy: null,
+        isAdmin: false,
+      };
 
-        const mockRaiseTicketDto = {
-            ticketSubject: 'New Ticket Subject',
-            ticketDescription: 'New Ticket Description',
-            senderId: 1,
-        };
+      const mockRaiseTicketDto = {
+        ticketSubject: 'New Ticket Subject',
+        ticketDescription: 'New Ticket Description',
+        senderId: 1,
+      };
 
-        jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-        await expect(supportService.raiseTicket(mockRaiseTicketDto)).rejects.toThrow(Error);
+      await expect(
+        supportService.raiseTicket(mockRaiseTicketDto),
+      ).rejects.toThrow(Error);
     });
 
-    it('should throw UnauthorizedException if unverified email', async () => {   
-        const mockUser = {
-            id: 1,
-            email: '',
-            password: await bcrypt.hash('password123', 10),
-            firstName: 'test',
-            lastName: 'test',
-            mobile: '1234567890',
-            address: 'test address',
-            city: 'test city',
-            state: 'test state',
-            country: 'test country',
-            zipcode: '456789',
-            resetToken: null,
-            resetTokenExpires: new Date(Date.now()),
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-            isActive: true,
-            hasId: null,
-            save: null,
-            remove: null,
-            softRemove: null,
-            recover: null,
-            reload: null,
-            createdDeals: null,
-            updatedDeals: null,
-            lastModifiedBy: null,
-            isAdmin: false,
-        };
+    it('should throw UnauthorizedException if unverified email', async () => {
+      const mockUser = {
+        id: 1,
+        email: '',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        lastModifiedBy: null,
+        isAdmin: false,
+      };
 
-        const mockRaiseTicketDto = {
-            ticketSubject: 'New Ticket Subject',
-            ticketDescription: 'New Ticket Description',
-            senderId: 1,
-        };
+      const mockRaiseTicketDto = {
+        ticketSubject: 'New Ticket Subject',
+        ticketDescription: 'New Ticket Description',
+        senderId: 1,
+      };
 
-        jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
 
-        await expect(supportService.raiseTicket(mockRaiseTicketDto)).rejects.toThrow(Error);
+      await expect(
+        supportService.raiseTicket(mockRaiseTicketDto),
+      ).rejects.toThrow(Error);
     });
   });
 });

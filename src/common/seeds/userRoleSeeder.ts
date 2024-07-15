@@ -5,8 +5,8 @@ export const seedUserRole = async (dataSource: DataSource) => {
   const existingUsers = await dataSource.getRepository(UserRole).find();
   if (existingUsers.length === 0) {
     await dataSource.getRepository(UserRole).save({
-        userId: 1,
-        roleId: 1,
+      userId: 1,
+      roleId: 1,
     });
   }
 };

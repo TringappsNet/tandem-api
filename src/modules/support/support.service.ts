@@ -33,9 +33,9 @@ export class SupportService {
       }
 
       if (!user.isActive) {
-
-        throw new UnauthorizedException('The user account is currently inactive');
-
+        throw new UnauthorizedException(
+          'The user account is currently inactive',
+        );
       }
 
       if (!user.email) {

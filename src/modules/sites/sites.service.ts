@@ -1,5 +1,9 @@
-
-import { BadRequestException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sites } from '../../common/entities/sites.entity';
@@ -14,9 +18,9 @@ export class SitesService {
 
   async createSite(createSiteDto: CreateSiteDto): Promise<Sites> {
     try {
-      const { addressline1} = createSiteDto;
+      const { addressline1 } = createSiteDto;
       const existingSite = await this.sitesRepository.findOne({
-        where: { addressline1},
+        where: { addressline1 },
       });
       if (existingSite) {
         throw new ConflictException();
@@ -26,9 +30,7 @@ export class SitesService {
     } catch (error) {
       throw error;
     }
-  }  
-
-
+  }
 
   async getAllSites(): Promise<Sites[]> {
     try {
@@ -58,7 +60,7 @@ export class SitesService {
     try {
       const site = await this.getSiteById(id);
       if (!site) {
-        throw new NotFoundException(`Sites with ID ${id}`); 
+        throw new NotFoundException(`Sites with ID ${id}`);
       }
       Object.assign(site, updateSiteDto);
       return await this.sitesRepository.save(site);
@@ -71,7 +73,7 @@ export class SitesService {
     try {
       const site = await this.getSiteById(id);
       if (!site) {
-        throw new NotFoundException(`Sites with ID ${id}`); 
+        throw new NotFoundException(`Sites with ID ${id}`);
       }
       return this.sitesRepository.remove(site);
     } catch (error) {

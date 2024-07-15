@@ -56,9 +56,9 @@ export class AuthService {
       }
 
       if (!user.isActive) {
-
-        throw new UnauthorizedException('The user account is currently inactive');
-
+        throw new UnauthorizedException(
+          'The user account is currently inactive',
+        );
       }
 
       const isPasswordValid = await bcrypt.compare(
@@ -94,7 +94,9 @@ export class AuthService {
         ...userObject
       } = user;
 
-      const userRoleId = await this.userRoleRepository.findOne({ where: { id : user.id }})
+      const userRoleId = await this.userRoleRepository.findOne({
+        where: { id: user.id },
+      });
       const roleObject = await this.roleService.getRoleById(userRoleId.roleId);
 
       const userDetails: any = userObject;
@@ -221,7 +223,9 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('The account associated with this user was');
+        throw new NotFoundException(
+          'The account associated with this user was',
+        );
       }
 
       user.resetToken = crypto.randomBytes(50).toString('hex').slice(0, 100);
@@ -250,11 +254,13 @@ export class AuthService {
     try {
       const user = await this.userRepository.findOne({ where: { resetToken } });
       if (!user) {
-        throw new NotFoundException('The account associated with this user was');
+        throw new NotFoundException(
+          'The account associated with this user was',
+        );
       }
 
       if (user.resetTokenExpires < new Date()) {
-        throw new BadRequestException('The password reset token has expired')
+        throw new BadRequestException('The password reset token has expired');
       }
 
       user.password = await bcrypt.hash(changePasswordDTO.newPassword, 10);
@@ -269,25 +275,48 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPasswordDTO: ResetPasswordDto): Promise<{ message: string }> {
+  async resetPassword(
+    resetPasswordDTO: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     try {
-      const user = await this.userRepository.findOne({ where: { id: resetPasswordDTO.userId } });
+      const user = await this.userRepository.findOne({
+        where: { id: resetPasswordDTO.userId },
+      });
       if (!user) {
-        throw new NotFoundException('The account associated with this user was');
+        throw new NotFoundException(
+          'The account associated with this user was',
+        );
       }
       if (!user.isActive) {
-        throw new UnauthorizedException('The user account is currently inactive');
+        throw new UnauthorizedException(
+          'The user account is currently inactive',
+        );
       }
-      const isOldPasswordValid = await bcrypt.compare(resetPasswordDTO.oldPassword, user.password);
+      const isOldPasswordValid = await bcrypt.compare(
+        resetPasswordDTO.oldPassword,
+        user.password,
+      );
       if (!isOldPasswordValid) {
-        throw new UnauthorizedException('The provided old password is incorrect');
+        throw new UnauthorizedException(
+          'The provided old password is incorrect',
+        );
       }
-      const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
+      const updatedPassword = await bcrypt.hash(
+        resetPasswordDTO.newPassword,
+        10,
+      );
       await this.userRepository.update(user.id, { password: updatedPassword });
       return { message: 'Password reset successfully' };
     } catch (error) {
-      if (!(error instanceof NotFoundException || error instanceof UnauthorizedException)) {
-        throw new InternalServerErrorException('An error occurred while resetting the password');
+      if (
+        !(
+          error instanceof NotFoundException ||
+          error instanceof UnauthorizedException
+        )
+      ) {
+        throw new InternalServerErrorException(
+          'An error occurred while resetting the password',
+        );
       }
       throw error;
     }
@@ -300,7 +329,9 @@ export class AuthService {
       });
 
       if (!session) {
-        throw new UnauthorizedException('The session has expired or is invalid');
+        throw new UnauthorizedException(
+          'The session has expired or is invalid',
+        );
       }
 
       await this.sessionRepository.delete({ token: session.token });
@@ -310,7 +341,6 @@ export class AuthService {
       throw error;
     }
   }
-
 
   async validateUser(userId: number, accessToken: string): Promise<boolean> {
     try {
@@ -332,8 +362,9 @@ export class AuthService {
 
       return true;
     } catch (error) {
-      throw new UnauthorizedException('The provided user ID or access token is invalid');
+      throw new UnauthorizedException(
+        'The provided user ID or access token is invalid',
+      );
     }
   }
-  
 }

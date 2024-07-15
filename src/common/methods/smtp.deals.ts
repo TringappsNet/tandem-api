@@ -2,7 +2,6 @@
 
 // import { MailerService } from '@nestjs-modules/mailer';
 
-
 // export async function sendDealsEmail(mailerService: MailerService, email: string, subject: string) {
 //   try {
 //     await MailService.dealsMail(mailerService, email, subject);

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException,BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../../../common/entities/role.entity';
@@ -17,7 +21,9 @@ export class RoleService {
   async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const role = this.roleRepository.create(createRoleDto);
     if (!role) {
-      throw new BadRequestException('The specified role is not created properly');
+      throw new BadRequestException(
+        'The specified role is not created properly',
+      );
     }
     // this.logger.log(`Role created with ID ${role.id}`);
     return await this.roleRepository.save(role);

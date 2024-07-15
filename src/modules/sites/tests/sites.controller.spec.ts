@@ -5,8 +5,8 @@ import { CreateSiteDto } from '../../../common/dto/create-site.dto';
 import { UpdateSiteDto } from '../../../common/dto/update-site.dto';
 import { Sites } from '../../../common/entities/sites.entity';
 import { NotFoundException } from '@nestjs/common';
-import { AuthService } from '../../auth/auth.service'; 
-import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd'; 
+import { AuthService } from '../../auth/auth.service';
+import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 
 describe('SitesController', () => {
   let controller: SitesController;
@@ -51,7 +51,9 @@ describe('SitesController', () => {
     createSite: jest.fn().mockResolvedValue(mockSite),
     getAllSites: jest.fn().mockResolvedValue([mockSite]),
     getSiteById: jest.fn().mockResolvedValue(mockSite),
-    updateSite: jest.fn().mockResolvedValue({ ...mockSite, ...mockUpdateSiteDto }),
+    updateSite: jest
+      .fn()
+      .mockResolvedValue({ ...mockSite, ...mockUpdateSiteDto }),
     deleteSiteById: jest.fn().mockResolvedValue(mockSite),
   };
 
@@ -108,16 +110,24 @@ describe('SitesController', () => {
     });
 
     it('should throw a NotFoundException if site not found', async () => {
-      jest.spyOn(service, 'getSiteById').mockRejectedValueOnce(new NotFoundException());
+      jest
+        .spyOn(service, 'getSiteById')
+        .mockRejectedValueOnce(new NotFoundException());
       const userAuth = { userId: 1, accessToken: 'some-token' };
-      await expect(controller.getSiteById(userAuth, 999)).rejects.toThrow(NotFoundException);
+      await expect(controller.getSiteById(userAuth, 999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('updateSiteById', () => {
     it('should update and return a site', async () => {
       const userAuth = { userId: 1, accessToken: 'some-token' };
-      const result = await controller.updateSiteById(userAuth, 1, mockUpdateSiteDto);
+      const result = await controller.updateSiteById(
+        userAuth,
+        1,
+        mockUpdateSiteDto,
+      );
       expect(result).toEqual({ ...mockSite, ...mockUpdateSiteDto });
       expect(service.updateSite).toHaveBeenCalledWith(1, mockUpdateSiteDto);
     });
