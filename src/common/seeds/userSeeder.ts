@@ -17,6 +17,7 @@ export const seedUsers = async (dataSource: DataSource) => {
       country: 'Admin Country',
       zipcode: '12345',
       isActive: true,
+      isAdmin: true,
     });
   }
 };

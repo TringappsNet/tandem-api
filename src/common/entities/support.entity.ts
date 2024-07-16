@@ -43,13 +43,17 @@ export class Support {
   })
   ticketPriority: string;
 
-  @ManyToOne(() => Users, (user) => user.id)
+  @ManyToOne(() => Users, (user) => user.id, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({
     name: 'created_by',
   })
   createdBy: number;
 
-  @ManyToOne(() => Users, (user) => user.id)
+  @ManyToOne(() => Users, (user) => user.id, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({
     name: 'updated_by',
   })

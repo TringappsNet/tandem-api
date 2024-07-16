@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Landlord } from '../../common/entities/landlord.entity';
@@ -13,50 +17,70 @@ export class LandlordService {
   ) {}
 
   async create(createLandlordDto: CreateLandlordDto): Promise<Landlord> {
-
-    const landlord = this.landlordRepository.create(createLandlordDto);
-    if (!landlord) {
-      throw new BadRequestException();
+    try {
+      const landlord = this.landlordRepository.create(createLandlordDto);
+      if (!landlord) {
+        throw new BadRequestException(
+          'The specified landlord is not created properly',
+        );
+      }
+      return await this.landlordRepository.save(landlord);
+    } catch (error) {
+      throw error;
     }
-    return await this.landlordRepository.save(landlord);
-
   }
 
   async findAll(): Promise<Landlord[]> {
-    const Landlord=await this.landlordRepository.find();
-    if (Landlord.length === 0) {
-      throw new NotFoundException();
+    try {
+      const Landlord = await this.landlordRepository.find();
+      if (Landlord.length === 0) {
+        throw new NotFoundException('Landlords');
+      }
+      return Landlord;
+    } catch (error) {
+      throw error;
     }
-    return Landlord;
   }
 
   async findOne(id: number): Promise<Landlord> {
-    const landlord = await this.landlordRepository.findOneBy({ id });
-    if (!landlord) {
-      throw new NotFoundException();
+    try {
+      const landlord = await this.landlordRepository.findOneBy({ id });
+      if (!landlord) {
+        throw new NotFoundException(`Landlord with ID ${id}`);
+      }
+      return landlord;
+    } catch (error) {
+      throw error;
     }
-    return landlord;
   }
 
   async update(
     id: number,
     updateLandlordDto: UpdateLandlordDto,
   ): Promise<Landlord> {
-    const landlord = await this.landlordRepository.preload({
-      id: id,
-      ...updateLandlordDto,
-    });
-    if (!landlord) {
-      throw new NotFoundException();
+    try {
+      const landlord = await this.landlordRepository.preload({
+        id: id,
+        ...updateLandlordDto,
+      });
+      if (!landlord) {
+        throw new NotFoundException(`Landlord with ID ${id}`);
+      }
+      return await this.landlordRepository.save(landlord);
+    } catch (error) {
+      throw error;
     }
-    return await this.landlordRepository.save(landlord);
   }
 
   async remove(id: number): Promise<void> {
-    const landlord = await this.findOne(id);
-    if (!landlord) {
-      throw new NotFoundException(); 
+    try {
+      const landlord = await this.findOne(id);
+      if (!landlord) {
+        throw new NotFoundException(`Landlord with ID ${id}`);
+      }
+      await this.landlordRepository.remove(landlord);
+    } catch (error) {
+      throw error;
     }
-    await this.landlordRepository.remove(landlord);
   }
 }

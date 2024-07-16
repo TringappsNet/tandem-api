@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException,BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../../../common/entities/role.entity';
@@ -17,7 +21,9 @@ export class RoleService {
   async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const role = this.roleRepository.create(createRoleDto);
     if (!role) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        'The specified role is not created properly',
+      );
     }
     // this.logger.log(`Role created with ID ${role.id}`);
     return await this.roleRepository.save(role);
@@ -33,7 +39,7 @@ export class RoleService {
     const role = await this.roleRepository.findOne({ where: { id } });
     if (!role) {
       // this.logger.warn(`Role with ID ${id} not found`);
-      throw new NotFoundException();
+      throw new NotFoundException(`Role with ID ${id}`);
     }
     return role;
   }
@@ -42,7 +48,7 @@ export class RoleService {
     const role = await this.getRoleById(id);
     Object.assign(role, updateRoleDto);
     if (!role) {
-      throw new NotFoundException();
+      throw new NotFoundException(`Role with ID ${id}`);
     }
     // this.logger.log(`Role with ID ${id} updated`);
     return await this.roleRepository.save(role);
@@ -52,7 +58,7 @@ export class RoleService {
     const result = await this.roleRepository.delete(id);
     if (result.affected === 0) {
       // this.logger.warn(`Role with ID ${id} not found`);
-      throw new NotFoundException();
+      throw new NotFoundException(`Role with ID ${id}`);
     }
     // this.logger.log(`Role with ID ${id} deleted`);
   }

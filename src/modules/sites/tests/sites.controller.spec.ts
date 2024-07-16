@@ -5,6 +5,8 @@ import { CreateSiteDto } from '../../../common/dto/create-site.dto';
 import { UpdateSiteDto } from '../../../common/dto/update-site.dto';
 import { Sites } from '../../../common/entities/sites.entity';
 import { NotFoundException } from '@nestjs/common';
+import { AuthService } from '../../auth/auth.service';
+import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 
 describe('SitesController', () => {
   let controller: SitesController;
@@ -63,6 +65,13 @@ describe('SitesController', () => {
           provide: SitesService,
           useValue: mockSitesService,
         },
+        {
+          provide: AuthService, // Provide the mock AuthService
+          useValue: {
+            validateUser: jest.fn().mockResolvedValue(true),
+          },
+        },
+        AuthGuard, // Provide the AuthGuard
       ],
     }).compile();
 
@@ -76,7 +85,8 @@ describe('SitesController', () => {
 
   describe('createSite', () => {
     it('should create and return a site', async () => {
-      const result = await controller.createSite(mockCreateSiteDto);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.createSite(userAuth, mockCreateSiteDto);
       expect(result).toEqual(mockSite);
       expect(service.createSite).toHaveBeenCalledWith(mockCreateSiteDto);
     });
@@ -84,7 +94,8 @@ describe('SitesController', () => {
 
   describe('getAllSites', () => {
     it('should return an array of sites', async () => {
-      const result = await controller.getAllSites();
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.getAllSites(userAuth);
       expect(result).toEqual([mockSite]);
       expect(service.getAllSites).toHaveBeenCalled();
     });
@@ -92,7 +103,8 @@ describe('SitesController', () => {
 
   describe('getSiteById', () => {
     it('should return a site by id', async () => {
-      const result = await controller.getSiteById(1);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.getSiteById(userAuth, 1);
       expect(result).toEqual(mockSite);
       expect(service.getSiteById).toHaveBeenCalledWith(1);
     });
@@ -101,7 +113,8 @@ describe('SitesController', () => {
       jest
         .spyOn(service, 'getSiteById')
         .mockRejectedValueOnce(new NotFoundException());
-      await expect(controller.getSiteById(999)).rejects.toThrow(
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      await expect(controller.getSiteById(userAuth, 999)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -109,7 +122,12 @@ describe('SitesController', () => {
 
   describe('updateSiteById', () => {
     it('should update and return a site', async () => {
-      const result = await controller.updateSiteById(1, mockUpdateSiteDto);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.updateSiteById(
+        userAuth,
+        1,
+        mockUpdateSiteDto,
+      );
       expect(result).toEqual({ ...mockSite, ...mockUpdateSiteDto });
       expect(service.updateSite).toHaveBeenCalledWith(1, mockUpdateSiteDto);
     });
@@ -117,7 +135,8 @@ describe('SitesController', () => {
 
   describe('deleteSiteById', () => {
     it('should delete a site by id and return it', async () => {
-      const result = await controller.deleteSiteById(1);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.deleteSiteById(userAuth, 1);
       expect(result).toEqual(mockSite);
       expect(service.deleteSiteById).toHaveBeenCalledWith(1);
     });

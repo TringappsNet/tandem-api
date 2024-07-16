@@ -4,6 +4,8 @@ import { LandlordService } from '../landlord.service';
 import { CreateLandlordDto } from '../../../common/dto/create-landlord.dto';
 import { UpdateLandlordDto } from '../../../common/dto/update-landlord.dto';
 import { Landlord } from '../../../common/entities/landlord.entity';
+import { AuthService } from '../../auth/auth.service';
+import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 
 describe('LandlordController', () => {
   let controller: LandlordController;
@@ -23,6 +25,13 @@ describe('LandlordController', () => {
             remove: jest.fn(),
           },
         },
+        {
+          provide: AuthService, // Provide the mock AuthService
+          useValue: {
+            validateUser: jest.fn().mockResolvedValue(true),
+          },
+        },
+        AuthGuard, // Provide the AuthGuard
       ],
     }).compile();
 
@@ -64,9 +73,11 @@ describe('LandlordController', () => {
         updatedAt: undefined,
       };
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'create').mockResolvedValue(result);
 
-      expect(await controller.create(createLandlordDto)).toBe(result);
+      expect(await controller.create(userAuth, createLandlordDto)).toBe(result);
       expect(service.create).toHaveBeenCalledWith(createLandlordDto);
     });
   });
@@ -77,9 +88,11 @@ describe('LandlordController', () => {
         /* fill with appropriate data */
       ];
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
-      expect(await controller.findAll()).toBe(result);
+      expect(await controller.findAll(userAuth)).toBe(result);
       expect(service.findAll).toHaveBeenCalled();
     });
   });
@@ -104,9 +117,11 @@ describe('LandlordController', () => {
       };
       const id = 1;
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'findOne').mockResolvedValue(result);
 
-      expect(await controller.findOne(id)).toBe(result);
+      expect(await controller.findOne(userAuth, id)).toBe(result);
       expect(service.findOne).toHaveBeenCalledWith(id);
     });
   });
@@ -141,9 +156,13 @@ describe('LandlordController', () => {
       };
       const id = 1;
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'update').mockResolvedValue(result);
 
-      expect(await controller.update(id, updateLandlordDto)).toBe(result);
+      expect(await controller.update(userAuth, id, updateLandlordDto)).toBe(
+        result,
+      );
       expect(service.update).toHaveBeenCalledWith(id, updateLandlordDto);
     });
   });
@@ -152,9 +171,11 @@ describe('LandlordController', () => {
     it('should remove a landlord', async () => {
       const id = 1;
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'remove').mockResolvedValue(undefined);
 
-      expect(await controller.remove(id)).toBeUndefined();
+      expect(await controller.remove(userAuth, id)).toBeUndefined();
       expect(service.remove).toHaveBeenCalledWith(id);
     });
   });

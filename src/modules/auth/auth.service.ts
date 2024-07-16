@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -51,13 +52,13 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('The user account is invalid');
       }
 
       if (!user.isActive) {
-
-        throw new UnauthorizedException();
-
+        throw new UnauthorizedException(
+          'The user account is currently inactive',
+        );
       }
 
       const isPasswordValid = await bcrypt.compare(
@@ -66,7 +67,7 @@ export class AuthService {
       );
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('The password you entered is invalid');
       }
 
       let session = await this.sessionRepository.findOne({
@@ -93,7 +94,10 @@ export class AuthService {
         ...userObject
       } = user;
 
-      const roleObject = await this.roleService.getRoleById(user.id);
+      const userRoleId = await this.userRoleRepository.findOne({
+        where: { id: user.id },
+      });
+      const roleObject = await this.roleService.getRoleById(userRoleId.roleId);
 
       const userDetails: any = userObject;
       userDetails.roleId = roleObject.id;
@@ -114,14 +118,14 @@ export class AuthService {
         where: { email: inviteDTO.email },
       });
       if (existingUser) {
-        throw new BadRequestException();
+        throw new BadRequestException('The user account already exists');
       }
 
       const existingInvite = await this.inviteRepository.findOne({
         where: { email: inviteDTO.email },
       });
       if (existingInvite) {
-        throw new BadRequestException();
+        throw new BadRequestException('The invitation has already been sent');
       }
 
       const role = await this.roleRepository.findOne({
@@ -129,7 +133,7 @@ export class AuthService {
       });
 
       if (!role) {
-        throw new BadRequestException();
+        throw new BadRequestException('The specified role is invalid');
       }
 
       const inviteUser = new InviteUser();
@@ -172,14 +176,11 @@ export class AuthService {
       });
 
       if (!inviteUser) {
-        throw new BadRequestException();
+        throw new BadRequestException('The invitation recipient is invalid');
       }
 
-  
-     
-
       if (inviteUser.inviteTokenExpires < new Date()) {
-        throw new BadRequestException();
+        throw new BadRequestException('The invitation has expired');
       }
 
       const user = new Users();
@@ -195,6 +196,10 @@ export class AuthService {
       user.country = registerDTO.country;
       user.zipcode = registerDTO.zipcode;
       user.isActive = true;
+
+      if (inviteUser.roleId === 1) {
+        user.isAdmin = true;
+      }
 
       const savedUser = await this.userRepository.save(user);
 
@@ -218,7 +223,9 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException();
+        throw new NotFoundException(
+          'The account associated with this user was',
+        );
       }
 
       user.resetToken = crypto.randomBytes(50).toString('hex').slice(0, 100);
@@ -246,11 +253,14 @@ export class AuthService {
   ) {
     try {
       const user = await this.userRepository.findOne({ where: { resetToken } });
-      if (!user || user.resetTokenExpires < new Date()) {
-        throw new HttpException(
-          'Invalid or expired reset token',
-          HttpStatus.BAD_REQUEST,
+      if (!user) {
+        throw new NotFoundException(
+          'The account associated with this user was',
         );
+      }
+
+      if (user.resetTokenExpires < new Date()) {
+        throw new BadRequestException('The password reset token has expired');
       }
 
       user.password = await bcrypt.hash(changePasswordDTO.newPassword, 10);
@@ -265,26 +275,49 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPasswordDTO: ResetPasswordDto):Promise <{ message: string }> {
+  async resetPassword(
+    resetPasswordDTO: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     try {
       const user = await this.userRepository.findOne({
         where: { id: resetPasswordDTO.userId },
       });
-
       if (!user) {
-        throw new NotFoundException();
+        throw new NotFoundException(
+          'The account associated with this user was',
+        );
       }
-
       if (!user.isActive) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException(
+          'The user account is currently inactive',
+        );
       }
-
-      const updatedPassword = await bcrypt.hash(resetPasswordDTO.newPassword, 10);
+      const isOldPasswordValid = await bcrypt.compare(
+        resetPasswordDTO.oldPassword,
+        user.password,
+      );
+      if (!isOldPasswordValid) {
+        throw new UnauthorizedException(
+          'The provided old password is incorrect',
+        );
+      }
+      const updatedPassword = await bcrypt.hash(
+        resetPasswordDTO.newPassword,
+        10,
+      );
       await this.userRepository.update(user.id, { password: updatedPassword });
-      return { message: 'Password has been reset successfully' };
-
-
+      return { message: 'Password reset successfully' };
     } catch (error) {
+      if (
+        !(
+          error instanceof NotFoundException ||
+          error instanceof UnauthorizedException
+        )
+      ) {
+        throw new InternalServerErrorException(
+          'An error occurred while resetting the password',
+        );
+      }
       throw error;
     }
   }
@@ -296,7 +329,9 @@ export class AuthService {
       });
 
       if (!session) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException(
+          'The session has expired or is invalid',
+        );
       }
 
       await this.sessionRepository.delete({ token: session.token });
@@ -304,6 +339,32 @@ export class AuthService {
       return { message: 'Logout successful' };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async validateUser(userId: number, accessToken: string): Promise<boolean> {
+    try {
+      const session = await this.sessionRepository.findOne({
+        where: { userId, token: accessToken },
+      });
+
+      if (!session || session.expiresAt < new Date()) {
+        return false;
+      }
+
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      if (!user || !user.isActive) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException(
+        'The provided user ID or access token is invalid',
+      );
     }
   }
 }

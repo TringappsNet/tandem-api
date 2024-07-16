@@ -1,5 +1,9 @@
-
-import { BadRequestException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sites } from '../../common/entities/sites.entity';
@@ -13,53 +17,67 @@ export class SitesService {
   ) {}
 
   async createSite(createSiteDto: CreateSiteDto): Promise<Sites> {
-
-    const { addressline1} = createSiteDto;
-    const existingSite = await this.sitesRepository.findOne({
-      where: { addressline1},
-    });
-    if (existingSite) {
-      throw new ConflictException();
+    try {
+      const { addressline1 } = createSiteDto;
+      const existingSite = await this.sitesRepository.findOne({
+        where: { addressline1 },
+      });
+      if (existingSite) {
+        throw new ConflictException();
+      }
+      const site = this.sitesRepository.create(createSiteDto);
+      return await this.sitesRepository.save(site);
+    } catch (error) {
+      throw error;
     }
-
-    const site = this.sitesRepository.create(createSiteDto);
-    return await this.sitesRepository.save(site);
-  }  
-
-
+  }
 
   async getAllSites(): Promise<Sites[]> {
-    const sites = await this.sitesRepository.find();
-    if (sites.length === 0) {
-      throw new NotFoundException();
+    try {
+      const sites = await this.sitesRepository.find();
+      if (sites.length === 0) {
+        throw new NotFoundException('Sites');
+      }
+      return sites;
+    } catch (error) {
+      throw error;
     }
-    return sites;
   }
 
   async getSiteById(id: number): Promise<Sites> {
-    const site = await this.sitesRepository.findOne({ where: { id } });
-
-    if (!site) {
-      throw new NotFoundException();
+    try {
+      const site = await this.sitesRepository.findOne({ where: { id } });
+      if (!site) {
+        throw new NotFoundException(`Sites with ID ${id}`);
+      }
+      return site;
+    } catch (error) {
+      throw error;
     }
-
-    return site;
   }
 
   async updateSite(id: number, updateSiteDto: UpdateSiteDto): Promise<Sites> {
-    const site = await this.getSiteById(id);
-    if (!site) {
-      throw new NotFoundException(); 
+    try {
+      const site = await this.getSiteById(id);
+      if (!site) {
+        throw new NotFoundException(`Sites with ID ${id}`);
+      }
+      Object.assign(site, updateSiteDto);
+      return await this.sitesRepository.save(site);
+    } catch (error) {
+      throw error;
     }
-    Object.assign(site, updateSiteDto);
-    return await this.sitesRepository.save(site);
   }
 
   async deleteSiteById(id: number): Promise<Sites> {
-    const site = await this.getSiteById(id);
-    if (!site) {
-      throw new NotFoundException(); 
+    try {
+      const site = await this.getSiteById(id);
+      if (!site) {
+        throw new NotFoundException(`Sites with ID ${id}`);
+      }
+      return this.sitesRepository.remove(site);
+    } catch (error) {
+      throw error;
     }
-    return this.sitesRepository.remove(site);
   }
 }

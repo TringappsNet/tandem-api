@@ -92,6 +92,13 @@ export class Users extends BaseEntity {
   isActive: boolean;
 
   @Column({
+    name: 'is_admin',
+    default: false,
+    type: 'boolean',
+  })
+  isAdmin: boolean;
+
+  @Column({
     name: 'last_modified_by',
     type: 'integer',
     nullable: false,

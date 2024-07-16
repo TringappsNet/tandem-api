@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleController } from '../role.controller';
 import { RoleService } from '../role.service';
+import { AuthService } from '../../../auth/auth.service';
+import { AuthGuard } from '../../../../common/gaurds/auth/auth.gaurd';
 import { CreateRoleDto } from '../../../../common/dto/create-role.dto';
 import { UpdateRoleDto } from '../../../../common/dto/update-role.dto';
 import { Role } from '../../../../common/entities/role.entity';
@@ -66,6 +68,13 @@ describe('RoleController', () => {
             deleteRole: jest.fn().mockResolvedValue(undefined),
           },
         },
+        {
+          provide: AuthService, // Provide the mock AuthService
+          useValue: {
+            validateUser: jest.fn().mockResolvedValue(true),
+          },
+        },
+        AuthGuard, // Provide the AuthGuard
       ],
     }).compile();
 
@@ -83,6 +92,7 @@ describe('RoleController', () => {
         roleName: 'Admin',
         createdBy: 0,
       };
+      const userAuth = { userId: 1, accessToken: 'some-token' };
       const createdRole: Role = {
         id: 1,
         roleName: 'Admin',
@@ -92,7 +102,7 @@ describe('RoleController', () => {
         updatedBy: 0,
         updatedAt: expect.any(Date),
       };
-      const result = await controller.createRole(createRoleDto);
+      const result = await controller.createRole(userAuth, createRoleDto);
       expect(result).toEqual({
         id: 1,
         roleName: 'Admin',
@@ -130,27 +140,9 @@ describe('RoleController', () => {
       ];
       jest.spyOn(roleService, 'getRoles').mockResolvedValue(roles);
 
-      const result = await controller.getRoles();
-      expect(result).toEqual([
-        {
-          id: 1,
-          roleName: 'Admin',
-          description: 'Administrator role',
-          createdBy: 0,
-          createdAt: expect.any(Date),
-          updatedBy: 0,
-          updatedAt: expect.any(Date),
-        },
-        {
-          id: 2,
-          roleName: 'User',
-          description: 'User role',
-          createdBy: 0,
-          createdAt: expect.any(Date),
-          updatedBy: 0,
-          updatedAt: expect.any(Date),
-        },
-      ]);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.getRoles(userAuth);
+      expect(result).toEqual(roles);
       expect(roleService.getRoles).toHaveBeenCalled();
     });
   });
@@ -169,16 +161,9 @@ describe('RoleController', () => {
       };
       jest.spyOn(roleService, 'getRoleById').mockResolvedValue(role);
 
-      const result = await controller.getRoleById(roleId);
-      expect(result).toEqual({
-        id: roleId,
-        roleName: 'Admin',
-        description: 'Administrator role',
-        createdBy: 0,
-        createdAt: expect.any(Date),
-        updatedBy: 0,
-        updatedAt: expect.any(Date),
-      });
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.getRoleById(userAuth, roleId);
+      expect(result).toEqual(role);
       expect(roleService.getRoleById).toHaveBeenCalledWith(roleId);
     });
   });
@@ -193,22 +178,19 @@ describe('RoleController', () => {
       const updatedRole: Role = {
         id: roleId,
         roleName: 'New Admin',
-        description: 'Administrator role',
-        createdBy: 0,
-        createdAt: expect.any(Date),
-        updatedBy: 0,
-        updatedAt: expect.any(Date),
-      };
-      const result = await controller.updateRole(roleId, updateRoleDto);
-      expect(result).toEqual({
-        id: roleId,
-        roleName: 'New Admin',
         description: 'Updated description',
         createdBy: 0,
         createdAt: expect.any(Date),
         updatedBy: 0,
         updatedAt: expect.any(Date),
-      });
+      };
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.updateRole(
+        userAuth,
+        roleId,
+        updateRoleDto,
+      );
+      expect(result).toEqual(updatedRole);
       expect(roleService.updateRole).toHaveBeenCalledWith(
         roleId,
         updateRoleDto,
@@ -219,7 +201,8 @@ describe('RoleController', () => {
   describe('deleteRole', () => {
     it('should delete role', async () => {
       const roleId = 1;
-      const result = await controller.deleteRole(roleId);
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+      const result = await controller.deleteRole(userAuth, roleId);
       expect(result).toBeUndefined();
       expect(roleService.deleteRole).toHaveBeenCalledWith(roleId);
     });

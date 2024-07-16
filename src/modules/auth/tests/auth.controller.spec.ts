@@ -13,6 +13,7 @@ import { Session } from 'inspector';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from '../../../common/dto/login.dto';
 import { InviteDto } from '../../../common/dto/invite.dto';
+import { ResetPasswordDto } from '../../../common/dto/reset-password.dto';
 import * as bcrypt from 'bcrypt';
 import { RoleService } from '../../user-role/role/role.service';
 
@@ -142,10 +143,12 @@ describe('AuthController', () => {
         updatedAt: new Date(Date.now()),
       };
 
+      const mockUserDetails: any = userObject;
+      mockUserDetails.roleId = roleObject.id;
+
       const mockLogin = {
         message: 'Login successful',
-        user: userObject,
-        role: roleObject,
+        user: mockUserDetails,
         session: {
           token: 'qwertyuiop',
           expiresAt: new Date(Date.now() + 1000),
@@ -173,9 +176,11 @@ describe('AuthController', () => {
         message: 'Invite sent successfully',
       };
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'sendInvite').mockResolvedValue(mockInvite);
 
-      const result = await controller.sendInvite(mockInviteDto);
+      const result = await controller.sendInvite(userAuth, mockInviteDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Invitation sent successfully');
@@ -221,16 +226,18 @@ describe('AuthController', () => {
         message: 'Password reset email sent successfully',
       };
 
-      jest.spyOn(service, 'forgotPassword').mockResolvedValue(mockForgotPassword);
+      jest
+        .spyOn(service, 'forgotPassword')
+        .mockResolvedValue(mockForgotPassword);
 
       const result = await controller.forgotPassword(mockForgotPasswordDto);
       expect(result).toEqual(mockForgotPassword);
 
       expect(result.message).toEqual('Password reset email sent successfully');
 
-
-      expect(service.forgotPassword).toHaveBeenCalledWith(mockForgotPasswordDto);
-
+      expect(service.forgotPassword).toHaveBeenCalledWith(
+        mockForgotPasswordDto,
+      );
     });
   });
 
@@ -266,7 +273,7 @@ describe('AuthController', () => {
 
   describe('resetPassword', () => {
     it('should return a password change successful message', async () => {
-      const mockResetPasswordDto = {
+      const mockResetPasswordDto: ResetPasswordDto = {
         userId: 1,
         oldPassword: 'password123',
         newPassword: 'newpassword123',
@@ -276,9 +283,14 @@ describe('AuthController', () => {
         message: 'Reset Password successfully',
       };
 
+      const userAuth = { userId: 1, accessToken: 'some-token' };
+
       jest.spyOn(service, 'resetPassword').mockResolvedValue(mockResetPassword);
 
-      const result = await controller.resetPassword(mockResetPasswordDto);
+      const result = await controller.resetPassword(
+        userAuth,
+        mockResetPasswordDto,
+      );
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Password reset successfully');

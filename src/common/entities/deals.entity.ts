@@ -33,8 +33,17 @@ export class Deals {
   @Column({
     name: 'broker_name',
     type: 'varchar',
+    nullable: true,
   })
   brokerName: string;
+
+  @Column({
+    name: 'assigned_to',
+    type: 'integer',
+    nullable: false,
+    default: 1,
+  })
+  brokerId: number;
 
   @Column({
     name: 'property_name',
@@ -94,7 +103,7 @@ export class Deals {
   @Column({
     name: 'potential_commission',
     type: 'int',
-    default: null,
+    default: 0,
   })
   potentialCommission: number;
 
