@@ -9,10 +9,14 @@ export const mailConfigAsync = {
     // or
     transport: {
       host: configService.get('MAIL_HOST'),
+      port: configService.get('MAIL_PORT'),
       secure: false,
       auth: {
         user: configService.get('MAIL_USER'),
         pass: configService.get('MAIL_PASSWORD'),
+        tls: {
+          rejectUnauthorized:false,
+        }
       },
     },
     defaults: {
@@ -24,6 +28,8 @@ export const mailConfigAsync = {
       adapter: new HandlebarsAdapter(),
       options: {
         strict: true,
+        partialsDir: join('src/common/mail', 'templates', 'partials'),
+        extname: '.hbs',
       },
     },
   }),
