@@ -6,12 +6,10 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Put,
   UsePipes,
   ValidationPipe,
   NotFoundException,
-  BadRequestException,
   ForbiddenException,
   ConflictException,
   UnprocessableEntityException,
@@ -19,10 +17,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BrokerService } from './broker.service';
-import { Users } from 'src/common/entities/user.entity';
+import { Users } from '../../common/entities/user.entity';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
-import { UpdateBrokerDto } from 'src/common/dto/update-broker.dto';
-import { SetActiveBrokerDto } from 'src/common/dto/set-active-broker.dto';
+import { UpdateBrokerDto } from '../../common/dto/update-broker.dto';
+import { SetActiveBrokerDto } from '../../common/dto/set-active-broker.dto';
 
 import {
   CustomNotFoundException,

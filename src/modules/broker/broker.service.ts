@@ -1,17 +1,15 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../../common/entities/user.entity';
 import { UserRole } from '../../common/entities/user-role.entity';
 import { Deals } from '../../common/entities/deals.entity';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UpdateBrokerDto } from '../../common/dto/update-broker.dto';
 import { SetActiveBrokerDto } from '../../common/dto/set-active-broker.dto';
-import { throwError } from 'rxjs';
 
 @Injectable()
 export class BrokerService {
@@ -107,12 +105,12 @@ export class BrokerService {
     UpdateBrokerDto: UpdateBrokerDto,
   ): Promise<Users> {
     try {
-      const role = await this.getBrokerById(id);
-      Object.assign(role, UpdateBrokerDto);
-      if (!role) {
+      const broker = await this.getBrokerById(id);
+      if (!broker) {
         throw new NotFoundException(`Broker with ID ${id}`);
       }
-      return await this.brokerRepository.save(role);
+      Object.assign(broker, UpdateBrokerDto);
+      return await this.brokerRepository.save(broker);
     } catch (error) {
       throw error;
     }
@@ -120,11 +118,11 @@ export class BrokerService {
 
   async getBrokerById(id: number): Promise<Users> {
     try {
-      const role = await this.brokerRepository.findOne({ where: { id } });
-      if (!role) {
+      const broker = await this.brokerRepository.findOne({ where: { id } });
+      if (!broker) {
         throw new NotFoundException(`Broker with ID ${id}`);
       }
-      return role;
+      return broker;
     } catch (error) {
       throw error;
     }
