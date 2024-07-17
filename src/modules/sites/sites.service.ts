@@ -36,7 +36,7 @@ export class SitesService {
     try {
       const sites = await this.sitesRepository.find();
       if (sites.length === 0) {
-        throw new NotFoundException('Sites');
+        throw new NotFoundException('Sites not found');
       }
       return sites;
     } catch (error) {
