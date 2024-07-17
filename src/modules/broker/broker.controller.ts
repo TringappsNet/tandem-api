@@ -6,12 +6,10 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Put,
   UsePipes,
   ValidationPipe,
   NotFoundException,
-  BadRequestException,
   ForbiddenException,
   ConflictException,
   UnprocessableEntityException,
@@ -19,10 +17,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BrokerService } from './broker.service';
-import { Users } from 'src/common/entities/user.entity';
+import { Users } from '../../common/entities/user.entity';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
-import { UpdateBrokerDto } from 'src/common/dto/update-broker.dto';
-import { SetActiveBrokerDto } from 'src/common/dto/set-active-broker.dto';
+import { UpdateBrokerDto } from '../../common/dto/update-broker.dto';
+import { SetActiveBrokerDto } from '../../common/dto/set-active-broker.dto';
 
 import {
   CustomNotFoundException,
@@ -73,7 +71,7 @@ export class BrokerController {
     @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<any> {
     try {
-      return this.brokerService.findAllUsers();
+      return await this.brokerService.findAllUsers();
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
@@ -102,7 +100,7 @@ export class BrokerController {
     @Body() UpdateBrokerDto: UpdateBrokerDto,
   ): Promise<Users> {
     try {
-      return this.brokerService.updateBroker(id, UpdateBrokerDto);
+      return await this.brokerService.updateBroker(id, UpdateBrokerDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
@@ -132,7 +130,7 @@ export class BrokerController {
     @Body() setActiveBrokerDto: SetActiveBrokerDto,
   ) {
     try {
-      return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
+      return await this.brokerService.setActiveBroker(id, setActiveBrokerDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
