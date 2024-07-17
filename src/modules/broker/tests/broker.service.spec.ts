@@ -7,7 +7,7 @@ import { Deals } from '../../../common/entities/deals.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../../../common/entities/role.entity';
-import { HttpException } from '@nestjs/common';
+import { BadRequestException, HttpException, NotFoundException } from '@nestjs/common';
 
 describe('BrokerService', () => {
   let service: BrokerService;
@@ -36,7 +36,7 @@ describe('BrokerService', () => {
             provide: getRepositoryToken(Role),
             useClass: Repository,
         }
-    ],
+      ],
     }).compile();
 
     service = module.get<BrokerService>(BrokerService);
@@ -185,11 +185,12 @@ describe('BrokerService', () => {
         mockUserRole.roleId = mockRole.id;
         mockUserRole.user = mockUser;
 
-        const mockDeals = {
+        const mockDeals = [{
             id: 1,
             activeStep: 1,
             status: 'Started',
             brokerName: 'broker',
+            brokerId: 1,
             propertyName: 'broker property',
             dealStartDate: new Date(Date.now()),
             proposalDate: new Date(Date.now()),
@@ -203,7 +204,47 @@ describe('BrokerService', () => {
             updatedBy: null,
             createdAt: new Date(Date.now()),
             updatedAt: new Date(Date.now()),
-        } as Deals
+        } as Deals, 
+        {
+          id: 1,
+          activeStep: 7,
+          status: 'Completed',
+          brokerName: 'broker',
+          brokerId: 1,
+          propertyName: 'broker property',
+          dealStartDate: new Date(Date.now()),
+          proposalDate: new Date(Date.now()),
+          loiExecuteDate: new Date(Date.now()),
+          leaseSignedDate: new Date(Date.now()),
+          noticeToProceedDate: new Date(Date.now()),
+          commercialOperationDate: new Date(Date.now()),
+          potentialCommissionDate: new Date(Date.now()),
+          potentialCommission: 100000,
+          createdBy: { id : mockUser.id},
+          updatedBy: null,
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+      } as Deals,
+      {
+        id: 1,
+        activeStep: 5,
+        status: 'In-Progress',
+        brokerName: 'broker',
+        brokerId: 1,
+        propertyName: 'broker property',
+        dealStartDate: new Date(Date.now()),
+        proposalDate: new Date(Date.now()),
+        loiExecuteDate: new Date(Date.now()),
+        leaseSignedDate: new Date(Date.now()),
+        noticeToProceedDate: new Date(Date.now()),
+        commercialOperationDate: new Date(Date.now()),
+        potentialCommissionDate: new Date(Date.now()),
+        potentialCommission: 0,
+        createdBy: { id : mockUser.id},
+        updatedBy: null,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    } as Deals];
 
         jest.spyOn(userRoleRepository, 'createQueryBuilder').mockReturnValueOnce(
             {
@@ -213,7 +254,7 @@ describe('BrokerService', () => {
             } as any
         );
 
-        jest.spyOn(dealsRepository, 'find').mockResolvedValue([mockDeals]);
+        jest.spyOn(dealsRepository, 'find').mockResolvedValue(mockDeals);
 
         const roleId = [1, 2];
         const result = await service.findAllUsers(roleId);
@@ -223,16 +264,28 @@ describe('BrokerService', () => {
         expect(result[0]).toEqual({
           user: mockUser,
           roleId: mockRole.id,
-          totalDeals: 1,
+          totalDeals: 3,
           dealsOpened: 1,
-          dealsInProgress: 0,
-          dealsClosed: 0,
-          totalCommission: 0,
+          dealsInProgress: 1,
+          dealsClosed: 1,
+          totalCommission: 100000,
         });
         expect(userRoleRepository.createQueryBuilder).toHaveBeenCalled();
         expect(dealsRepository.find).toHaveBeenCalledWith({
           where: { createdBy: { id: mockUser.id } },
         });
+    });
+
+    it('should return NotFoundException if user with specified role not found', async () => {
+      jest.spyOn(userRoleRepository, 'createQueryBuilder').mockReturnValueOnce(
+        {
+            innerJoinAndSelect: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            getMany: jest.fn().mockResolvedValueOnce([]),
+        } as any
+      );
+
+      await expect(service.findAllUsers()).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -419,14 +472,71 @@ describe('BrokerService', () => {
       expect(result).toBeDefined();
       expect(userRepository.update).toHaveBeenCalled();
     });
-  });
-  
-  describe('deleteBroker', () => {
-    it('should delete a broker', async () => {
+
+    it('should return NotFoundException if invalid broker id', async () => {
       const mockUserId = 1;
 
-      const mockUser = [{
-        id: 2,
+      const mockSetActiveBrokerDto = {
+        isActive: true,
+      }
+
+      jest.spyOn(service, 'getBrokerById').mockResolvedValue(null);
+
+      await expect(service.setActiveBroker(mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return BadRequestException if broker already in active state', async () => {
+      const mockUserId = 1;
+
+      const mockSetActiveBrokerDto = {
+        isActive: true,
+      }
+
+      const mockUser = {
+        id: mockUserId,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
+        isAdmin: false,
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+
+      await expect(service.setActiveBroker(mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('should return BadRequestException if broker already in deactive state', async () => {
+      const mockUserId = 1;
+
+      const mockSetActiveBrokerDto = {
+        isActive: false,
+      }
+
+      const mockUser = {
+        id: mockUserId,
         email: 'test@example.com',
         password: await bcrypt.hash('password123', 10),
         firstName: 'test',
@@ -454,9 +564,66 @@ describe('BrokerService', () => {
         updatedSites: null,
         lastModifiedBy: 1,
         isAdmin: false,
-      }];
+      };
 
-      jest.spyOn(dealsRepository, 'count').mockResolvedValue(0);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+
+      await expect(service.setActiveBroker(mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('should return NotFoundException if not found updated broker', async () => {
+      const mockUserId = 1;
+
+      const mockSetActiveBrokerDto = {
+        isActive: true,
+      }
+
+      const mockUser = {
+        id: mockUserId,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: false,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        createdSites: null,
+        updatedSites: null,
+        lastModifiedBy: 1,
+        isAdmin: false,
+      };
+
+      jest.spyOn(service, 'getBrokerById').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'update').mockResolvedValue(undefined);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(service.setActiveBroker(mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(new NotFoundException('The account associated with this user was'));
+    });
+  });
+  
+  describe('deleteBroker', () => {
+    it('should delete a broker', async () => {
+      const mockUserId = 1;
+
+      const mockUser = [];
+
+      jest.spyOn(dealsRepository, 'count').mockResolvedValue(mockUser.length);
       jest.spyOn(userRepository, 'delete').mockResolvedValue({
         affected: 1, raw: {}
       });
@@ -468,6 +635,29 @@ describe('BrokerService', () => {
       expect(dealsRepository.count).toHaveBeenCalled();
       expect(userRepository.delete).toHaveBeenCalled();
     });
-  })
+
+    it('should return BadRequestException if broker have deals', async () => {
+      const mockUserId = 1;
+
+      const mockUser = [new Users(), new Users()];
+
+      jest.spyOn(dealsRepository, 'count').mockResolvedValue(mockUser.length);
+
+      await expect(service.deleteBroker(mockUserId)).rejects.toThrow(BadRequestException);
+    });
+
+    it('should return NotFoundException if invalid broker id', async () => {
+      const mockUserId = 1;
+
+      const mockUser = [];
+
+      jest.spyOn(dealsRepository, 'count').mockResolvedValue(mockUser.length);
+      jest.spyOn(userRepository, 'delete').mockResolvedValue({
+        affected: 0, raw: {}
+      });
+
+      await expect(service.deleteBroker(mockUserId)).rejects.toThrow(NotFoundException);
+    });
+  });
   
 });

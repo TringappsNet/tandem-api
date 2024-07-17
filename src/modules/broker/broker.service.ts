@@ -130,9 +130,7 @@ export class BrokerService {
 
   async setActiveBroker(id: number, setActiveBrokerDto: SetActiveBrokerDto) {
     try {
-      const checkStatus = await this.brokerRepository.findOne({
-        where: { id },
-      });
+      const checkStatus = await this.getBrokerById(id);
       if (!checkStatus) {
         throw new NotFoundException(`Broker with id ${id}`);
       }

@@ -71,7 +71,7 @@ export class BrokerController {
     @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<any> {
     try {
-      return this.brokerService.findAllUsers();
+      return await this.brokerService.findAllUsers();
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
@@ -100,7 +100,7 @@ export class BrokerController {
     @Body() UpdateBrokerDto: UpdateBrokerDto,
   ): Promise<Users> {
     try {
-      return this.brokerService.updateBroker(id, UpdateBrokerDto);
+      return await this.brokerService.updateBroker(id, UpdateBrokerDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
@@ -130,7 +130,7 @@ export class BrokerController {
     @Body() setActiveBrokerDto: SetActiveBrokerDto,
   ) {
     try {
-      return this.brokerService.setActiveBroker(id, setActiveBrokerDto);
+      return await this.brokerService.setActiveBroker(id, setActiveBrokerDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
