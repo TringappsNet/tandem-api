@@ -144,50 +144,50 @@ describe('BrokerController', () => {
         totalCommission: 0,
       }];
 
-      jest.spyOn(service, 'findAllUsers').mockResolvedValue(mockUsers);
+      jest.spyOn(service, 'getAllBrokersData').mockResolvedValue(mockUsers);
 
-      const result = await controller.getAllUsers(mockUserAuth);
+      const result = await controller.getAllBrokers(mockUserAuth);
 
       expect(result).toBeDefined();
       expect(result).toEqual(mockUsers);
-      expect(service.findAllUsers).toHaveBeenCalled();
+      expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomNotFoundException when service throws NotFoundException', async () => {
       jest.spyOn(authService, 'validateUser').mockResolvedValue(true);
-      jest.spyOn(service, 'findAllUsers').mockRejectedValue(new NotFoundException('The user with the specified role was'));
+      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new NotFoundException('The user with the specified role was'));
 
-      await expect(controller.getAllUsers(mockUserAuth)).rejects.toThrow(CustomNotFoundException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomNotFoundException);
 
-      expect(service.findAllUsers).toHaveBeenCalled();
+      expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomForbiddenException when service throws ForbiddenException', async () => {
-      jest.spyOn(service, 'findAllUsers').mockRejectedValue(new ForbiddenException());
+      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new ForbiddenException());
 
-      await expect(controller.getAllUsers(mockUserAuth)).rejects.toThrow(CustomForbiddenException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomForbiddenException);
 
-      expect(service.findAllUsers).toHaveBeenCalled();
+      expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomInternalServerErrorException when service throws CustomServiceException', async () => {
-      jest.spyOn(service, 'findAllUsers').mockRejectedValue(new CustomInternalServerErrorException('findAllUsers'));
+      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new CustomInternalServerErrorException('findAllUsers'));
 
-      await expect(controller.getAllUsers(mockUserAuth)).rejects.toThrow(CustomServiceException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomServiceException);
 
-      expect(service.findAllUsers).toHaveBeenCalled();
+      expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomBadRequestException when service throws Exception', async () => {
-      jest.spyOn(service, 'findAllUsers').mockRejectedValue(new BadRequestException());
+      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new BadRequestException());
 
-      await expect(controller.getAllUsers(mockUserAuth)).rejects.toThrow(CustomBadRequestException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomBadRequestException);
 
-      expect(service.findAllUsers).toHaveBeenCalled();
+      expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.getAllUsers);
+      const guards = Reflect.getMetadata('__guards__', controller.getAllBrokers);
       expect(guards).toContain(AuthGuard);
     });
   });

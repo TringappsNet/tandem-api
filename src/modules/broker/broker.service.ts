@@ -46,7 +46,7 @@ export class BrokerService {
     }
   }
 
-  async findAllUsers(roleId: number[] = [1, 2]): Promise<any> {
+  async getAllBrokersData(roleId: number[] = [1, 2]): Promise<any> {
     try {
       const usersWithRole = await this.userRoleRepository
         .createQueryBuilder('userRole')
@@ -64,7 +64,7 @@ export class BrokerService {
           const roleId = userRole.roleId;
 
           const deals = await this.dealsRepository.find({
-            where: { createdBy: { id: user.id } },
+            where: { brokerId: user.id },
           });
 
           const totalDeals = deals.length;

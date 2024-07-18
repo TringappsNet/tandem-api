@@ -67,11 +67,11 @@ export class BrokerController {
     required: true,
     description: 'Access Token',
   })
-  async getAllUsers(
+  async getAllBrokers(
     @UserAuth() userAuth: { userId: number; accessToken: string },
   ): Promise<any> {
     try {
-      return await this.brokerService.findAllUsers();
+      return await this.brokerService.getAllBrokersData();
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
