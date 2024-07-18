@@ -52,7 +52,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException('Invalid credentials - username');
+        throw new UnauthorizedException('Invalid credentials - Please try again');
       }
 
       if (!user.isActive) {
@@ -67,7 +67,7 @@ export class AuthService {
       );
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials - password');
+        throw new UnauthorizedException('Invalid credentials - Please try again');
       }
 
       let session = await this.sessionRepository.findOne({
