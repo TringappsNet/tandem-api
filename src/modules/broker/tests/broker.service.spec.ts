@@ -141,7 +141,7 @@ describe('BrokerService', () => {
       });
   });
   
-  describe('findAllUsers', () => {
+  describe('getAllBrokersData', () => {
     it('should return a user with deals details', async () => {
  
         const mockUser = new Users();
@@ -257,7 +257,7 @@ describe('BrokerService', () => {
         jest.spyOn(dealsRepository, 'find').mockResolvedValue(mockDeals);
 
         const roleId = [1, 2];
-        const result = await service.findAllUsers(roleId);
+        const result = await service.getAllBrokersData(roleId);
 
         expect(result).toBeDefined();
         expect(result).toHaveLength(1);
@@ -272,7 +272,7 @@ describe('BrokerService', () => {
         });
         expect(userRoleRepository.createQueryBuilder).toHaveBeenCalled();
         expect(dealsRepository.find).toHaveBeenCalledWith({
-          where: { createdBy: { id: mockUser.id } },
+          where: { brokerId: mockUser.id },
         });
     });
 
@@ -285,10 +285,10 @@ describe('BrokerService', () => {
         } as any
       );
 
-      await expect(service.findAllUsers()).rejects.toThrow(NotFoundException);
+      await expect(service.getAllBrokersData()).rejects.toThrow(NotFoundException);
     });
   });
-
+  
   describe('updateBroker', () => { 
     it('should update broker details', async () => {
       const mockUpdateBrokerDto = {
