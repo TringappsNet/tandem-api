@@ -187,7 +187,7 @@ describe('BrokerController', () => {
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.findAll);
+      const guards = Reflect.getMetadata('__guards__', controller.getAllUsers);
       expect(guards).toContain(AuthGuard);
     });
   });
@@ -306,7 +306,7 @@ describe('BrokerController', () => {
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.findAll);
+      const guards = Reflect.getMetadata('__guards__', controller.updateBroker);
       expect(guards).toContain(AuthGuard);
     });
   });
@@ -392,7 +392,7 @@ describe('BrokerController', () => {
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.findAll);
+      const guards = Reflect.getMetadata('__guards__', controller.setActiveBroker);
       expect(guards).toContain(AuthGuard);
     });
   });
@@ -473,7 +473,7 @@ describe('BrokerController', () => {
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.findAll);
+      const guards = Reflect.getMetadata('__guards__', controller.deleteBroker);
       expect(guards).toContain(AuthGuard);
     });
   });
