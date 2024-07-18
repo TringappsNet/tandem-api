@@ -10,6 +10,8 @@ import { SupportService } from '../support.service';
 import { AuthService } from '../../../modules/auth/auth.service';
 import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { CustomInternalServerErrorException, CustomUnauthorizedException } from '../../../exceptions/custom-exceptions';
 
 describe('SupportController', () => {
   let supportController: SupportController;
@@ -37,12 +39,12 @@ describe('SupportController', () => {
           useClass: Repository,
         },
         {
-          provide: AuthService, // Provide the mock AuthService
+          provide: AuthService,
           useValue: {
             validateUser: jest.fn().mockResolvedValue(true),
           },
         },
-        AuthGuard, // Provide the AuthGuard
+        AuthGuard,
       ],
     }).compile();
 
@@ -60,6 +62,8 @@ describe('SupportController', () => {
   });
 
   describe('raiseTicket', () => {
+    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+
     it('should raise the ticket and mail the appropriate details', async () => {
       const mockUser = {
         id: 1,
@@ -99,14 +103,12 @@ describe('SupportController', () => {
         message: 'Ticket raised successfully',
       };
 
-      const userAuth = { userId: 1, accessToken: 'some-token' };
-
       jest
         .spyOn(supportService, 'raiseTicket')
         .mockResolvedValue(mockRaiseTicket);
 
       const result = await supportController.raiseTicket(
-        userAuth,
+        mockUserAuth,
         mockRaiseTicketDto,
       );
 
@@ -115,6 +117,97 @@ describe('SupportController', () => {
       expect(supportService.raiseTicket).toHaveBeenCalledWith(
         mockRaiseTicketDto,
       );
+    });
+
+    it('should throw CustomUnauthorizedException when service throws UnauthorizedException', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        lastModifiedBy: null,
+        isAdmin: false,
+      };
+
+      const mockRaiseTicketDto = {
+        ticketSubject: 'New Ticket Subject',
+        ticketDescription: 'New Ticket Description',
+        senderId: mockUser.id,
+      };
+
+      jest.spyOn(supportService, 'raiseTicket').mockRejectedValue(new UnauthorizedException());
+
+      await expect(supportController.raiseTicket(mockUserAuth, mockRaiseTicketDto)).rejects.toThrow(CustomUnauthorizedException);
+
+      expect(supportService.raiseTicket).toHaveBeenCalled();
+    });
+
+    it('should throw CustomInternalServerErrorException when service throws Exception', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', 10),
+        firstName: 'test',
+        lastName: 'test',
+        mobile: '1234567890',
+        address: 'test address',
+        city: 'test city',
+        state: 'test state',
+        country: 'test country',
+        zipcode: '456789',
+        resetToken: null,
+        resetTokenExpires: new Date(Date.now()),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        isActive: true,
+        hasId: null,
+        save: null,
+        remove: null,
+        softRemove: null,
+        recover: null,
+        reload: null,
+        createdDeals: null,
+        updatedDeals: null,
+        lastModifiedBy: null,
+        isAdmin: false,
+      };
+
+      const mockRaiseTicketDto = {
+        ticketSubject: 'New Ticket Subject',
+        ticketDescription: 'New Ticket Description',
+        senderId: mockUser.id,
+      };
+
+      jest.spyOn(supportService, 'raiseTicket').mockRejectedValue(new InternalServerErrorException());
+
+      await expect(supportController.raiseTicket(mockUserAuth, mockRaiseTicketDto)).rejects.toThrow(CustomInternalServerErrorException);
+
+      expect(supportService.raiseTicket).toHaveBeenCalled();
+    });
+
+    it('should use AuthGuard', () => {
+      const guards = Reflect.getMetadata('__guards__', supportController.raiseTicket);
+      expect(guards).toContain(AuthGuard);
     });
   });
 });
