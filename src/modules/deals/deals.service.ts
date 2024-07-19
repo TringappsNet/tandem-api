@@ -8,14 +8,12 @@ import { CreateDealDto } from '../../common/dto/create-deal.dto';
 import { UpdateDealDto } from '../../common/dto/update-deal.dto';
 import { Deals } from '../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
-import { MailerService } from '@nestjs-modules/mailer';
-import { MailService } from 'src/common/mail/mail.service';
-import { Users } from 'src/common/entities/user.entity';
+import { MailService } from '../../common/mail/mail.service';
+import { Users } from '../../common/entities/user.entity';
 import {
   listOfDealStatus,
   listOfMilestones,
-} from 'src/common/constants/deals.constants';
-import { error } from 'console';
+} from '../../common/constants/deals.constants';
 
 @Injectable()
 export class DealsService {
