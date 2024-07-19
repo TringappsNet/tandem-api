@@ -46,6 +46,7 @@ export class BrokerService {
     }
   }
 
+
   async getAllBrokersData(roleId: number[] = [1, 2]): Promise<any> {
     try {
       const usersWithRole = await this.userRoleRepository
@@ -94,6 +95,44 @@ export class BrokerService {
         }),
       );
 
+      return brokers;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllBrokers(roleId: number[] = [2]): Promise<any> {
+    try {
+      const usersWithRole = await this.userRoleRepository
+        .createQueryBuilder('userRole')
+        .innerJoinAndSelect('userRole.user', 'user')
+        .where('userRole.roleId IN (:...roleIds)', { roleIds: roleId })
+        .getMany();
+  
+      if (usersWithRole.length === 0) {
+        throw new NotFoundException('The user with the specified role was not found');
+      }
+  
+      const brokers = await Promise.all(
+        usersWithRole.map(async (userRole) => {
+          const user = userRole.user;
+          return {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            mobile: user.mobile,
+            address: user.address,
+            city: user.city,
+            state: user.state,
+            country: user.country,
+            zipcode: user.zipcode,
+            isAdmin: user.isAdmin,
+            lastModifiedBy: user.lastModifiedBy,
+          };
+        }),
+      );
+  
       return brokers;
     } catch (error) {
       throw error;

@@ -39,6 +39,28 @@ import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
 export class BrokerController {
   constructor(private readonly brokerService: BrokerService) {}
 
+  @Get('all-brokers')
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
+  async getBrokers(
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+  ): Promise<object> {
+    try {
+      return await this.brokerService.getAllBrokers();
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      }
+    }
+  }
+
+
+  
   @Get('all-users')
   @UseGuards(AuthGuard)
   @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
