@@ -115,7 +115,7 @@ export class DealsHistory {
     onDelete: 'SET NULL',
     })
     @JoinColumn({
-    name: 'created_by',
+    name: 'deals_created_by',
     })
     createdBy: Users;
 
@@ -123,24 +123,24 @@ export class DealsHistory {
     onDelete: 'SET NULL',
     })
     @JoinColumn({
-    name: 'updated_by',
+    name: 'deals_updated_by',
     })
     updatedBy: Users;
 
     @CreateDateColumn({
-    name: 'created_at',
+    name: 'deals_created_at',
     nullable: true,
     })
     createdAt: Date = undefined;
 
     @UpdateDateColumn({
-    name: 'updated_at',
+    name: 'deals_updated_at',
     nullable: true,
     })
     updatedAt: Date = undefined;
 
     @Column({
-        name: 'date',
+        name: 'modified_date_and_time',
         type: 'timestamp',
     })
     date: Date = undefined;
