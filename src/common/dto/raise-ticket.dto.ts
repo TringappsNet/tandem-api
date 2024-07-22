@@ -1,5 +1,4 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
-import { Users } from '../entities/user.entity';
 
 export class RaiseTicketDto {
   @IsNotEmpty()

@@ -8,22 +8,50 @@ import { CreateDealDto } from '../../common/dto/create-deal.dto';
 import { UpdateDealDto } from '../../common/dto/update-deal.dto';
 import { Deals } from '../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
-import { MailerService } from '@nestjs-modules/mailer';
 import { MailService } from 'src/common/mail/mail.service';
 import { Users } from 'src/common/entities/user.entity';
 import {
   listOfDealStatus,
   listOfMilestones,
 } from 'src/common/constants/deals.constants';
-import { error } from 'console';
+import { allowedActions, DealsHistory } from 'src/common/entities/deals.history.entity';
+import { stat } from 'fs';
 
 @Injectable()
 export class DealsService {
   constructor(
     @InjectRepository(Deals) private dealsRepository: Repository<Deals>,
     @InjectRepository(Users) private usersRepository: Repository<Users>,
+    @InjectRepository(DealsHistory) private dealsHistoryRepository: Repository<DealsHistory>,
     private mailService: MailService,
   ) {}
+
+
+  dealsHistory = async (state: Deals, action: allowedActions) => {
+    const dealsHistory = new DealsHistory();
+    dealsHistory.dealId = state.id;
+    dealsHistory.activeStep = state.activeStep;
+    dealsHistory.status = state.status;
+    dealsHistory.brokerName = state.brokerName;
+    dealsHistory.brokerId = state.brokerId;
+    dealsHistory.propertyName = state.propertyName;
+    dealsHistory.dealStartDate = state.dealStartDate;
+    dealsHistory.proposalDate = state.proposalDate;
+    dealsHistory.loiExecuteDate = state.loiExecuteDate;
+    dealsHistory.leaseSignedDate = state.leaseSignedDate;
+    dealsHistory.noticeToProceedDate = state.noticeToProceedDate;
+    dealsHistory.commercialOperationDate = state.commercialOperationDate;
+    dealsHistory.potentialCommissionDate = state.potentialCommissionDate;
+    dealsHistory.potentialCommission = state.potentialCommission;
+    dealsHistory.createdBy = state.createdBy;
+    dealsHistory.createdAt = state.createdAt;
+    dealsHistory.updatedBy = state.updatedBy;
+    dealsHistory.updatedAt = state.updatedAt;
+    dealsHistory.date = new Date(Date.now());
+    dealsHistory.action = action;
+    
+    this.dealsHistoryRepository.save(dealsHistory);
+  };
 
   getInProgressMilestones = async (
     existingActiveStep: number,
@@ -79,6 +107,9 @@ export class DealsService {
     try {
       const dealData = this.dealsRepository.create(createDealDto);
       const saveData = await this.dealsRepository.save(dealData);
+
+      this.dealsHistory(saveData, allowedActions.CREATE);
+
       let mailTemplate = './deals';
 
       const assignedToRecord = await this.usersRepository.findOne({
@@ -214,7 +245,13 @@ export class DealsService {
 
   async getDealById(id: number): Promise<Deals> {
     try {
-      const deal = await this.dealsRepository.findOneBy({ id });
+      const deal = await this.dealsRepository.findOne({ 
+        where: { id },
+        relations: {
+          updatedBy: true,
+          createdBy: true,
+        }
+       });
 
       if (!deal) {
         throw new NotFoundException(`Deals with ID ${id}`);
@@ -249,6 +286,8 @@ export class DealsService {
         updateDealDto,
       );
       const savedDeal = await this.dealsRepository.save(updatedDeal);
+
+      this.dealsHistory(savedDeal, allowedActions.UPDATE);
 
       if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
         if (existingActiveStep === latestActiveStep) {
@@ -289,9 +328,28 @@ export class DealsService {
         throw new NotFoundException(`Deals with ID ${id}`);
       }
 
+      await this.dealsHistory(deal, allowedActions.DELETE);
+
       return await this.dealsRepository.remove(deal);
     } catch (error) {
       throw error;
     }
   }
+
+  // async getDealsHistory(id: number): Promise<DealsHistory[]> {
+  //   try {
+  //     const dealsHistory = await this.dealsHistoryRepository.find({
+  //       where: { dealId: id },
+  //     })
+      
+  //     const dealsHistoryArray = [];
+  //     dealsHistory.map((deals) => {
+  //       dealsHistoryArray.push(deals.dealState);
+  //     })
+
+  //     return dealsHistoryArray;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
