@@ -1,6 +1,6 @@
 import { Support } from '../../common/entities/support.entity';
 import { Repository } from 'typeorm';
-import { RaiseTicketDto } from 'src/common/dto/raise-ticket.dto';
+import { RaiseTicketDto } from '../../common/dto/raise-ticket.dto';
 import { MailService } from '../../common/mail/mail.service';
 import {
   Injectable,
@@ -9,6 +9,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../../common/entities/user.entity';
+import { PromotionalEmailsDto } from '../../common/dto/promotionals_emails.dto';
+import { filePath } from '../../common/constants/support.constants';
 
 @Injectable()
 export class SupportService {
@@ -61,6 +63,42 @@ export class SupportService {
 
       return {
         message: 'Ticket raised successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async promotionalEmails(promotionalEmailsDto: PromotionalEmailsDto) {
+    try {    
+      const email: string[] = promotionalEmailsDto.emails;
+      const fs = require('fs');
+      const path = require('path');
+      const fileLocation = path.join(filePath, './promotionalTemplates.hbs')
+
+      if (fs.existsSync(fileLocation)) {
+        fs.unlink(fileLocation, (err) => err);
+        // console.log(`The file or directory at '${fileLocation}' exists.`);
+      } else {
+        console.log(`The file or directory at '${fileLocation}' does not exist.`);
+      }
+
+      fs.writeFileSync(fileLocation, promotionalEmailsDto.template);
+
+      const mailTemplate = promotionalEmailsDto.template?'./promotionalTemplates':'./promotionalEmails'; 
+
+      await this.mailService.promotionalMail(
+        email,
+        promotionalEmailsDto.ticketSubject,
+        {
+          description: promotionalEmailsDto.ticketDescription,
+          link: 'https://www.tandeminf.com/',
+        },
+        mailTemplate,
+      );
+
+      return {
+        message: 'Promotional mail sent successfully',
       };
     } catch (error) {
       throw error;
