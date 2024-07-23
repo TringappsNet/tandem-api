@@ -1,6 +1,6 @@
 import { Support } from '../../common/entities/support.entity';
 import { Repository } from 'typeorm';
-import { RaiseTicketDto } from 'src/common/dto/raise-ticket.dto';
+import { RaiseTicketDto } from '../../common/dto/raise-ticket.dto';
 import { MailService } from '../../common/mail/mail.service';
 import {
   Injectable,

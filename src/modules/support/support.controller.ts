@@ -18,7 +18,7 @@ import {
 } from '../../exceptions/custom-exceptions';
 import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
 import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
-import { PromotionalEmailsDto } from 'src/common/dto/promotionals_emails.dto';
+import { PromotionalEmailsDto } from '../../common/dto/promotionals_emails.dto';
 
 @ApiTags('Support')
 @Controller('api/support')
