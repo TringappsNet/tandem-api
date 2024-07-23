@@ -1,1 +1,1 @@
-export const filePath = 'src\\common\\mail\\templates'
+export const filePath = 'src\\common\\mail\\templates';

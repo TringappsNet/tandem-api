@@ -10,8 +10,14 @@ import { SupportService } from '../support.service';
 import { AuthService } from '../../../modules/auth/auth.service';
 import { AuthGuard } from '../../../common/gaurds/auth/auth.gaurd';
 import * as bcrypt from 'bcrypt';
-import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { CustomInternalServerErrorException, CustomUnauthorizedException } from '../../../exceptions/custom-exceptions';
+import {
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import {
+  CustomInternalServerErrorException,
+  CustomUnauthorizedException,
+} from '../../../exceptions/custom-exceptions';
 
 describe('SupportController', () => {
   let supportController: SupportController;
@@ -62,7 +68,10 @@ describe('SupportController', () => {
   });
 
   describe('raiseTicket', () => {
-    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+    const mockUserAuth = {
+      userId: 1,
+      accessToken: 'qwertyuiopasdfghjklzxcvbnm',
+    };
 
     it('should raise the ticket and mail the appropriate details', async () => {
       const mockUser = {
@@ -155,9 +164,13 @@ describe('SupportController', () => {
         senderId: mockUser.id,
       };
 
-      jest.spyOn(supportService, 'raiseTicket').mockRejectedValue(new UnauthorizedException());
+      jest
+        .spyOn(supportService, 'raiseTicket')
+        .mockRejectedValue(new UnauthorizedException());
 
-      await expect(supportController.raiseTicket(mockUserAuth, mockRaiseTicketDto)).rejects.toThrow(CustomUnauthorizedException);
+      await expect(
+        supportController.raiseTicket(mockUserAuth, mockRaiseTicketDto),
+      ).rejects.toThrow(CustomUnauthorizedException);
 
       expect(supportService.raiseTicket).toHaveBeenCalled();
     });
@@ -198,15 +211,22 @@ describe('SupportController', () => {
         senderId: mockUser.id,
       };
 
-      jest.spyOn(supportService, 'raiseTicket').mockRejectedValue(new InternalServerErrorException());
+      jest
+        .spyOn(supportService, 'raiseTicket')
+        .mockRejectedValue(new InternalServerErrorException());
 
-      await expect(supportController.raiseTicket(mockUserAuth, mockRaiseTicketDto)).rejects.toThrow(CustomInternalServerErrorException);
+      await expect(
+        supportController.raiseTicket(mockUserAuth, mockRaiseTicketDto),
+      ).rejects.toThrow(CustomInternalServerErrorException);
 
       expect(supportService.raiseTicket).toHaveBeenCalled();
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', supportController.raiseTicket);
+      const guards = Reflect.getMetadata(
+        '__guards__',
+        supportController.raiseTicket,
+      );
       expect(guards).toContain(AuthGuard);
     });
   });

@@ -15,13 +15,28 @@ import { InviteUser } from '../../../common/entities/invite.entity';
 import { MailService } from '../../../common/mail/mail.service';
 import { RoleService } from '../../../modules/user-role/role/role.service';
 import { MailerService } from '@nestjs-modules/mailer';
-import { BadRequestException, ConflictException, ForbiddenException, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { CustomBadRequestException, CustomConflictException, CustomForbiddenException, CustomInternalServerErrorException, CustomNotFoundException, CustomServiceException, CustomUnprocessableEntityException } from '../../../exceptions/custom-exceptions';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import {
+  CustomBadRequestException,
+  CustomConflictException,
+  CustomForbiddenException,
+  CustomInternalServerErrorException,
+  CustomNotFoundException,
+  CustomServiceException,
+  CustomUnprocessableEntityException,
+} from '../../../exceptions/custom-exceptions';
 
 describe('BrokerController', () => {
   let controller: BrokerController;
   let service: BrokerService;
-  let authService: AuthService
+  let authService: AuthService;
   let userRepository: Repository<Users>;
   let userRoleRepository: Repository<UserRole>;
   let sessionRepository: Repository<Session>;
@@ -78,11 +93,17 @@ describe('BrokerController', () => {
     service = module.get<BrokerService>(BrokerService);
     authService = module.get<AuthService>(AuthService);
     userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
-    userRoleRepository = module.get<Repository<UserRole>>(getRepositoryToken(UserRole));
-    sessionRepository = module.get<Repository<Session>>(getRepositoryToken(Session));
+    userRoleRepository = module.get<Repository<UserRole>>(
+      getRepositoryToken(UserRole),
+    );
+    sessionRepository = module.get<Repository<Session>>(
+      getRepositoryToken(Session),
+    );
     dealsRepository = module.get<Repository<Deals>>(getRepositoryToken(Deals));
     roleRepository = module.get<Repository<Role>>(getRepositoryToken(Role));
-    inviteRepository = module.get<Repository<InviteUser>>(getRepositoryToken(InviteUser));
+    inviteRepository = module.get<Repository<InviteUser>>(
+      getRepositoryToken(InviteUser),
+    );
     mailService = module.get<MailService>(MailService);
     jwtService = module.get<JwtService>(JwtService);
     roleService = module.get<RoleService>(RoleService);
@@ -94,7 +115,10 @@ describe('BrokerController', () => {
   });
 
   describe('findAll', () => {
-    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+    const mockUserAuth = {
+      userId: 1,
+      accessToken: 'qwertyuiopasdfghjklzxcvbnm',
+    };
 
     it('should return all the users', async () => {
       const mockUsers = [new Users(), new Users()];
@@ -109,9 +133,13 @@ describe('BrokerController', () => {
     });
 
     it('should throw CustomNotFoundException when service throws NotFoundException', async () => {
-      jest.spyOn(service, 'findAll').mockRejectedValue(new NotFoundException('Brokers'));
+      jest
+        .spyOn(service, 'findAll')
+        .mockRejectedValue(new NotFoundException('Brokers'));
 
-      await expect(controller.findAll(mockUserAuth)).rejects.toThrow(CustomNotFoundException);
+      await expect(controller.findAll(mockUserAuth)).rejects.toThrow(
+        CustomNotFoundException,
+      );
       expect(service.findAll).toHaveBeenCalled();
     });
 
@@ -120,29 +148,34 @@ describe('BrokerController', () => {
       expect(guards).toContain(AuthGuard);
     });
   });
-  
+
   describe('getAllUsers', () => {
-    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+    const mockUserAuth = {
+      userId: 1,
+      accessToken: 'qwertyuiopasdfghjklzxcvbnm',
+    };
 
     it('should return all the users with respective deal details', async () => {
-      const mockUsers = [{
-        user: new Users,
-        roleId: 1,
-        totalDeals: 1,
-        dealsOpened: 1,
-        dealsInProgress: 0,
-        dealsClosed: 0,
-        totalCommission: 0,
-      },
-      {
-        user: new Users,
-        roleId: 1,
-        totalDeals: 1,
-        dealsOpened: 1,
-        dealsInProgress: 0,
-        dealsClosed: 0,
-        totalCommission: 0,
-      }];
+      const mockUsers = [
+        {
+          user: new Users(),
+          roleId: 1,
+          totalDeals: 1,
+          dealsOpened: 1,
+          dealsInProgress: 0,
+          dealsClosed: 0,
+          totalCommission: 0,
+        },
+        {
+          user: new Users(),
+          roleId: 1,
+          totalDeals: 1,
+          dealsOpened: 1,
+          dealsInProgress: 0,
+          dealsClosed: 0,
+          totalCommission: 0,
+        },
+      ];
 
       jest.spyOn(service, 'getAllBrokersData').mockResolvedValue(mockUsers);
 
@@ -155,45 +188,71 @@ describe('BrokerController', () => {
 
     it('should throw CustomNotFoundException when service throws NotFoundException', async () => {
       jest.spyOn(authService, 'validateUser').mockResolvedValue(true);
-      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new NotFoundException('The user with the specified role was'));
+      jest
+        .spyOn(service, 'getAllBrokersData')
+        .mockRejectedValue(
+          new NotFoundException('The user with the specified role was'),
+        );
 
-      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomNotFoundException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(
+        CustomNotFoundException,
+      );
 
       expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomForbiddenException when service throws ForbiddenException', async () => {
-      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new ForbiddenException());
+      jest
+        .spyOn(service, 'getAllBrokersData')
+        .mockRejectedValue(new ForbiddenException());
 
-      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomForbiddenException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(
+        CustomForbiddenException,
+      );
 
       expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomInternalServerErrorException when service throws CustomServiceException', async () => {
-      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new CustomInternalServerErrorException('findAllUsers'));
+      jest
+        .spyOn(service, 'getAllBrokersData')
+        .mockRejectedValue(
+          new CustomInternalServerErrorException('findAllUsers'),
+        );
 
-      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomServiceException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(
+        CustomServiceException,
+      );
 
       expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should throw CustomBadRequestException when service throws Exception', async () => {
-      jest.spyOn(service, 'getAllBrokersData').mockRejectedValue(new BadRequestException());
+      jest
+        .spyOn(service, 'getAllBrokersData')
+        .mockRejectedValue(new BadRequestException());
 
-      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(CustomBadRequestException);
+      await expect(controller.getAllBrokers(mockUserAuth)).rejects.toThrow(
+        CustomBadRequestException,
+      );
 
       expect(service.getAllBrokersData).toHaveBeenCalled();
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.getAllBrokers);
+      const guards = Reflect.getMetadata(
+        '__guards__',
+        controller.getAllBrokers,
+      );
       expect(guards).toContain(AuthGuard);
     });
   });
-  
+
   describe('updateBroker', () => {
-    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+    const mockUserAuth = {
+      userId: 1,
+      accessToken: 'qwertyuiopasdfghjklzxcvbnm',
+    };
 
     it('should update broker deatils', async () => {
       const mockUserId = 1;
@@ -214,7 +273,11 @@ describe('BrokerController', () => {
 
       jest.spyOn(service, 'updateBroker').mockResolvedValue(mockUser);
 
-      const result = await controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto);
+      const result = await controller.updateBroker(
+        mockUserAuth,
+        mockUserId,
+        mockUpdateBrokerDto,
+      );
 
       expect(result).toBeDefined();
       expect(result).toEqual(mockUser);
@@ -235,9 +298,15 @@ describe('BrokerController', () => {
         zipcode: '456789',
         lastModifiedBy: 1,
       };
-      jest.spyOn(service, 'updateBroker').mockRejectedValue(new NotFoundException(`Broker with ID ${mockUserId}`));
+      jest
+        .spyOn(service, 'updateBroker')
+        .mockRejectedValue(
+          new NotFoundException(`Broker with ID ${mockUserId}`),
+        );
 
-      await expect(controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto)).rejects.toThrow(CustomNotFoundException);
+      await expect(
+        controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto),
+      ).rejects.toThrow(CustomNotFoundException);
 
       expect(service.updateBroker).toHaveBeenCalled();
     });
@@ -256,9 +325,13 @@ describe('BrokerController', () => {
         zipcode: '456789',
         lastModifiedBy: 1,
       };
-      jest.spyOn(service, 'updateBroker').mockRejectedValue(new UnprocessableEntityException());
+      jest
+        .spyOn(service, 'updateBroker')
+        .mockRejectedValue(new UnprocessableEntityException());
 
-      await expect(controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto)).rejects.toThrow(CustomUnprocessableEntityException);
+      await expect(
+        controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto),
+      ).rejects.toThrow(CustomUnprocessableEntityException);
 
       expect(service.updateBroker).toHaveBeenCalled();
     });
@@ -277,9 +350,13 @@ describe('BrokerController', () => {
         zipcode: '456789',
         lastModifiedBy: 1,
       };
-      jest.spyOn(service, 'updateBroker').mockRejectedValue(new ConflictException());
+      jest
+        .spyOn(service, 'updateBroker')
+        .mockRejectedValue(new ConflictException());
 
-      await expect(controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto)).rejects.toThrow(CustomConflictException);
+      await expect(
+        controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto),
+      ).rejects.toThrow(CustomConflictException);
 
       expect(service.updateBroker).toHaveBeenCalled();
     });
@@ -298,9 +375,13 @@ describe('BrokerController', () => {
         zipcode: '456789',
         lastModifiedBy: 1,
       };
-      jest.spyOn(service, 'updateBroker').mockRejectedValue(new BadRequestException());
+      jest
+        .spyOn(service, 'updateBroker')
+        .mockRejectedValue(new BadRequestException());
 
-      await expect(controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto)).rejects.toThrow(CustomBadRequestException);
+      await expect(
+        controller.updateBroker(mockUserAuth, mockUserId, mockUpdateBrokerDto),
+      ).rejects.toThrow(CustomBadRequestException);
 
       expect(service.updateBroker).toHaveBeenCalled();
     });
@@ -310,9 +391,12 @@ describe('BrokerController', () => {
       expect(guards).toContain(AuthGuard);
     });
   });
-  
+
   describe('setActiveBroker', () => {
-    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+    const mockUserAuth = {
+      userId: 1,
+      accessToken: 'qwertyuiopasdfghjklzxcvbnm',
+    };
 
     it('should set broker active', async () => {
       const mockUserId = 1;
@@ -328,7 +412,11 @@ describe('BrokerController', () => {
 
       jest.spyOn(service, 'setActiveBroker').mockResolvedValue(mockUser);
 
-      const result = await controller.setActiveBroker(mockUserAuth, mockUserId, mockSetActiveBrokerDto);
+      const result = await controller.setActiveBroker(
+        mockUserAuth,
+        mockUserId,
+        mockSetActiveBrokerDto,
+      );
 
       expect(result).toBeDefined();
       expect(result).toEqual(mockUser);
@@ -342,9 +430,19 @@ describe('BrokerController', () => {
         isActive: true,
       };
 
-      jest.spyOn(service, 'setActiveBroker').mockRejectedValue(new NotFoundException(`Broker with ID ${mockUserId}`));
+      jest
+        .spyOn(service, 'setActiveBroker')
+        .mockRejectedValue(
+          new NotFoundException(`Broker with ID ${mockUserId}`),
+        );
 
-      await expect(controller.setActiveBroker(mockUserAuth, mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(CustomNotFoundException);
+      await expect(
+        controller.setActiveBroker(
+          mockUserAuth,
+          mockUserId,
+          mockSetActiveBrokerDto,
+        ),
+      ).rejects.toThrow(CustomNotFoundException);
 
       expect(service.setActiveBroker).toHaveBeenCalled();
     });
@@ -356,9 +454,17 @@ describe('BrokerController', () => {
         isActive: true,
       };
 
-      jest.spyOn(service, 'setActiveBroker').mockRejectedValue(new UnprocessableEntityException());
+      jest
+        .spyOn(service, 'setActiveBroker')
+        .mockRejectedValue(new UnprocessableEntityException());
 
-      await expect(controller.setActiveBroker(mockUserAuth, mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(CustomUnprocessableEntityException);
+      await expect(
+        controller.setActiveBroker(
+          mockUserAuth,
+          mockUserId,
+          mockSetActiveBrokerDto,
+        ),
+      ).rejects.toThrow(CustomUnprocessableEntityException);
 
       expect(service.setActiveBroker).toHaveBeenCalled();
     });
@@ -370,9 +476,17 @@ describe('BrokerController', () => {
         isActive: true,
       };
 
-      jest.spyOn(service, 'setActiveBroker').mockRejectedValue(new ConflictException());
+      jest
+        .spyOn(service, 'setActiveBroker')
+        .mockRejectedValue(new ConflictException());
 
-      await expect(controller.setActiveBroker(mockUserAuth, mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(CustomConflictException);
+      await expect(
+        controller.setActiveBroker(
+          mockUserAuth,
+          mockUserId,
+          mockSetActiveBrokerDto,
+        ),
+      ).rejects.toThrow(CustomConflictException);
 
       expect(service.setActiveBroker).toHaveBeenCalled();
     });
@@ -384,28 +498,42 @@ describe('BrokerController', () => {
         isActive: true,
       };
 
-      jest.spyOn(service, 'setActiveBroker').mockRejectedValue(new BadRequestException());
+      jest
+        .spyOn(service, 'setActiveBroker')
+        .mockRejectedValue(new BadRequestException());
 
-      await expect(controller.setActiveBroker(mockUserAuth, mockUserId, mockSetActiveBrokerDto)).rejects.toThrow(CustomBadRequestException);
+      await expect(
+        controller.setActiveBroker(
+          mockUserAuth,
+          mockUserId,
+          mockSetActiveBrokerDto,
+        ),
+      ).rejects.toThrow(CustomBadRequestException);
 
       expect(service.setActiveBroker).toHaveBeenCalled();
     });
 
     it('should use AuthGuard', () => {
-      const guards = Reflect.getMetadata('__guards__', controller.setActiveBroker);
+      const guards = Reflect.getMetadata(
+        '__guards__',
+        controller.setActiveBroker,
+      );
       expect(guards).toContain(AuthGuard);
     });
   });
-  
+
   describe('deleteBroker', () => {
-    const mockUserAuth = { userId: 1, accessToken: 'qwertyuiopasdfghjklzxcvbnm'};
+    const mockUserAuth = {
+      userId: 1,
+      accessToken: 'qwertyuiopasdfghjklzxcvbnm',
+    };
 
     it('should delete a broker', async () => {
       const mockUserId = 1;
 
       const mockDeleteBroker = {
         message: 'Broker deleted successfully',
-      }
+      };
 
       jest.spyOn(service, 'deleteBroker').mockResolvedValue(mockDeleteBroker);
 
@@ -421,11 +549,17 @@ describe('BrokerController', () => {
 
       const mockDeleteBroker = {
         message: 'Broker deleted successfully',
-      }
+      };
 
-      jest.spyOn(service, 'deleteBroker').mockRejectedValue(new NotFoundException(`Broker with ID ${mockUserId}`));
+      jest
+        .spyOn(service, 'deleteBroker')
+        .mockRejectedValue(
+          new NotFoundException(`Broker with ID ${mockUserId}`),
+        );
 
-      await expect(controller.deleteBroker(mockUserAuth, mockUserId)).rejects.toThrow(CustomNotFoundException);
+      await expect(
+        controller.deleteBroker(mockUserAuth, mockUserId),
+      ).rejects.toThrow(CustomNotFoundException);
 
       expect(service.deleteBroker).toHaveBeenCalled();
     });
@@ -435,11 +569,15 @@ describe('BrokerController', () => {
 
       const mockDeleteBroker = {
         message: 'Broker deleted successfully',
-      }
+      };
 
-      jest.spyOn(service, 'deleteBroker').mockRejectedValue(new ForbiddenException());
+      jest
+        .spyOn(service, 'deleteBroker')
+        .mockRejectedValue(new ForbiddenException());
 
-      await expect(controller.deleteBroker(mockUserAuth, mockUserId)).rejects.toThrow(CustomForbiddenException);
+      await expect(
+        controller.deleteBroker(mockUserAuth, mockUserId),
+      ).rejects.toThrow(CustomForbiddenException);
 
       expect(service.deleteBroker).toHaveBeenCalled();
     });
@@ -449,11 +587,15 @@ describe('BrokerController', () => {
 
       const mockDeleteBroker = {
         message: 'Broker deleted successfully',
-      }
+      };
 
-      jest.spyOn(service, 'deleteBroker').mockRejectedValue(new InternalServerErrorException());
+      jest
+        .spyOn(service, 'deleteBroker')
+        .mockRejectedValue(new InternalServerErrorException());
 
-      await expect(controller.deleteBroker(mockUserAuth, mockUserId)).rejects.toThrow(CustomServiceException);
+      await expect(
+        controller.deleteBroker(mockUserAuth, mockUserId),
+      ).rejects.toThrow(CustomServiceException);
 
       expect(service.deleteBroker).toHaveBeenCalled();
     });
@@ -463,11 +605,15 @@ describe('BrokerController', () => {
 
       const mockDeleteBroker = {
         message: 'Broker deleted successfully',
-      }
+      };
 
-      jest.spyOn(service, 'deleteBroker').mockRejectedValue(new BadRequestException());
+      jest
+        .spyOn(service, 'deleteBroker')
+        .mockRejectedValue(new BadRequestException());
 
-      await expect(controller.deleteBroker(mockUserAuth, mockUserId)).rejects.toThrow(CustomBadRequestException);
+      await expect(
+        controller.deleteBroker(mockUserAuth, mockUserId),
+      ).rejects.toThrow(CustomBadRequestException);
 
       expect(service.deleteBroker).toHaveBeenCalled();
     });
@@ -477,5 +623,4 @@ describe('BrokerController', () => {
       expect(guards).toContain(AuthGuard);
     });
   });
-  
 });
