@@ -154,7 +154,7 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Invitation to join our platform';
-      const link = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
+      const link = `${authConstants.hostname}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
       const option = 'View Invitation';
       const text =
         'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
@@ -237,7 +237,7 @@ export class AuthService {
 
       await this.userRepository.save(user);
 
-      const link = `${authConstants.hostname}:${authConstants.port}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
+      const link = `${authConstants.hostname}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
 
       const subject = 'Password Reset Request';
       const text = 'To reset your password, please click the following link:';

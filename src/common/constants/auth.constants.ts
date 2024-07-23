@@ -4,7 +4,7 @@ export const jwtConstants = {
 };
 
 export const authConstants = {
-  hostname: 'http://127.0.0.1',
+  hostname: 'http://43.205.44.92',
   port: '3000',
   endpoints: {
     register: 'registerform',
