@@ -180,7 +180,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Headers('Authorization') token: string) {
+  async logout(@Headers('access-token') token: string) {
     try {
       const result = await this.authService.logout(token);
       return { message: 'Logout successful', data: result };

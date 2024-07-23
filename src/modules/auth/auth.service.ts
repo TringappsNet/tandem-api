@@ -74,15 +74,17 @@ export class AuthService {
         );
       }
 
-      let session = await this.sessionRepository.findOne({
-        where: { userId: user.id },
-      });
+      // let session = await this.sessionRepository.findOne({
+      //   where: { userId: user.id },
+      // });
 
-      if (!session) {
-        session = new Session();
-        session.userId = user.id;
-      }
+      // if (!session) {
+      //   session = new Session();
+      //   session.userId = user.id;
+      // }
 
+      const session = new Session();
+      session.userId = user.id;
       session.token = crypto.randomBytes(50).toString('hex');
       session.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
@@ -351,6 +353,10 @@ export class AuthService {
       const session = await this.sessionRepository.findOne({
         where: { userId, token: accessToken },
       });
+
+      if (session.expiresAt < new Date()) {
+        await this.sessionRepository.delete({ token: session.token });
+      }
 
       if (!session || session.expiresAt < new Date()) {
         return false;
