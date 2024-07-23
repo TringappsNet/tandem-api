@@ -4,7 +4,7 @@ export const jwtConstants = {
 };
 
 export const authConstants = {
-  hostname: 'http://43.205.44.92',
+  hostname: 'http://portal.tandeminf.com/',
   port: '3000',
   endpoints: {
     register: 'registerform',
