@@ -15,6 +15,6 @@ export const setupSwagger = (app: INestApplication<any>) => {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  fs.writeFileSync("./swagger-spec.json", JSON.stringify(document));
+  fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('api', app, document);
 };

@@ -52,7 +52,9 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException('Invalid credentials - Please try again');
+        throw new UnauthorizedException(
+          'Invalid credentials - Please try again',
+        );
       }
 
       if (!user.isActive) {
@@ -67,7 +69,9 @@ export class AuthService {
       );
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials - Please try again');
+        throw new UnauthorizedException(
+          'Invalid credentials - Please try again',
+        );
       }
 
       let session = await this.sessionRepository.findOne({
@@ -351,7 +355,7 @@ export class AuthService {
       if (!session || session.expiresAt < new Date()) {
         return false;
       }
-      
+
       const user = await this.userRepository.findOne({
         where: { id: userId },
       });
@@ -372,5 +376,5 @@ export class AuthService {
     return await this.userRepository.findOne({
       where: { id: userId },
     });
-  }
+  };
 }

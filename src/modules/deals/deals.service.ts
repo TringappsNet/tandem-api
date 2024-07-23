@@ -14,7 +14,10 @@ import {
   listOfDealStatus,
   listOfMilestones,
 } from 'src/common/constants/deals.constants';
-import { allowedActions, DealsHistory } from 'src/common/entities/deals.history.entity';
+import {
+  allowedActions,
+  DealsHistory,
+} from 'src/common/entities/deals.history.entity';
 import { stat } from 'fs';
 
 @Injectable()
@@ -22,10 +25,10 @@ export class DealsService {
   constructor(
     @InjectRepository(Deals) private dealsRepository: Repository<Deals>,
     @InjectRepository(Users) private usersRepository: Repository<Users>,
-    @InjectRepository(DealsHistory) private dealsHistoryRepository: Repository<DealsHistory>,
+    @InjectRepository(DealsHistory)
+    private dealsHistoryRepository: Repository<DealsHistory>,
     private mailService: MailService,
   ) {}
-
 
   dealsHistory = async (state: Deals, action: allowedActions) => {
     const dealsHistory = new DealsHistory();
@@ -49,7 +52,7 @@ export class DealsService {
     dealsHistory.updatedAt = state.updatedAt;
     dealsHistory.date = new Date(Date.now());
     dealsHistory.action = action;
-    
+
     this.dealsHistoryRepository.save(dealsHistory);
   };
 
@@ -245,13 +248,13 @@ export class DealsService {
 
   async getDealById(id: number): Promise<Deals> {
     try {
-      const deal = await this.dealsRepository.findOne({ 
+      const deal = await this.dealsRepository.findOne({
         where: { id },
         relations: {
           updatedBy: true,
           createdBy: true,
-        }
-       });
+        },
+      });
 
       if (!deal) {
         throw new NotFoundException(`Deals with ID ${id}`);
@@ -341,7 +344,7 @@ export class DealsService {
   //     const dealsHistory = await this.dealsHistoryRepository.find({
   //       where: { dealId: id },
   //     })
-      
+
   //     const dealsHistoryArray = [];
   //     dealsHistory.map((deals) => {
   //       dealsHistoryArray.push(deals.dealState);

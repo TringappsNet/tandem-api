@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
     const users = await this.authService.getUser(userId);
     // this.clsService.set('user', users);
     // console.log(this.clsService.get('user'));
-    
+
     if (!isValid) {
       throw new UnauthorizedException(
         'The provided user ID or access token is invalid',

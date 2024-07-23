@@ -29,11 +29,14 @@ import { DealsHistory } from './common/entities/deals.history.entity';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     LandlordModule,
-    ClsModule.forRoot({ global: true, middleware: { mount: true }, guard: { mount: true } }),
+    ClsModule.forRoot({
+      global: true,
+      middleware: { mount: true },
+      guard: { mount: true },
+    }),
     // AuditLogModule,
     // TypeOrmModule.forFeature([DealsHistory]),
   ],
   // providers: [ChangeAuditSubscriber],
 })
-
 export class AppModule {}

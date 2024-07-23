@@ -70,22 +70,26 @@ export class SupportService {
   }
 
   async promotionalEmails(promotionalEmailsDto: PromotionalEmailsDto) {
-    try {    
+    try {
       const email: string[] = promotionalEmailsDto.emails;
       const fs = require('fs');
       const path = require('path');
-      const fileLocation = path.join(filePath, './promotionalTemplates.hbs')
+      const fileLocation = path.join(filePath, './promotionalTemplates.hbs');
 
       if (fs.existsSync(fileLocation)) {
         fs.unlink(fileLocation, (err) => err);
         // console.log(`The file or directory at '${fileLocation}' exists.`);
       } else {
-        console.log(`The file or directory at '${fileLocation}' does not exist.`);
+        console.log(
+          `The file or directory at '${fileLocation}' does not exist.`,
+        );
       }
 
       fs.writeFileSync(fileLocation, promotionalEmailsDto.template);
 
-      const mailTemplate = promotionalEmailsDto.template?'./promotionalTemplates':'./promotionalEmails'; 
+      const mailTemplate = promotionalEmailsDto.template
+        ? './promotionalTemplates'
+        : './promotionalEmails';
 
       await this.mailService.promotionalMail(
         email,
