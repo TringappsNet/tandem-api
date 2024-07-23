@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../../common/entities/user.entity';
-import { PromotionalEmailsDto } from 'src/common/dto/promotionals_emails.dto';
-import { filePath } from 'src/common/constants/support.constants';
+import { PromotionalEmailsDto } from '../../common/dto/promotionals_emails.dto';
+import { filePath } from '../../common/constants/support.constants';
 
 @Injectable()
 export class SupportService {
