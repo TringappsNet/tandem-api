@@ -67,4 +67,21 @@ export class MailService {
       },
     });
   }
+
+  async promotionalMail(
+    email: string[],
+    subject: string,
+    context: any,
+    mailTemplate: string,
+  ) {
+    await this.mailerService.sendMail({
+      // sender: 'tandeminfrastructure@gmail.com',
+      bcc: email,
+      subject: subject,
+      template: mailTemplate,
+      context: {
+        ...context,
+      },
+    });
+  }
 }
