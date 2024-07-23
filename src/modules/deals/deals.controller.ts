@@ -36,6 +36,7 @@ import {
 } from '../../exceptions/custom-exceptions';
 import { AuthGuard } from '../../common/gaurds/auth/auth.gaurd';
 import { UserAuth } from '../../common/gaurds/auth/user-auth.decorator';
+import { DealsHistory } from 'src/common/entities/deals.history.entity';
 
 @ApiTags('Deals')
 @Controller('api/deals')
@@ -244,4 +245,24 @@ export class DealsController {
       }
     }
   }
+
+  // @Get('deal-history/:id')
+  // @HttpCode(HttpStatus.OK)
+  // async getDealHistory(
+  //   @Param('id', ParseIntPipe) id: number,
+  // ): Promise<DealsHistory[]> {
+  //   try {
+  //     return this.dealsService.getDealsHistory(id);
+  //   } catch (error) {
+  //     if (error instanceof NotFoundException) {
+  //       throw new CustomNotFoundException(error.message);
+  //     } else if (error instanceof ForbiddenException) {
+  //       throw new CustomForbiddenException();
+  //     } else if (error instanceof InternalServerErrorException) {
+  //       throw new CustomServiceException('DealsService', 'deleteDealById');
+  //     } else {
+  //       throw new CustomBadRequestException(error.message);
+  //     }
+  //   }
+  // }
 }

@@ -351,7 +351,7 @@ export class AuthService {
       if (!session || session.expiresAt < new Date()) {
         return false;
       }
-
+      
       const user = await this.userRepository.findOne({
         where: { id: userId },
       });
@@ -366,5 +366,11 @@ export class AuthService {
         'The provided user ID or access token is invalid',
       );
     }
+  }
+
+  getUser = async (userId: number): Promise<Users> => {
+    return await this.userRepository.findOne({
+      where: { id: userId },
+    });
   }
 }

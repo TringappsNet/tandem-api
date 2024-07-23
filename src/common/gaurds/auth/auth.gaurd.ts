@@ -5,10 +5,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from '../../../modules/auth/auth.service';
+import { ClsService } from 'nestjs-cls';
+import { Users } from 'src/common/entities/user.entity';
+// import { MyClsStore } from 'src/common/interfaces/cls-store.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    // private clsService: ClsService<MyClsStore>,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -25,6 +31,11 @@ export class AuthGuard implements CanActivate {
       Number(userId),
       accessToken,
     );
+
+    const users = await this.authService.getUser(userId);
+    // this.clsService.set('user', users);
+    // console.log(this.clsService.get('user'));
+    
     if (!isValid) {
       throw new UnauthorizedException(
         'The provided user ID or access token is invalid',

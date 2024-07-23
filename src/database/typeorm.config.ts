@@ -14,8 +14,9 @@ export default class TypeOrmConfig {
       password: configService.get('DB_PASSWORD'),
       database: configService.get('DB_NAME'),
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      // subscribers: [__dirname + '/../**/*.subscriber{.ts,.js}'],
       synchronize: true,
-      logging: true,
+      logging: false,
     };
   }
 }
