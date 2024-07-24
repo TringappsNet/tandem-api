@@ -399,10 +399,15 @@ describe('AuthService', () => {
       jest.spyOn(userRoleRepository, 'save').mockResolvedValue(undefined);
       jest.spyOn(inviteRepository, 'remove').mockResolvedValue(undefined);
 
+      const spySendMail = jest
+        .spyOn(mailService, 'sendMail')
+        .mockResolvedValue(undefined);
+
       const result = await service.register(mockRegisterDto);
 
       expect(result).toBeDefined();
       expect(result.message).toEqual('Registered Successfully!');
+      expect(spySendMail).toHaveBeenCalled();
       expect(userRepository.save).toHaveBeenCalled();
     });
 
