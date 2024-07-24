@@ -7,6 +7,7 @@ export const authConstants = {
   hostname: 'http://portal.tandeminf.com',
   port: '3000',
   endpoints: {
+    login: 'login',
     register: 'registerform',
     forgotPassword: 'change',
   },
