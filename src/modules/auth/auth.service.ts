@@ -216,6 +216,20 @@ export class AuthService {
 
       await this.inviteRepository.remove(inviteUser);
 
+      const subject = 'Registered Successfully - Login Into Your Account';
+      const link = `${authConstants.hostname}/${authConstants.endpoints.login}`;
+      const option = 'Login';
+      const text =
+        'You have been registered successfully to our platform. Please click on the login to explore the world of Tandem Infrastructure: ';
+
+      await this.mailService.sendMail(
+        inviteUser.email,
+        subject,
+        link,
+        text,
+        option,
+      );
+
       return { message: 'Registered Successfully!' };
     } catch (error) {
       throw error;
