@@ -219,7 +219,7 @@ export class DealsService {
       });
 
       if (!deals || deals.length === 0) {
-        throw new NotFoundException('Deals');
+        return new NotFoundException('Deals');
       }
 
       const totalDeals = deals.length;

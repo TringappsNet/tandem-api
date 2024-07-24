@@ -78,14 +78,13 @@ export class SupportService {
 
       if (fs.existsSync(fileLocation)) {
         fs.unlink(fileLocation, (err) => err);
+        fs.writeFileSync(fileLocation, promotionalEmailsDto.template);
         // console.log(`The file or directory at '${fileLocation}' exists.`);
       } else {
         console.log(
           `The file or directory at '${fileLocation}' does not exist.`,
         );
       }
-
-      fs.writeFileSync(fileLocation, promotionalEmailsDto.template);
 
       const mailTemplate = promotionalEmailsDto.template
         ? './promotionalTemplates'
