@@ -144,7 +144,7 @@ export class BrokerService {
         setActiveBrokerDto.isActive == false
       ) {
         throw new BadRequestException(
-          `Broker with id ${id} already in deactive state`,
+          `Broker is already in deactive state`,
         );
       }
       await this.brokerRepository.update(id, {
