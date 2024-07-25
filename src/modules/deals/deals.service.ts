@@ -13,12 +13,13 @@ import { Users } from 'src/common/entities/user.entity';
 import {
   listOfDealStatus,
   listOfMilestones,
+  mailSubject,
+  mailTemplates,
 } from 'src/common/constants/deals.constants';
 import {
   allowedActions,
   DealsHistory,
 } from 'src/common/entities/deals.history.entity';
-import { stat } from 'fs';
 
 @Injectable()
 export class DealsService {
@@ -66,7 +67,7 @@ export class DealsService {
     const milestones = [];
     for (let index = existingActiveStep; index < latestActiveStep; index++) {
       const element = listOfDealStatus[index];
-      if (latestActiveStep === 7 && deals.status === 'Completed') {
+      if (existingActiveStep === 6 && latestActiveStep === 7 && deals.status === 'Completed') {
         let dealStatus = deals.status;
         const element = listOfDealStatus[latestActiveStep - 1];
         milestones.push({
@@ -80,7 +81,6 @@ export class DealsService {
         date: new Date(deals[element]).toUTCString(),
       });
     }
-    console.log(milestones);
     return milestones;
   };
 
@@ -113,15 +113,15 @@ export class DealsService {
 
       this.dealsHistory(saveData, allowedActions.CREATE);
 
-      let mailTemplate = './deals';
+      let mailTemplate = mailTemplates.deals.update //'./deals';
 
       const assignedToRecord = await this.usersRepository.findOne({
         where: { id: createDealDto.brokerId },
       });
 
       if (saveData.activeStep === 1) {
-        const subject = 'Deal Has Been Created';
-        let mailTemplate = './newDeal';
+        const subject = mailSubject.deals.started //'Deal Has Been Created';
+        let mailTemplate = mailTemplates.deals.new //'./newDeal';
         this.sendMail(
           assignedToRecord,
           saveData,
@@ -137,7 +137,7 @@ export class DealsService {
           listOfMilestones,
           saveData,
         );
-        const subject = 'Current Status of the Deal';
+        const subject = mailSubject.deals.updated //'Current Status of the Deal';
         this.sendMail(
           assignedToRecord,
           saveData,
@@ -153,7 +153,7 @@ export class DealsService {
           listOfMilestones,
           saveData,
         );
-        const subject = 'Deal Has Been Completed';
+        const subject = mailSubject.deals.completed //'Deal Has Been Completed';
         this.sendMail(
           assignedToRecord,
           saveData,
@@ -271,7 +271,7 @@ export class DealsService {
     updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
     try {
-      const mailTemplate = './deals';
+      const mailTemplate = mailTemplates.deals.update //'./deals';
       const existingDeal = await this.getDealById(id);
       const existingActiveStep = existingDeal.activeStep;
       const latestActiveStep = updateDealDto.activeStep;
@@ -303,9 +303,9 @@ export class DealsService {
           listOfMilestones,
           updatedDeal,
         );
-        var subject = 'Current Status of the Deal';
+        var subject = mailSubject.deals.updated //'Current Status of the Deal';
         if (latestActiveStep === 7) {
-          subject = 'Deal Has Been Completed';
+          subject = mailSubject.deals.completed //'Deal Has Been Completed';
         }
         this.sendMail(
           assignedToRecord,
@@ -331,7 +331,30 @@ export class DealsService {
         throw new NotFoundException(`Deals with ID ${id}`);
       }
 
-      await this.dealsHistory(deal, allowedActions.DELETE);
+      this.dealsHistory(deal, allowedActions.DELETE);
+
+      const milestones = await this.getInProgressMilestones(
+        0,
+        deal.activeStep,
+        listOfDealStatus,
+        listOfMilestones,
+        deal,
+      );
+
+      const assignedToRecord = await this.usersRepository.findOne({
+        where: { id: deal.brokerId },
+      });
+
+      const mailTemplate = mailTemplates.deals.delete // './deals';
+      const subject = mailSubject.deals.deleted // 'Deal Has Been Deleted';
+
+      this.sendMail(
+        assignedToRecord,
+        deal,
+        mailTemplate,
+        subject,
+        milestones,
+      );
 
       return await this.dealsRepository.remove(deal);
     } catch (error) {
