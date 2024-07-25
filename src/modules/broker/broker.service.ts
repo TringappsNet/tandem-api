@@ -33,7 +33,6 @@ export class BrokerService {
           password,
           createdAt,
           updatedAt,
-          isActive,
           resetToken,
           resetTokenExpires,
           ...userObject
