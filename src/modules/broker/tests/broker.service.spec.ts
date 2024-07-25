@@ -130,7 +130,6 @@ describe('BrokerService', () => {
           password,
           createdAt,
           updatedAt,
-          isActive,
           resetToken,
           resetTokenExpires,
           ...userObject
