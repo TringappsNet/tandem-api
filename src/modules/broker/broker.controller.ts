@@ -85,6 +85,34 @@ export class BrokerController {
     }
   }
 
+  @Get('brokerwithdeals/:id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @ApiHeader({ name: 'user-id', required: true, description: 'User ID' })
+  @ApiHeader({
+    name: 'access-token',
+    required: true,
+    description: 'Access Token',
+  })
+  async getBrokerByIdWithDeals(
+    @UserAuth() userAuth: { userId: number; accessToken: string },
+    @Param('id') id: number,
+  ): Promise<Users | any> {
+    try {
+      return await this.brokerService.getBrokerById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new CustomNotFoundException(error.message);
+      } else if (error instanceof UnprocessableEntityException) {
+        throw new CustomUnprocessableEntityException();
+      } else if (error instanceof ConflictException) {
+        throw new CustomConflictException('Broker');
+      } else {
+        throw new CustomBadRequestException(error.message);
+      }
+    }
+  }
+
   @Put('broker/:id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
