@@ -162,7 +162,7 @@ export class BrokerService {
       );
 
       return {
-        ...brokerObject as Users,
+        user: brokerObject,
         totalDeals,
         dealsOpened,
         dealsInProgress,
