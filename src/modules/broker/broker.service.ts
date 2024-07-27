@@ -127,6 +127,53 @@ export class BrokerService {
     }
   }
 
+  async getBrokerByIdWithDeals(id: number): Promise<Users | any> {
+    try {
+      const broker = await this.brokerRepository.findOne({ where: { id } });
+      if (!broker) {
+        throw new NotFoundException(`Broker with ID ${id}`);
+      }
+      const {
+        password,
+        createdAt,
+        updatedAt,
+        resetToken,
+        resetTokenExpires,
+        ...brokerObject
+      } = broker;
+
+      const deals = await this.dealsRepository.find({
+        where: { brokerId: broker.id },
+      });
+
+      const totalDeals = deals.length;
+      const dealsOpened = deals.filter(
+        (deal) => deal.activeStep === 1,
+      ).length;
+      const dealsInProgress = deals.filter(
+        (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+      ).length;
+      const dealsClosed = deals.filter(
+        (deal) => deal.activeStep === 7,
+      ).length;
+      const totalCommission = deals.reduce(
+        (sum, deal) => sum + deal.potentialCommission,
+        0,
+      );
+
+      return {
+        user: brokerObject,
+        totalDeals,
+        dealsOpened,
+        dealsInProgress,
+        dealsClosed,
+        totalCommission,
+      } 
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async setActiveBroker(id: number, setActiveBrokerDto: SetActiveBrokerDto) {
     try {
       const checkStatus = await this.getBrokerById(id);
