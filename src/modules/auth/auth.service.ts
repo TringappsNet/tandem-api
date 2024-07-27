@@ -317,7 +317,7 @@ export class AuthService {
         user.password,
       );
       if (!isOldPasswordValid) {
-        throw new UnauthorizedException(
+        throw new NotFoundException(
           'The provided old password is incorrect',
         );
       }
