@@ -99,7 +99,7 @@ export class BrokerController {
     @Param('id') id: number,
   ): Promise<Users | any> {
     try {
-      return await this.brokerService.getBrokerById(id);
+      return await this.brokerService.getBrokerByIdWithDeals(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new CustomNotFoundException(error.message);
