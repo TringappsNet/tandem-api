@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>We Received your Message</title>
+    <title>New Tandem Solar Deal Has Been Created</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +12,10 @@
             padding: 0;
             background-color: #f9f9f9;
             color: #333;
+        }
+
+        td {
+            padding-right: 15px;
         }
 
         .container {
@@ -64,31 +68,40 @@
 <body>
     <div class="container">
         <div class="content">
-            <p>Dear {{ name }},</p>
-
             <p>
-                Thank you for reaching out to us! We have received your message and appreciate your interest in learning
-                more about our
-                products and services. At Tandem, our team is committed to providing prompt and thorough responses to
-                all
-                inquiries and you
-                can expect to hear from one of our representatives as soon as possible.
+                Dear {{ name }},
             </p>
-
             <p>
-                Please note that this is an automated email response. For security and efficiency, please do not reply
-                to
-                this email directly. Rest
-                assured, your message has been forwarded to the appropriate team member who will be in touch with you
-                shortly.
+                We are pleased to inform you that a new milestone has been reached: a Tandem Solar Deal has been
+                successfully created on
+                your account!
             </p>
-
             <p>
-                We appreciate your patience and look forward to assisting you!
+                Deal ID: {{ dealId }} <br>
+                Deal Status: {{ dealStatus }} <br>
+                Property Address: {{ propertyName }} <br>
+            </p>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><b>Deal Milestone</b></td>
+                        <td><b>Milestone Date</b></td>
+                    </tr>
+                    <tr>
+                        <td>Deal Started</td>
+                        <td>{{ milestones }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                To view the details and track the progress of this deal, please log in to your account via the Tandem
+                website at <a href="http://www.tandeminf.com" target="_blank">www.tandeminf.com</a>
+            </p>
+            <p>
+                Thank you for your continued partnership!
             </p>
         </div>
         <div class="footer">
-            <p>Sincerely,</p>
             <p>The Tandem Team</p>
             <div class="footer-content">
                 <img src="https://static.wixstatic.com/media/de20d1_c11a5e3e27554cde9ed8e2312c36095b~mv2.webp/v1/fill/w_101,h_101,al_c,lg_1,q_80,enc_auto/Logo%20Transparency%20-%20Icon.webp"

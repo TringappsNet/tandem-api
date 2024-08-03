@@ -1,5 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import { mailSubject, mailTemplates } from '../constants/support.constants';
 
 @Injectable()
 export class MailService {
@@ -8,6 +9,7 @@ export class MailService {
   async sendMail(
     email: string,
     subject: string,
+    template: string,
     link: string,
     text: string,
     option: string,
@@ -15,7 +17,7 @@ export class MailService {
     await this.mailerService.sendMail({
       to: email,
       subject: subject,
-      template: './common',
+      template: template,
       context: {
         invite_link: link,
         text: text,
@@ -32,16 +34,16 @@ export class MailService {
   ) {
     await this.mailerService.sendMail({
       to: senderMail,
-      subject: subject,
-      template: './support',
+      subject: mailSubject.support.default,
+      template: mailTemplates.support.default,
       context: {
         name: name,
       },
     });
 
     await this.mailerService.sendMail({
-      subject: subject,
-      template: './newTicket',
+      subject: mailSubject.support.enquiry,
+      template: mailTemplates.support.enquiry,
       context: {
         name: 'Admin',
         username: name,
