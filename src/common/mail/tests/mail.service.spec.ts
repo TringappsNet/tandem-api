@@ -29,6 +29,7 @@ describe('EmailService', () => {
     it('should sent the mail successfully', async () => {
       const email = 'test@gmail.com';
       const subject = 'test';
+      const template = './template'
       const text = 'test';
       const link = 'test link';
       const option = 'test option';
@@ -38,6 +39,7 @@ describe('EmailService', () => {
       const result = await mailService.sendMail(
         email,
         subject,
+        template,
         link,
         text,
         option,
