@@ -366,6 +366,24 @@ export class AuthService {
     }
   }
 
+  async getEmail(token: string) {
+    try {
+      const inviteDetails = await this.inviteRepository.findOne({
+        where: {
+          inviteToken: token,
+        }
+      })
+
+      if (!inviteDetails) {
+        throw new NotFoundException('Email ID')
+      }
+
+      return inviteDetails.email;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async validateUser(userId: number, accessToken: string): Promise<boolean> {
     try {
       const session = await this.sessionRepository.findOne({
