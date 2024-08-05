@@ -156,7 +156,7 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Tandem Referral Portal Invitation';
-      const link = `${authConstants.hostname}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
+      const link = `${authConstants.hostname}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}&email=${inviteDTO.email}`;
       const option = 'View Invitation';
       const text =
         'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
