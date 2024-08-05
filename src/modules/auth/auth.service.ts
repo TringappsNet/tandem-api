@@ -155,15 +155,17 @@ export class AuthService {
 
       await this.inviteRepository.save(inviteUser);
 
-      const subject = 'Invitation to join our platform';
+      const subject = 'Tandem Referral Portal Invitation';
       const link = `${authConstants.hostname}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
       const option = 'View Invitation';
       const text =
         'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
+      const template = './invitation';
 
       await this.mailService.sendMail(
         inviteDTO.email,
         subject,
+        template,
         link,
         text,
         option,
@@ -216,15 +218,16 @@ export class AuthService {
 
       await this.inviteRepository.remove(inviteUser);
 
-      const subject = 'Registered Successfully - Login Into Your Account';
+      const subject = 'Tandem Registration Successful – Login to your account';
       const link = `${authConstants.hostname}/${authConstants.endpoints.login}`;
       const option = 'Login';
       const text =
         'You have been registered successfully to our platform. Please click on the login to explore the world of Tandem Infrastructure: ';
-
+      const template = './registration'
       await this.mailService.sendMail(
         inviteUser.email,
         subject,
+        template,
         link,
         text,
         option,
@@ -255,11 +258,12 @@ export class AuthService {
 
       const link = `${authConstants.hostname}/${authConstants.endpoints.forgotPassword}?resetToken=${user.resetToken}`;
 
-      const subject = 'Password Reset Request';
+      const subject = 'Tandem Password Reset Request';
       const text = 'To reset your password, please click the following link:';
       const option = 'Reset password';
+      const template = './reset-password'
 
-      await this.mailService.sendMail(user.email, subject, link, text, option);
+      await this.mailService.sendMail(user.email, subject, template, link, text, option);
 
       return { message: 'Password reset email sent successfully' };
     } catch (error) {

@@ -20,6 +20,7 @@ import {
   allowedActions,
   DealsHistory,
 } from 'src/common/entities/deals.history.entity';
+import { format } from 'date-fns/format';
 
 @Injectable()
 export class DealsService {
@@ -72,13 +73,13 @@ export class DealsService {
         const element = listOfDealStatus[latestActiveStep - 1];
         milestones.push({
           milestones: listOfMilestones[index],
-          date: new Date(deals[element]).toDateString(),
+          date: format(new Date(deals[element]).toDateString(), 'MMMM dd, yyyy'),
         });
         break;
       }
       milestones.push({
         milestones: listOfMilestones[index],
-        date: new Date(deals[element]).toUTCString(),
+        date: format(new Date(deals[element]).toUTCString(), 'MMMM dd, yyyy'),
       });
     }
     return milestones;
@@ -127,7 +128,7 @@ export class DealsService {
           saveData,
           mailTemplate,
           subject,
-          new Date(saveData.dealStartDate).toDateString(),
+          format(new Date(saveData.dealStartDate).toDateString(), 'MMMM dd, yyyy'),
         );
       } else if (saveData.activeStep > 1 && saveData.activeStep < 7) {
         const milestones = await this.getInProgressMilestones(
@@ -332,29 +333,6 @@ export class DealsService {
       }
 
       this.dealsHistory(deal, allowedActions.DELETE);
-
-      const milestones = await this.getInProgressMilestones(
-        0,
-        deal.activeStep,
-        listOfDealStatus,
-        listOfMilestones,
-        deal,
-      );
-
-      const assignedToRecord = await this.usersRepository.findOne({
-        where: { id: deal.brokerId },
-      });
-
-      const mailTemplate = mailTemplates.deals.delete // './deals';
-      const subject = mailSubject.deals.deleted // 'Deal Has Been Deleted';
-
-      this.sendMail(
-        assignedToRecord,
-        deal,
-        mailTemplate,
-        subject,
-        milestones,
-      );
 
       return await this.dealsRepository.remove(deal);
     } catch (error) {

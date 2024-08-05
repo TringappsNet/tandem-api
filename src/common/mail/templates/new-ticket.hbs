@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>We Received your Message</title>
+    <title>Incoming Message from the Tandem Portal</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,32 +64,18 @@
 <body>
     <div class="container">
         <div class="content">
-            <p>Dear {{ name }},</p>
-
             <p>
-                Thank you for reaching out to us! We have received your message and appreciate your interest in learning
-                more about our
-                products and services. At Tandem, our team is committed to providing prompt and thorough responses to
-                all
-                inquiries and you
-                can expect to hear from one of our representatives as soon as possible.
+                Hi {{ name }},
             </p>
-
             <p>
-                Please note that this is an automated email response. For security and efficiency, please do not reply
-                to
-                this email directly. Rest
-                assured, your message has been forwarded to the appropriate team member who will be in touch with you
-                shortly.
-            </p>
-
-            <p>
-                We appreciate your patience and look forward to assisting you!
+                A new has been raised by the user: {{ username }}<br>
+                Email: {{ email }}<br>
+                Subject: {{ subject }}<br>
+                Message: {{ message }}<br>
             </p>
         </div>
         <div class="footer">
-            <p>Sincerely,</p>
-            <p>The Tandem Team</p>
+            <p>Tandem Portal - Enquiries</p>
             <div class="footer-content">
                 <img src="https://static.wixstatic.com/media/de20d1_c11a5e3e27554cde9ed8e2312c36095b~mv2.webp/v1/fill/w_101,h_101,al_c,lg_1,q_80,enc_auto/Logo%20Transparency%20-%20Icon.webp"
                     alt="Tandem Logo">

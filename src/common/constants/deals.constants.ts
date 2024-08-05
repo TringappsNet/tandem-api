@@ -20,17 +20,15 @@ export const listOfMilestones = [
 
 export const mailTemplates = {
   deals: {
-    new: './newDeal',
-    update: './deals',
-    delete: './deals',
+    new: './new-deal',
+    update: './update-deal',
   }
 }
 
 export const mailSubject = {
   deals: {
-    started: 'Deal Has Been Created',
-    updated: 'Current Status of the Deal',
-    completed: 'Deal Has Been Completed',
-    deleted: 'Deal Has Been Deleted'
+    started: 'New Tandem Solar Deal Has Been Created',
+    updated: 'Tandem Solar New Milestone Achieved!',
+    completed: 'Tandem Solar New Milestone Achieved!',
   }
 }
