@@ -194,4 +194,21 @@ export class AuthController {
       }
     }
   }
+
+  // @Post('get-email')
+  // @HttpCode(HttpStatus.OK)
+  // async getEmail(@Headers('invite-token') token: string) {
+  //   try {
+  //     const result = await this.authService.getEmail(token);
+  //     return { data: result };
+  //   } catch (error) {
+  //     if (error instanceof NotFoundException) {
+  //       throw new CustomNotFoundException(error.message);
+  //     } else if (error instanceof ForbiddenException) {
+  //       throw new CustomForbiddenException();
+  //     } else {
+  //       throw new CustomInternalServerErrorException('get-email');
+  //     }
+  //   }
+  // }
 }

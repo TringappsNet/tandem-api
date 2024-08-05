@@ -156,7 +156,7 @@ export class AuthService {
       await this.inviteRepository.save(inviteUser);
 
       const subject = 'Tandem Referral Portal Invitation';
-      const link = `${authConstants.hostname}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}`;
+      const link = `${authConstants.hostname}/${authConstants.endpoints.register}?inviteToken=${inviteUser.inviteToken}&email=${inviteDTO.email}`;
       const option = 'View Invitation';
       const text =
         'You have been invited to join our platform. Please click on the invitation to complete your registration: ';
@@ -361,6 +361,24 @@ export class AuthService {
       await this.sessionRepository.delete({ token: session.token });
 
       return { message: 'Logout successful' };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getEmail(token: string) {
+    try {
+      const inviteDetails = await this.inviteRepository.findOne({
+        where: {
+          inviteToken: token,
+        }
+      })
+
+      if (!inviteDetails) {
+        throw new NotFoundException('Email ID')
+      }
+
+      return inviteDetails.email;
     } catch (error) {
       throw error;
     }
