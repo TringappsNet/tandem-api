@@ -97,6 +97,7 @@ describe('SupportService', () => {
 
       jest.spyOn(supportRepository, 'save').mockResolvedValue(mockSupport);
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'find').mockResolvedValue([]);
 
       const spySupportMail = jest
         .spyOn(mailService, 'supportMail')

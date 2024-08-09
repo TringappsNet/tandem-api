@@ -29,6 +29,7 @@ export class MailService {
   async supportMail(
     name: string,
     senderMail: string,
+    adminMail: string[],
     subject: string,
     text: string,
   ) {
@@ -42,6 +43,7 @@ export class MailService {
     });
 
     await this.mailerService.sendMail({
+      cc: adminMail,
       subject: mailSubject.support.enquiry,
       template: mailTemplates.support.enquiry,
       context: {

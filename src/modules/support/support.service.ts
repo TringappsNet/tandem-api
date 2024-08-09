@@ -1,5 +1,5 @@
 import { Support } from '../../common/entities/support.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { RaiseTicketDto } from '../../common/dto/raise-ticket.dto';
 import { MailService } from '../../common/mail/mail.service';
 import {
@@ -30,6 +30,15 @@ export class SupportService {
         where: { id: userId },
       });
 
+      const adminMail = await this.userRepository.find({
+        where: { isAdmin: true, id: MoreThan(1) },
+        select: ['email'],
+      });
+
+      const adminMailArray = [];
+
+      adminMail.map((mail) => adminMailArray.push(mail.email));
+
       if (!user) {
         throw new UnauthorizedException('The user account is invalid');
       }
@@ -57,6 +66,7 @@ export class SupportService {
       await this.mailService.supportMail(
         name,
         email,
+        adminMailArray,
         raiseTicketDto.ticketSubject,
         raiseTicketDto.ticketDescription,
       );
