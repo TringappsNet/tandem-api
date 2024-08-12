@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { Sites } from '../../common/entities/sites.entity';
 import { CreateSiteDto } from '../../common/dto/create-site.dto';
 import { UpdateSiteDto } from '../../common/dto/update-site.dto';
-import { Deals } from 'src/common/entities/deals.entity';
+import { Deals } from '../../common/entities/deals.entity';
 
 @Injectable()
 export class SitesService {
