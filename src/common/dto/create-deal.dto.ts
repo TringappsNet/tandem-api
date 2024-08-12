@@ -16,6 +16,9 @@ export class CreateDealDto {
   @IsNotEmpty()
   propertyName: string;
 
+  @IsNotEmpty()
+  propertyId: number;
+
   dealStartDate: Date;
 
   proposalDate: Date;
