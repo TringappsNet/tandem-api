@@ -92,13 +92,17 @@ export class SupportService {
         // console.log(`The file or directory at '${fileLocation}' exists.`);
       } else {
         console.log(
-          `The file or directory at '${fileLocation}' does not exist.`,
+          `INFO: The file or directory at '${fileLocation}' does not exist.`,
         );
       }
 
-      const mailTemplate = promotionalEmailsDto.template
+      let mailTemplate = promotionalEmailsDto.template
         ? './promotionalTemplates'
         : './promotionalEmails';
+
+      mailTemplate = promotionalEmailsDto.isDefault
+      ? './promotionalEmails'
+      : './customisedPromotionalEmails';
 
       await this.mailService.promotionalMail(
         email,

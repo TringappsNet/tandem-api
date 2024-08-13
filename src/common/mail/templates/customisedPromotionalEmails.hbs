@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promotional Emails</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        .content {
+            font-size: 14px;
+            line-height: 2;
+        }
+
+        .footer {
+            margin-top: 2px;
+            font-size: 14px;
+        }
+
+        .footer .footer-content {
+            height: 2rem;
+            display: flex;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: .3rem !important;
+            width: 100%;
+        }
+
+        .footer .footer-content img {
+            border-radius: 100%;
+        }
+
+        .footer .footer-content .company-name {
+            font-size: 14px;
+            color: #0c0659;
+            margin: auto 8px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <p>
+                Dear Tandem Referral Partner,
+            </p>
+            <p>
+                {{ description }}
+            </p>
+        </div>
+        <div class="footer">
+            <p>Sincerely,</p>
+            <p>The Tandem Team</p>
+            <div class="footer-content">
+                <img src="https://static.wixstatic.com/media/de20d1_c11a5e3e27554cde9ed8e2312c36095b~mv2.webp/v1/fill/w_101,h_101,al_c,lg_1,q_80,enc_auto/Logo%20Transparency%20-%20Icon.webp"
+                    alt="Tandem Logo">
+                <p class="company-name">TANDEM INFRASTRUCTURE</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
