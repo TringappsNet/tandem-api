@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class PromotionalEmailsDto {
   @IsNotEmpty()
@@ -13,4 +13,7 @@ export class PromotionalEmailsDto {
   @IsOptional()
   @IsString()
   template: string;
+
+  @IsBoolean()
+  isDefault: boolean = true;
 }
