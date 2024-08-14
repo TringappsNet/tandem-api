@@ -3,6 +3,9 @@ import { Users } from '../entities/user.entity';
 
 export class CreateSiteDto {
   @IsNotEmpty()
+  landlordId: number;
+  
+  @IsNotEmpty()
   @IsString()
   addressline1: string;
 
