@@ -52,6 +52,12 @@ export class Deals {
   propertyName: string;
 
   @Column({
+    name: 'property_id',
+    type: 'integer'
+  })
+  propertyId: number;
+
+  @Column({
     name: 'deal_start_date',
     type: 'timestamp',
     default: null,
