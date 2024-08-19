@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SitesService } from '../sites.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Sites } from '../../../common/entities/sites.entity';
+import { Deals } from '../../../common/entities/deals.entity';
 import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { CreateSiteDto } from '../../../common/dto/create-site.dto';
@@ -10,6 +11,7 @@ import { UpdateSiteDto } from '../../../common/dto/update-site.dto';
 describe('SitesService', () => {
   let service: SitesService;
   let sitesRepository: Repository<Sites>;
+  let dealsRepository: Repository<Deals>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,11 +27,22 @@ describe('SitesService', () => {
             remove: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(Deals),
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            find: jest.fn(),
+            findOne: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<SitesService>(SitesService);
     sitesRepository = module.get<Repository<Sites>>(getRepositoryToken(Sites));
+    dealsRepository = module.get<Repository<Deals>>(getRepositoryToken(Deals));
   });
 
   describe('createSite', () => {

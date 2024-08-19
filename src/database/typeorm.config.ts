@@ -15,7 +15,7 @@ export default class TypeOrmConfig {
       database: configService.get('DB_NAME'),
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       // subscribers: [__dirname + '/../**/*.subscriber{.ts,.js}'],
-      synchronize: false,
+      synchronize: true,
       logging: false,
     };
   }
