@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -84,8 +85,8 @@ export class LandlordService {
       const property = await this.sitesRepository.find({
         where: { landlordId: id },
       });
-      if(property.length !== 0) {
-        throw new BadRequestException(`Landlords with ID ${landlord.id} associated with sites cannot be deleted`)
+      if(property.length > 0) {
+        throw new ConflictException(`Landlords with name "${landlord.name}" associated with sites cannot be deleted`)
       }
       return await this.landlordRepository.remove(landlord);
     } catch (error) {

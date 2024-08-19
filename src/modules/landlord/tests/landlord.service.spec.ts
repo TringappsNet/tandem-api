@@ -6,11 +6,14 @@ import { CreateLandlordDto } from '../../../common/dto/create-landlord.dto';
 import { UpdateLandlordDto } from '../../../common/dto/update-landlord.dto';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { Sites } from '../../../common/entities/sites.entity';
+import { Users } from '../../../common/entities/user.entity';
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 const createMockRepository = <T = any>(): MockRepository<T> => ({
   findOneBy: jest.fn(),
+  findOne: jest.fn(),
   find: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
@@ -21,6 +24,8 @@ const createMockRepository = <T = any>(): MockRepository<T> => ({
 describe('LandlordService', () => {
   let service: LandlordService;
   let repository: MockRepository<Landlord>;
+  let sitesRepository: Repository<Sites>;
+  let userRepository: Repository<Users>;
 
   beforeEach(async () => {
     repository = createMockRepository();
@@ -29,10 +34,20 @@ describe('LandlordService', () => {
       providers: [
         LandlordService,
         { provide: getRepositoryToken(Landlord), useValue: repository },
+        { 
+          provide: getRepositoryToken(Sites), 
+          useClass: Repository 
+        },
+        {
+          provide: getRepositoryToken(Users),
+          useClass: Repository,
+        },
       ],
     }).compile();
 
     service = module.get<LandlordService>(LandlordService);
+    userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
+    sitesRepository = module.get<Repository<Sites>>(getRepositoryToken(Sites));
   });
 
   it('should be defined', () => {
@@ -229,8 +244,9 @@ describe('LandlordService', () => {
   describe('remove', () => {
     it('should remove a landlord', async () => {
       const landlordId = 1;
-      const landlord: Landlord = {
-        id: landlordId,
+      
+      const landlord = {
+        id: 1,
         name: 'John Doe',
         email: 'john.doe@example.com',
         phoneNumber: '',
@@ -244,13 +260,17 @@ describe('LandlordService', () => {
         updatedBy: 0,
         createdAt: undefined,
         updatedAt: undefined,
-      };
+      } as Landlord;
 
       repository.findOneBy.mockResolvedValue(landlord);
-      repository.remove.mockResolvedValue(undefined);
+      jest.spyOn(sitesRepository, 'find').mockResolvedValue([]);
 
-      await expect(service.remove(landlordId)).resolves.toBeUndefined();
+      repository.remove.mockResolvedValue(landlord);
+
+      const result = await service.remove(landlordId);
+      expect(result).toEqual(landlord);
       expect(repository.findOneBy).toHaveBeenCalledWith({ id: landlordId });
+      expect(sitesRepository.find).toHaveBeenCalledWith({ where: {landlordId: landlordId} });
       expect(repository.remove).toHaveBeenCalledWith(landlord);
     });
 

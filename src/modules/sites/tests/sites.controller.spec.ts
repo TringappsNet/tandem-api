@@ -13,6 +13,7 @@ describe('SitesController', () => {
   let service: SitesService;
 
   const mockSite: Sites = {
+    landlordId: 1,
     id: 1,
     addressline1: '123 Main St',
     addressline2: 'Apt 4B',
@@ -27,6 +28,7 @@ describe('SitesController', () => {
   };
 
   const mockCreateSiteDto: CreateSiteDto = {
+    landlordId: 1,
     isNew: true,
     addressline1: '123 Main St',
     addressline2: 'Apt 4B',
@@ -38,6 +40,7 @@ describe('SitesController', () => {
   };
 
   const mockUpdateSiteDto: UpdateSiteDto = {
+    landlordId: 1,
     addressline1: '456 Elm St',
     addressline2: 'Suite 500',
     state: 'CA',
