@@ -81,7 +81,7 @@ export class SitesService {
         where: { propertyId: id },
       })
       if(property.length !== 0) {
-        throw new BadRequestException(`Sites with ID ${id} associated with deals cannot be deleted`)
+        throw new BadRequestException(`Property with address "${site.addressline1}" associated with deals cannot be deleted`)
       }
       return this.sitesRepository.remove(site);
     } catch (error) {
