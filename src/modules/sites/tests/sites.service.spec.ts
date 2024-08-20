@@ -48,6 +48,7 @@ describe('SitesService', () => {
   describe('createSite', () => {
     it('should create and return a site', async () => {
       const createSiteDto: CreateSiteDto = {
+        landlordId: 1,
         isNew: true,
         addressline1: '123 Main St',
         addressline2: 'Apt 4B',
@@ -59,6 +60,7 @@ describe('SitesService', () => {
       };
 
       const savedSite: Sites = {
+        landlordId: 1,
         id: 1,
         addressline1: '123 Main St',
         addressline2: 'Apt 4B',
@@ -84,6 +86,7 @@ describe('SitesService', () => {
       const sitesArray: Sites[] = [
         {
           id: 1,
+          landlordId: 1,
           addressline1: '123 Main St',
           addressline2: 'Apt 4B',
           state: 'CA',
@@ -105,6 +108,7 @@ describe('SitesService', () => {
   describe('getSiteById', () => {
     it('should return a site by ID', async () => {
       const site: Sites = {
+        landlordId: 1,
         id: 1,
         addressline1: '123 Main St',
         addressline2: 'Apt 4B',
@@ -133,6 +137,7 @@ describe('SitesService', () => {
   describe('updateSite', () => {
     it('should update and return a site', async () => {
       const updateSiteDto: UpdateSiteDto = {
+        landlordId: 1,
         addressline1: '456 Elm St',
         addressline2: 'Suite 5C',
         state: 'TX',
@@ -143,6 +148,7 @@ describe('SitesService', () => {
       };
 
       const existingSite: Sites = {
+        landlordId: 1,
         id: 1,
         addressline1: '123 Main St',
         addressline2: 'Apt 4B',

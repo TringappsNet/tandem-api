@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,12 +9,15 @@ import { Repository } from 'typeorm';
 import { Landlord } from '../../common/entities/landlord.entity';
 import { CreateLandlordDto } from '../../common/dto/create-landlord.dto';
 import { UpdateLandlordDto } from '../../common/dto/update-landlord.dto';
+import { Sites } from '../../common/entities/sites.entity';
 
 @Injectable()
 export class LandlordService {
   constructor(
     @InjectRepository(Landlord)
     private readonly landlordRepository: Repository<Landlord>,
+    @InjectRepository(Sites)
+    private readonly sitesRepository: Repository<Sites>,
   ) {}
 
   async create(createLandlordDto: CreateLandlordDto): Promise<Landlord> {
@@ -72,13 +76,19 @@ export class LandlordService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<Landlord> {
     try {
       const landlord = await this.findOne(id);
       if (!landlord) {
         throw new NotFoundException(`Landlord with ID ${id}`);
       }
-      await this.landlordRepository.remove(landlord);
+      const property = await this.sitesRepository.find({
+        where: { landlordId: id },
+      });
+      if(property.length > 0) {
+        throw new ConflictException(`Landlords with name "${landlord.name}" associated with sites cannot be deleted`)
+      }
+      return await this.landlordRepository.remove(landlord);
     } catch (error) {
       throw error;
     }

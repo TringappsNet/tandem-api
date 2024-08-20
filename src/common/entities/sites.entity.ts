@@ -15,9 +15,14 @@ export class Sites {
   id: number;
 
   @Column({
+    name: 'landlord_id',
+    type: 'integer',
+  })
+  landlordId: number;
+
+  @Column({
     name: 'address_line1',
     type: 'varchar',
-
     length: 255,
   })
   addressline1: string;

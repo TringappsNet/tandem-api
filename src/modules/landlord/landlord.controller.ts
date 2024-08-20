@@ -147,7 +147,7 @@ export class LandlordController {
   async remove(
     @UserAuth() userAuth: { userId: number; accessToken: string },
     @Param('id') id: number,
-  ): Promise<void> {
+  ): Promise<Landlord> {
     try {
       return await this.landlordService.remove(id);
     } catch (error) {

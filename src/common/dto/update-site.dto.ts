@@ -2,6 +2,9 @@ import { IsNotEmpty, IsString, IsInt, IsOptional } from 'class-validator';
 
 export class UpdateSiteDto {
   @IsNotEmpty()
+  landlordId: number;
+  
+  @IsNotEmpty()
   @IsString()
   addressline1: string;
 
