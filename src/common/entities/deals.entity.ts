@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Users } from './user.entity';
+import { Sites } from './sites.entity';
 
 @Entity('deals')
 export class Deals {
@@ -51,11 +52,19 @@ export class Deals {
   })
   propertyName: string;
 
-  @Column({
-    name: 'property_id',
-    type: 'integer'
+  // @Column({
+  //   name: 'property_id',
+  //   type: 'integer',
+  // })
+  // propertyId: number;
+
+  @ManyToOne(() => Sites, (site) => site.id, {
+    onDelete: 'SET NULL',
   })
-  propertyId: number;
+  @JoinColumn({
+    name: 'property_id',
+  })
+  propertyId: Sites;
 
   @Column({
     name: 'deal_start_date',

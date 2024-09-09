@@ -1,5 +1,6 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
 import { Users } from '../entities/user.entity';
+import { Sites } from '../entities/sites.entity';
 
 export class UpdateDealDto {
   @IsNotEmpty()
@@ -17,7 +18,7 @@ export class UpdateDealDto {
   propertyName: string;
 
   @IsNotEmpty()
-  propertyId: number;
+  propertyId: Sites;
 
   dealStartDate: Date;
 
