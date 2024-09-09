@@ -8,11 +8,12 @@ import { AuthModule } from '../auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailConfigAsync } from 'src/common/configurations/email.config';
 import { DealsHistory } from 'src/common/entities/deals.history.entity';
+import { Sites } from 'src/common/entities/sites.entity';
 
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forFeature([Deals, Users, DealsHistory]),
+    TypeOrmModule.forFeature([Deals, Users, DealsHistory, Sites]),
     MailerModule.forRootAsync(mailConfigAsync),
   ],
   controllers: [DealsController],

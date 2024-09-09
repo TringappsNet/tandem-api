@@ -78,7 +78,9 @@ export class SitesService {
         throw new NotFoundException(`Sites with ID ${id}`);
       }
       const property = await this.dealsRepository.find({
-        where: { propertyId: id },
+        where: { propertyId:
+          {id}
+        },
       })
       if(property.length !== 0) {
         throw new BadRequestException(`Property with address "${site.addressline1}" associated with deals cannot be deleted`)
