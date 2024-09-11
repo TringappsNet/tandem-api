@@ -77,7 +77,7 @@ export class BrokerService {
             (deal) => deal.activeStep === 7,
           ).length;
           const totalCommission = deals.reduce(
-            (sum, deal) => sum + deal.potentialCommission,
+            (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.potentialCommission),
             0,
           );
 

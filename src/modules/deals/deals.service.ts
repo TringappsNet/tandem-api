@@ -22,6 +22,7 @@ import {
 } from 'src/common/entities/deals.history.entity';
 import { format } from 'date-fns/format';
 import { Sites } from 'src/common/entities/sites.entity';
+import { SitesService } from '../sites/sites.service';
 
 @Injectable()
 export class DealsService {
@@ -32,6 +33,7 @@ export class DealsService {
     private dealsHistoryRepository: Repository<DealsHistory>,
     @InjectRepository(Sites) private propertyRepository: Repository<Sites>,
     private mailService: MailService,
+    private sitesService: SitesService,
   ) {}
 
   dealsHistory = async (state: Deals, action: allowedActions) => {
@@ -123,15 +125,15 @@ export class DealsService {
 
       this.dealsHistory(saveData, allowedActions.CREATE);
 
-      const mailTemplate = mailTemplates.deals.update; //'./deals';
+      const mailTemplate = mailTemplates.deals.update;
 
       const assignedToRecord = await this.usersRepository.findOne({
         where: { id: createDealDto.brokerId },
       });
 
       if (saveData.activeStep === 1) {
-        const subject = mailSubject.deals.started; //'Deal Has Been Created';
-        const mailTemplate = mailTemplates.deals.new; //'./newDeal';
+        const subject = mailSubject.deals.started;
+        const mailTemplate = mailTemplates.deals.new;
         this.sendMail(
           assignedToRecord,
           saveData,
@@ -150,7 +152,7 @@ export class DealsService {
           listOfMilestones,
           saveData,
         );
-        const subject = mailSubject.deals.updated; //'Current Status of the Deal';
+        const subject = mailSubject.deals.updated;
         this.sendMail(
           assignedToRecord,
           saveData,
@@ -166,7 +168,7 @@ export class DealsService {
           listOfMilestones,
           saveData,
         );
-        const subject = mailSubject.deals.completed; //'Deal Has Been Completed';
+        const subject = mailSubject.deals.completed;
         this.sendMail(
           assignedToRecord,
           saveData,
@@ -175,6 +177,8 @@ export class DealsService {
           milestones,
         );
       }
+
+      saveData.propertyId = await this.sitesService.getSiteById(saveData.propertyId.id)
 
       return saveData;
     } catch (error) {
@@ -208,7 +212,7 @@ export class DealsService {
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
       const totalCommission = deals.reduce(
-        (sum, deal) => sum + deal.potentialCommission,
+        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.potentialCommission),
         0,
       );
       return {
@@ -247,7 +251,7 @@ export class DealsService {
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
       const totalCommission = deals.reduce(
-        (sum, deal) => sum + deal.potentialCommission,
+        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.potentialCommission),
         0,
       );
 
@@ -269,8 +273,8 @@ export class DealsService {
       const deal = await this.dealsRepository.findOne({
         where: { id },
         relations: {
-          updatedBy: true,
-          createdBy: true,
+          updatedBy: false,
+          createdBy: false,
           propertyId: true,
         },
       });
@@ -290,7 +294,7 @@ export class DealsService {
     updateDealDto: UpdateDealDto,
   ): Promise<Deals> {
     try {
-      const mailTemplate = mailTemplates.deals.update; //'./deals';
+      const mailTemplate = mailTemplates.deals.update;
       const existingDeal = await this.getDealById(id);
       const existingActiveStep = existingDeal.activeStep;
       const latestActiveStep = updateDealDto.activeStep;
@@ -322,9 +326,9 @@ export class DealsService {
           listOfMilestones,
           updatedDeal,
         );
-        let subject = mailSubject.deals.updated; //'Current Status of the Deal';
+        let subject = mailSubject.deals.updated;
         if (latestActiveStep === 7) {
-          subject = mailSubject.deals.completed; //'Deal Has Been Completed';
+          subject = mailSubject.deals.completed;
         }
         this.sendMail(
           assignedToRecord,

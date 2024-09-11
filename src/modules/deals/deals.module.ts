@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { mailConfigAsync } from 'src/common/configurations/email.config';
 import { DealsHistory } from 'src/common/entities/deals.history.entity';
 import { Sites } from 'src/common/entities/sites.entity';
+import { SitesService } from '../sites/sites.service';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { Sites } from 'src/common/entities/sites.entity';
     MailerModule.forRootAsync(mailConfigAsync),
   ],
   controllers: [DealsController],
-  providers: [DealsService],
+  providers: [DealsService, SitesService],
 })
 export class DealsModule {}

@@ -52,12 +52,6 @@ export class Deals {
   })
   propertyName: string;
 
-  // @Column({
-  //   name: 'property_id',
-  //   type: 'integer',
-  // })
-  // propertyId: number;
-
   @ManyToOne(() => Sites, (site) => site.id, {
     onDelete: 'SET NULL',
   })
@@ -81,11 +75,25 @@ export class Deals {
   proposalDate: Date;
 
   @Column({
+    name: 'proposal_commission',
+    type: 'int',
+    default: 0,
+  })
+  proposalCommission: number;
+
+  @Column({
     name: 'loi_execute_date',
     type: 'timestamp',
     default: null,
   })
   loiExecuteDate: Date;
+
+  @Column({
+    name: 'loi_execute_commission',
+    type: 'int',
+    default: 0,
+  })
+  loiExecuteCommission: number;
 
   @Column({
     name: 'lease_signed_date',
@@ -95,6 +103,13 @@ export class Deals {
   leaseSignedDate: Date;
 
   @Column({
+    name: 'lease_signed_commission',
+    type: 'int',
+    default: 0,
+  })
+  leaseSignedCommission: number;
+
+  @Column({
     name: 'notice_to_proceed_date',
     type: 'timestamp',
     default: null,
@@ -102,11 +117,25 @@ export class Deals {
   noticeToProceedDate: Date;
 
   @Column({
+    name: 'notice_to_proceed_commission',
+    type: 'int',
+    default: 0,
+  })
+  noticeToProceedCommission: number;
+
+  @Column({
     name: 'commercial_operation_date',
     type: 'timestamp',
     default: null,
   })
   commercialOperationDate: Date;
+
+  @Column({
+    name: 'commercial_operation_commission',
+    type: 'int',
+    default: 0,
+  })
+  commercialOperationCommission: number;
 
   @Column({
     name: 'potential_commission_date',
