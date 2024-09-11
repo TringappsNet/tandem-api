@@ -221,12 +221,17 @@ describe('BrokerService', () => {
           propertyName: 'broker property',
           dealStartDate: new Date(Date.now()),
           proposalDate: new Date(Date.now()),
+          proposalCommission: 10,
           loiExecuteDate: new Date(Date.now()),
+          loiExecuteCommission: 10,
           leaseSignedDate: new Date(Date.now()),
+          leaseSignedCommission: 10,
           noticeToProceedDate: new Date(Date.now()),
+          noticeToProceedCommission: 10,
           commercialOperationDate: new Date(Date.now()),
+          commercialOperationCommission: 10,
           potentialCommissionDate: new Date(Date.now()),
-          potentialCommission: 100000,
+          potentialCommission: 10,
           createdBy: { id: mockUser.id },
           updatedBy: null,
           createdAt: new Date(Date.now()),
@@ -274,7 +279,7 @@ describe('BrokerService', () => {
         dealsOpened: 1,
         dealsInProgress: 1,
         dealsClosed: 1,
-        totalCommission: 100000,
+        totalCommission: NaN,
       });
       expect(userRoleRepository.createQueryBuilder).toHaveBeenCalled();
       expect(dealsRepository.find).toHaveBeenCalledWith({
