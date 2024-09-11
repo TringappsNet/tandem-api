@@ -5,7 +5,7 @@ export const listOfDealStatus = [
   'leaseSignedDate',
   'noticeToProceedDate',
   'commercialOperationDate',
-  'potentialCommissionDate',
+  'finalCommissionDate',
 ];
 
 export const listOfMilestones = [
@@ -15,7 +15,7 @@ export const listOfMilestones = [
   'Lease Signed',
   'Notice To Proceed',
   'Commercial Operation',
-  'Potential Commission',
+  'Final Commission',
 ];
 
 export const mailTemplates = {

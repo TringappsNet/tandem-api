@@ -25,18 +25,22 @@ export class CreateDealDto {
   dealStartDate: Date;
 
   proposalDate: Date;
+  proposalCommission: number;
 
   loiExecuteDate: Date;
+  loiExecuteCommission: number;
 
   leaseSignedDate: Date;
+  leaseSignedCommission: number;
 
   noticeToProceedDate: Date;
+  noticeToProceedCommission: number;
 
   commercialOperationDate: Date;
+  commercialOperationCommission: number;
 
-  potentialCommissionDate: Date;
-
-  potentialCommission: number;
+  finalCommissionDate: Date;
+  finalCommission: number;
 
   @IsInt()
   createdBy: Users;

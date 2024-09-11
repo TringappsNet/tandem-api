@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Users } from './user.entity';
+import { Sites } from './sites.entity';
 
 export enum allowedActions {
   CREATE = 'create',
@@ -63,6 +64,14 @@ export class DealsHistory {
   })
   propertyName: string;
 
+  @ManyToOne(() => Sites, (site) => site.id, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({
+    name: 'property_id',
+  })
+  propertyId: Sites;
+
   @Column({
     name: 'deal_start_date',
     type: 'timestamp',
@@ -78,11 +87,25 @@ export class DealsHistory {
   proposalDate: Date;
 
   @Column({
+    name: 'proposal_commission',
+    type: 'int',
+    default: 0,
+  })
+  proposalCommission: number;
+
+  @Column({
     name: 'loi_execute_date',
     type: 'timestamp',
     default: null,
   })
   loiExecuteDate: Date;
+
+  @Column({
+    name: 'loi_execute_commission',
+    type: 'int',
+    default: 0,
+  })
+  loiExecuteCommission: number;
 
   @Column({
     name: 'lease_signed_date',
@@ -92,11 +115,25 @@ export class DealsHistory {
   leaseSignedDate: Date;
 
   @Column({
+    name: 'lease_signed_commission',
+    type: 'int',
+    default: 0,
+  })
+  leaseSignedCommission: number;
+
+  @Column({
     name: 'notice_to_proceed_date',
     type: 'timestamp',
     default: null,
   })
   noticeToProceedDate: Date;
+
+  @Column({
+    name: 'notice_to_proceed_commission',
+    type: 'int',
+    default: 0,
+  })
+  noticeToProceedCommission: number;
 
   @Column({
     name: 'commercial_operation_date',
@@ -106,18 +143,25 @@ export class DealsHistory {
   commercialOperationDate: Date;
 
   @Column({
+    name: 'commercial_operation_commission',
+    type: 'int',
+    default: 0,
+  })
+  commercialOperationCommission: number;
+
+  @Column({
     name: 'potential_commission_date',
     type: 'timestamp',
     default: null,
   })
-  potentialCommissionDate: Date;
+  finalCommissionDate: Date;
 
   @Column({
     name: 'potential_commission',
     type: 'int',
     default: 0,
   })
-  potentialCommission: number;
+  finalCommission: number;
 
   @ManyToOne(() => Users, (user) => user.createdDeals, {
     onDelete: 'SET NULL',
