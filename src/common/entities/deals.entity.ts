@@ -142,14 +142,14 @@ export class Deals {
     type: 'timestamp',
     default: null,
   })
-  potentialCommissionDate: Date;
+  finalCommissionDate: Date;
 
   @Column({
     name: 'potential_commission',
     type: 'int',
     default: 0,
   })
-  potentialCommission: number;
+  finalCommission: number;
 
   @ManyToOne(() => Users, (user) => user.createdDeals, {
     onDelete: 'SET NULL',

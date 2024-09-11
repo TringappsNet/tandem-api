@@ -44,14 +44,20 @@ export class DealsService {
     dealsHistory.brokerName = state.brokerName;
     dealsHistory.brokerId = state.brokerId;
     dealsHistory.propertyName = state.propertyName;
+    dealsHistory.propertyId = state.propertyId;
     dealsHistory.dealStartDate = state.dealStartDate;
     dealsHistory.proposalDate = state.proposalDate;
+    dealsHistory.proposalCommission = state.proposalCommission;
     dealsHistory.loiExecuteDate = state.loiExecuteDate;
+    dealsHistory.loiExecuteCommission = state.loiExecuteCommission
     dealsHistory.leaseSignedDate = state.leaseSignedDate;
+    dealsHistory.leaseSignedCommission = state.leaseSignedCommission;
     dealsHistory.noticeToProceedDate = state.noticeToProceedDate;
+    dealsHistory.noticeToProceedCommission = state.noticeToProceedCommission;
     dealsHistory.commercialOperationDate = state.commercialOperationDate;
-    dealsHistory.potentialCommissionDate = state.potentialCommissionDate;
-    dealsHistory.potentialCommission = state.potentialCommission;
+    dealsHistory.commercialOperationCommission = state.commercialOperationCommission;
+    dealsHistory.finalCommissionDate = state.finalCommissionDate;
+    dealsHistory.finalCommission = state.finalCommission;
     dealsHistory.createdBy = state.createdBy;
     dealsHistory.createdAt = state.createdAt;
     dealsHistory.updatedBy = state.updatedBy;
@@ -112,7 +118,7 @@ export class DealsService {
         milestones: milestones,
         dealStatus: deals.status,
         propertyName: deals.propertyName,
-        commission: deals.potentialCommission,
+        commission: deals.finalCommission,
       },
       mailTemplate,
     );
@@ -211,8 +217,8 @@ export class DealsService {
         (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
-      const totalCommission = deals.reduce(
-        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.potentialCommission),
+      const totalPotentialCommission = deals.reduce(
+        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
         0,
       );
       return {
@@ -220,7 +226,7 @@ export class DealsService {
         dealsOpened,
         dealsInProgress,
         dealsClosed,
-        totalCommission,
+        totalPotentialCommission,
         deals,
       };
     } catch {
@@ -250,8 +256,8 @@ export class DealsService {
         (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
-      const totalCommission = deals.reduce(
-        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.potentialCommission),
+      const totalPotentialCommission = deals.reduce(
+        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
         0,
       );
 
@@ -260,7 +266,7 @@ export class DealsService {
         dealsOpened,
         dealsInProgress,
         dealsClosed,
-        totalCommission,
+        totalPotentialCommission,
         deals,
       };
     } catch (error) {

@@ -76,8 +76,8 @@ export class BrokerService {
           const dealsClosed = deals.filter(
             (deal) => deal.activeStep === 7,
           ).length;
-          const totalCommission = deals.reduce(
-            (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.potentialCommission),
+          const totalPotentialCommission = deals.reduce(
+            (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
             0,
           );
 
@@ -88,7 +88,7 @@ export class BrokerService {
             dealsOpened,
             dealsInProgress,
             dealsClosed,
-            totalCommission,
+            totalPotentialCommission,
           };
         }),
       );
@@ -156,8 +156,8 @@ export class BrokerService {
       const dealsClosed = deals.filter(
         (deal) => deal.activeStep === 7,
       ).length;
-      const totalCommission = deals.reduce(
-        (sum, deal) => sum + deal.potentialCommission,
+      const totalPotentialCommission = deals.reduce(
+        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
         0,
       );
 
@@ -167,7 +167,7 @@ export class BrokerService {
         dealsOpened,
         dealsInProgress,
         dealsClosed,
-        totalCommission,
+        totalPotentialCommission,
       } 
     } catch (error) {
       throw error;

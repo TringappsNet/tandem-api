@@ -37,9 +37,8 @@ export class UpdateDealDto {
   commercialOperationDate: Date;
   commercialOperationCommission: number;
 
-  potentialCommissionDate: Date;
-
-  potentialCommission: number;
+  finalCommissionDate: Date;
+  finalCommission: number;
 
   @IsInt()
   updatedBy: Users;
