@@ -7,7 +7,7 @@ export const seedUsers = async (dataSource: DataSource) => {
   if (existingUsers.length === 0) {
     await dataSource.getRepository(Users).save({
       email: 'tandeminfrastructure@gmail.com',
-      password: await bcrypt.hash('admin123', 10),
+      password: await bcrypt.hash('Admin@12', 10),
       firstName: 'Admin',
       lastName: 'User',
       mobile: '1234567890',
