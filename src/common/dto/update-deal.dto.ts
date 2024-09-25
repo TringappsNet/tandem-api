@@ -1,6 +1,7 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
 import { Users } from '../entities/user.entity';
 import { Sites } from '../entities/sites.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateDealDto {
   @IsNotEmpty()
@@ -23,23 +24,19 @@ export class UpdateDealDto {
   dealStartDate: Date;
 
   proposalDate: Date;
-  proposalCommission: number;
 
   loiExecuteDate: Date;
-  loiExecuteCommission: number;
 
   leaseSignedDate: Date;
-  leaseSignedCommission: number;
 
   noticeToProceedDate: Date;
-  noticeToProceedCommission: number;
 
   commercialOperationDate: Date;
-  commercialOperationCommission: number;
 
   finalCommissionDate: Date;
   finalCommission: number;
 
-  @IsInt()
+  @IsNotEmpty()
+  @ApiProperty({ example: { id: 1 } })
   updatedBy: Users;
 }

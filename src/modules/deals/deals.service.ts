@@ -36,6 +36,9 @@ export class DealsService {
     private sitesService: SitesService,
   ) {}
 
+  private previousDeal: Deals;
+  private currentDeal: Deals;
+  
   dealsHistory = async (state: Deals, action: allowedActions) => {
     const dealsHistory = new DealsHistory();
     dealsHistory.dealId = state.id;
@@ -47,15 +50,10 @@ export class DealsService {
     dealsHistory.propertyId = state.propertyId;
     dealsHistory.dealStartDate = state.dealStartDate;
     dealsHistory.proposalDate = state.proposalDate;
-    dealsHistory.proposalCommission = state.proposalCommission;
     dealsHistory.loiExecuteDate = state.loiExecuteDate;
-    dealsHistory.loiExecuteCommission = state.loiExecuteCommission
     dealsHistory.leaseSignedDate = state.leaseSignedDate;
-    dealsHistory.leaseSignedCommission = state.leaseSignedCommission;
     dealsHistory.noticeToProceedDate = state.noticeToProceedDate;
-    dealsHistory.noticeToProceedCommission = state.noticeToProceedCommission;
     dealsHistory.commercialOperationDate = state.commercialOperationDate;
-    dealsHistory.commercialOperationCommission = state.commercialOperationCommission;
     dealsHistory.finalCommissionDate = state.finalCommissionDate;
     dealsHistory.finalCommission = state.finalCommission;
     dealsHistory.createdBy = state.createdBy;
@@ -195,7 +193,15 @@ export class DealsService {
   async getAllDeals(): Promise<Deals[]> {
     try {
       const Landlord = await this.dealsRepository.find({
-        relations: ['propertyId'],
+        relations: ['propertyId', 'createdBy', 'updatedBy'],
+        select: {
+          createdBy: {
+            id: true,
+          },
+          updatedBy: {
+            id: true,
+          }
+        },
       });
       if (Landlord.length === 0) {
         throw new NotFoundException('Deals');
@@ -218,7 +224,7 @@ export class DealsService {
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
       const totalPotentialCommission = deals.reduce(
-        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
+        (sum, deal) => sum + deal.finalCommission,
         0,
       );
       return {
@@ -257,7 +263,7 @@ export class DealsService {
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
       const totalPotentialCommission = deals.reduce(
-        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
+        (sum, deal) => sum + deal.finalCommission,
         0,
       );
 
@@ -295,6 +301,32 @@ export class DealsService {
     }
   }
 
+  async areObjectsEqual() {
+    const obj1 = { ...this.previousDeal };
+    const obj2 = { ...this.currentDeal };
+    ['createdBy', 'updatedBy', 'createdAt', 'updatedAt', 'propertyId'].forEach(key => delete obj1[key]);
+    ['createdBy', 'updatedBy', 'createdAt', 'updatedAt', 'propertyId'].forEach(key => delete obj2[key]);
+
+    let map1 = new Map(Object.entries(obj1));
+    let map2 = new Map(Object.entries(obj2));
+
+    if (map1.size !== map2.size) return false;
+    
+    for (let [key, value1] of map1) {
+      if (!map2.has(key)) return false;
+      
+      const value2 = map2.get(key);
+      
+      if (value1 instanceof Date && value2 instanceof Date) {
+        if (value1.getTime() !== value2.getTime()) return false;
+      } else if (value1 !== value2) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
   async updateDealById(
     id: number,
     updateDealDto: UpdateDealDto,
@@ -302,8 +334,9 @@ export class DealsService {
     try {
       const mailTemplate = mailTemplates.deals.update;
       const existingDeal = await this.getDealById(id);
-      const existingActiveStep = existingDeal.activeStep;
-      const latestActiveStep = updateDealDto.activeStep;
+      this.previousDeal = { ...existingDeal };
+      let existingActiveStep: number = existingDeal.activeStep;
+      let latestActiveStep: number = updateDealDto.activeStep;
 
       const assignedToRecord = await this.usersRepository.findOne({
         where: { id: updateDealDto.brokerId },
@@ -319,34 +352,43 @@ export class DealsService {
       );
       const savedDeal = await this.dealsRepository.save(updatedDeal);
 
+      const updateDeal = await this.getDealById(id);
+      this.currentDeal = { ...updateDeal };
+      
       this.dealsHistory(savedDeal, allowedActions.UPDATE);
 
-      if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
-        if (existingActiveStep === latestActiveStep) {
-          throw new BadRequestException('Invalid Operations on Deals Tracker');
+      const isUpdated = await this.areObjectsEqual()
+      if (!isUpdated) {
+        if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
+          if (existingActiveStep === latestActiveStep) {
+            existingActiveStep = 1;
+            console.log("Mail Updated");
+          }
+  
+          const milestones = await this.getInProgressMilestones(
+            existingActiveStep,
+            latestActiveStep,
+            listOfDealStatus,
+            listOfMilestones,
+            updatedDeal,
+          );
+          let subject = mailSubject.deals.updated;
+          if (latestActiveStep === 7) {
+            subject = mailSubject.deals.completed;
+          }
+          this.sendMail(
+            assignedToRecord,
+            updatedDeal,
+            mailTemplate,
+            subject,
+            milestones,
+          );
+          
+        } else {
+          throw new BadRequestException('Invalid Active Step');
         }
-        const milestones = await this.getInProgressMilestones(
-          existingActiveStep,
-          latestActiveStep,
-          listOfDealStatus,
-          listOfMilestones,
-          updatedDeal,
-        );
-        let subject = mailSubject.deals.updated;
-        if (latestActiveStep === 7) {
-          subject = mailSubject.deals.completed;
-        }
-        this.sendMail(
-          assignedToRecord,
-          updatedDeal,
-          mailTemplate,
-          subject,
-          milestones,
-        );
-        return savedDeal;
-      } else {
-        throw new BadRequestException('Invalid Active Step');
       }
+      return savedDeal;
     } catch (error) {
       throw error;
     }

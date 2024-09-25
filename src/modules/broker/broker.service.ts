@@ -77,7 +77,7 @@ export class BrokerService {
             (deal) => deal.activeStep === 7,
           ).length;
           const totalPotentialCommission = deals.reduce(
-            (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
+            (sum, deal) => sum + deal.finalCommission,
             0,
           );
 
@@ -147,17 +147,13 @@ export class BrokerService {
       });
 
       const totalDeals = deals.length;
-      const dealsOpened = deals.filter(
-        (deal) => deal.activeStep === 1,
-      ).length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
       const dealsInProgress = deals.filter(
         (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
       ).length;
-      const dealsClosed = deals.filter(
-        (deal) => deal.activeStep === 7,
-      ).length;
+      const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
       const totalPotentialCommission = deals.reduce(
-        (sum, deal) => sum + (deal.proposalCommission + deal.loiExecuteCommission + deal.leaseSignedCommission + deal.noticeToProceedCommission + deal.commercialOperationCommission + deal.finalCommission),
+        (sum, deal) => sum + deal.finalCommission,
         0,
       );
 
@@ -168,7 +164,7 @@ export class BrokerService {
         dealsInProgress,
         dealsClosed,
         totalPotentialCommission,
-      } 
+      };
     } catch (error) {
       throw error;
     }
@@ -189,9 +185,7 @@ export class BrokerService {
         checkStatus.isActive == false &&
         setActiveBrokerDto.isActive == false
       ) {
-        throw new BadRequestException(
-          `Broker is already in deactive state`,
-        );
+        throw new BadRequestException(`Broker is already in deactive state`);
       }
       await this.brokerRepository.update(id, {
         isActive: setActiveBrokerDto.isActive,
@@ -206,7 +200,7 @@ export class BrokerService {
         );
       }
 
-      var status: string = 'deactivated';
+      let status: string = 'deactivated';
       if (setActiveBrokerDto.isActive) {
         status = 'activated';
       }
