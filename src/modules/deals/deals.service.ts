@@ -249,7 +249,12 @@ export class DealsService {
     try {
       const deals = await this.dealsRepository.find({
         where: { brokerId: assignedTo },
-        relations: ['propertyId'],
+        relations: ['propertyId', 'updatedBy'],
+        select: {
+          updatedBy: {
+            id: true,
+          }
+        }
       });
 
       if (!deals || deals.length === 0) {
