@@ -362,7 +362,7 @@ export class DealsService {
         if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
           if (existingActiveStep === latestActiveStep) {
             existingActiveStep = 1;
-            console.log("Mail Updated");
+            console.log("New update found in the data and mail has been sent!");
           }
   
           const milestones = await this.getInProgressMilestones(
