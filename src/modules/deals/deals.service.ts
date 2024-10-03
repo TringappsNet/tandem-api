@@ -69,16 +69,16 @@ export class DealsService {
   getInProgressMilestones = async (
     existingActiveStep: number,
     latestActiveStep: number,
-    listOfDealStatus: string[],
-    listOfMilestones: string[],
+    listOfDealStatus: object,
+    listOfMilestones: object,
     deals: Deals,
   ) => {
     const milestones = [];
     for (let index = existingActiveStep; index < latestActiveStep; index++) {
       const element = listOfDealStatus[index];
       if (
-        existingActiveStep === 6 &&
-        latestActiveStep === 7 &&
+        existingActiveStep === 7 &&
+        latestActiveStep === 8 &&
         deals.status === 'Completed'
       ) {
         const dealStatus = deals.status;
@@ -135,7 +135,7 @@ export class DealsService {
         where: { id: createDealDto.brokerId },
       });
 
-      if (saveData.activeStep === 1) {
+      if (saveData.activeStep === 2) {
         const subject = mailSubject.deals.started;
         const mailTemplate = mailTemplates.deals.new;
         this.sendMail(
@@ -148,7 +148,7 @@ export class DealsService {
             'MMMM dd, yyyy',
           ),
         );
-      } else if (saveData.activeStep > 1 && saveData.activeStep < 7) {
+      } else if (saveData.activeStep > 2 && saveData.activeStep < 8) {
         const milestones = await this.getInProgressMilestones(
           1,
           saveData.activeStep,
@@ -164,10 +164,10 @@ export class DealsService {
           subject,
           milestones,
         );
-      } else if (saveData.activeStep === 7) {
+      } else if (saveData.activeStep === 8) {
         const milestones: object = await this.getInProgressMilestones(
           1,
-          7,
+          8,
           listOfDealStatus,
           listOfMilestones,
           saveData,
@@ -218,11 +218,11 @@ export class DealsService {
         relations: ['propertyId'],
       });
       const totalDeals = deals.length;
-      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep <= 2).length;
       const dealsInProgress = deals.filter(
-        (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+        (deal) => deal.activeStep > 2 && deal.activeStep <= 7,
       ).length;
-      const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
+      const dealsClosed = deals.filter((deal) => deal.activeStep === 8).length;
       const totalPotentialCommission = deals.reduce(
         (sum, deal) => sum + deal.finalCommission,
         0,
@@ -262,11 +262,11 @@ export class DealsService {
       }
 
       const totalDeals = deals.length;
-      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep <= 2).length;
       const dealsInProgress = deals.filter(
-        (deal) => deal.activeStep > 1 && deal.activeStep <= 6,
+        (deal) => deal.activeStep > 2 && deal.activeStep <= 7,
       ).length;
-      const dealsClosed = deals.filter((deal) => deal.activeStep === 7).length;
+      const dealsClosed = deals.filter((deal) => deal.activeStep === 8).length;
       const totalPotentialCommission = deals.reduce(
         (sum, deal) => sum + deal.finalCommission,
         0,
@@ -364,7 +364,7 @@ export class DealsService {
 
       const isUpdated = await this.areObjectsEqual()
       if (!isUpdated) {
-        if (latestActiveStep > 1 && latestActiveStep <= listOfDealStatus.length) {
+        if (latestActiveStep > 0 && latestActiveStep <= Object.keys(listOfDealStatus).length + 1) {
           if (existingActiveStep === latestActiveStep) {
             existingActiveStep = 1;
             console.log("New update found in the data and mail has been sent!");
@@ -378,7 +378,7 @@ export class DealsService {
             updatedDeal,
           );
           let subject = mailSubject.deals.updated;
-          if (latestActiveStep === 7) {
+          if (latestActiveStep === 8) {
             subject = mailSubject.deals.completed;
           }
           this.sendMail(

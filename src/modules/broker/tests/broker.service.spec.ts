@@ -214,7 +214,7 @@ describe('BrokerService', () => {
         } as Deals,
         {
           id: 1,
-          activeStep: 7,
+          activeStep: 8,
           status: 'Completed',
           brokerName: 'broker',
           brokerId: 1,

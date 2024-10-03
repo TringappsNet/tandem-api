@@ -53,7 +53,7 @@ export class DealsHistory {
   @Column({
     name: 'assigned_to',
     type: 'integer',
-    nullable: false,
+    nullable: true,
     default: 1,
   })
   brokerId: number;
