@@ -218,9 +218,9 @@ export class DealsService {
         relations: ['propertyId'],
       });
       const totalDeals = deals.length;
-      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep <= 2).length;
       const dealsInProgress = deals.filter(
-        (deal) => deal.activeStep > 1 && deal.activeStep <= 7,
+        (deal) => deal.activeStep > 2 && deal.activeStep <= 7,
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 8).length;
       const totalPotentialCommission = deals.reduce(
@@ -262,9 +262,9 @@ export class DealsService {
       }
 
       const totalDeals = deals.length;
-      const dealsOpened = deals.filter((deal) => deal.activeStep === 1).length;
+      const dealsOpened = deals.filter((deal) => deal.activeStep <= 2).length;
       const dealsInProgress = deals.filter(
-        (deal) => deal.activeStep > 1 && deal.activeStep <= 7,
+        (deal) => deal.activeStep > 2 && deal.activeStep <= 7,
       ).length;
       const dealsClosed = deals.filter((deal) => deal.activeStep === 8).length;
       const totalPotentialCommission = deals.reduce(
