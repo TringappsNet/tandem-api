@@ -12,7 +12,6 @@ export class CreateDealDto {
 
   brokerName: string;
 
-  @IsNotEmpty()
   brokerId: number;
 
   @IsNotEmpty()
